@@ -527,6 +527,7 @@ dependencies = [
  "http",
  "log",
  "mime",
+ "mysql",
  "serde_json",
  "tokio",
 ]

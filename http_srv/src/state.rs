@@ -2,11 +2,11 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
 
 use crate::filecache::{FileCache, StaticFileCacheLogic};
-// use mysql::{Opts, Pool};
 
 #[derive(Clone)]
 pub struct AppConfig {
@@ -21,18 +21,18 @@ pub struct AppState {
     pub js_cache: Mutex<FileCache<StaticFileCacheLogic>>,
     pub svg_cache: Mutex<FileCache<StaticFileCacheLogic>>,
 
-    // pub pool: Mutex<Option<Pool>>,
+    pub pool: Mutex<Option<Pool>>,
     pub config: AppConfig,
 }
 
 impl AppState {
-    // pub async fn set_connection_pool(&mut self, url: &String) {
-    //     let opts = Opts::from_url(url).unwrap();
-    //     let new_pool = Pool::new(opts).unwrap();
-    //     let mut pool = self.pool.lock().unwrap();
-    //     let _old_val = pool.insert(new_pool);
-    //     // TODO? Release _old_val?
-    // }
+    pub async fn set_connection_pool(&mut self, url: &String) {
+        let opts = Opts::from_url(url).unwrap();
+        let new_pool = Pool::new(opts).unwrap();
+        let mut pool = self.pool.lock().unwrap();
+        let _old_val = pool.insert(new_pool);
+        // TODO? Release _old_val?
+    }
 }
 
 pub fn create_app_state(config: AppConfig) -> AppState {
@@ -72,7 +72,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
         css_cache: Mutex::new(css_cache),
         js_cache: Mutex::new(js_cache),
         svg_cache: Mutex::new(svg_cache),
-        // pool: Mutex::new(None),
+        pool: Mutex::new(None),
         config,
     }
 }
