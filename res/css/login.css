@@ -1,0 +1,70 @@
+/* ****************************************************************************************************************** * 
+ * Local CSS styles for the Login page
+ * ****************************************************************************************************************** */
+
+/* Read colors from another source */
+
+* {
+  --input-color   : #e0d0ac;
+  --input-border  : #c0a08c;
+}
+
+BODY {
+  font-family   : sans-serif;
+  color         : var(--menu-fg);
+  background    : var(--menu-bg);
+  padding-left  : 80px;
+}
+
+H1 {
+  font-size     : xxx-large;
+  font-family   : var(--aion-title-font);
+  font-weight   : bold;
+}
+
+DIV.login_panel {
+  border        : 3px solid var(--input-border);
+  border-radius : 28px;
+  color         : var(--main-fg);
+  background    : var(--main-bg);
+  padding       : 4em;
+}
+
+#body {
+  margin        : auto;
+  width         : 700px;
+}
+
+TABLE.login_table {
+  width         : 300px;
+}
+
+INPUT {
+  width         : 100%;
+  background    : var(--input-color);
+  border        : 2px solid var(--input-border);
+  border-radius : 6px;
+}
+
+
+.submit {
+  text-align    : right;
+}
+
+BUTTON {
+  color         : var(--menu-fg);
+  background    : var(--menu-bg);
+  border-radius : 12px;
+  padding       : 10px;
+  font-weight   : bold;
+  font-family   : var(--aion-title-font);
+}
+
+.login_form {
+  margin-left   : 48px;
+}
+
+.label {
+  font-family   : Verania, sans-serif;
+  font-weight   : bold;
+}

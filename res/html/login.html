@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<!-- ***************************************************************************************************************
+     * Static login page to log into Shifty
+     *************************************************************************************************************** -->
+
+<html>
+  <head>
+    <title>Log into Aion</title>
+
+    <!-- Global CSS style -->
+    <!--
+    <link rel="stylesheet" href="/css/global.css"/>
+    -->
+
+    <!-- Local CSS style -->
+    <link rel="stylesheet" href="/static/css/colors.css"/>
+    <link rel="stylesheet" href="/static/css/login.css"/>
+
+    <script type="text/javascript">
+
+function authenticate () {
+  console.log('Authenticating for ' + name + '/' + pass);
+  const name = document.getElementById('user-id-input').value;
+  const pass = document.getElementById('password-input').value;
+}
+
+    </script>
+
+    <!-- Global JavaScript functions -->
+    <!--
+    <script src="/script/global.js"></script>
+    -->
+  </head>
+  <body>
+    <div id="body">
+      <h1>Log into Aion</h1>
+      <div class="login_panel">
+
+        <table>
+          <tr>
+            <td>
+              <!-- Icon Image -->
+              <img src="/static/svg/rust.svg" width="128" height="128"/>
+            </td>
+            <td>
+              <div class="login_form">
+                <form action="/login" method="post">
+                  <table class="login_table">
+                    <tr>
+                      <td class="label" width="100px"><label>User Name</label></td>
+                      <td class="input"><input id="user-id-input" name="user-id"/></td>
+                    </tr>
+                    <tr>
+                      <td class="label" width="100px"><label>Password</label></td>
+                      <td class="input"><input id="password-input" name="password" type="password"/></td>
+                    </tr>
+                    <tr>
+                      <td class="submit" colspan=2><button on-click="authenticate();">Login</button></td>
+                    </tr>
+                  </table>
+                </form>
+              </div>
+            </td>
+          </tr>
+        </table>
+     
+      </div>
+    </div>
+  </body>
+</html>

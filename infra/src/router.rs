@@ -60,7 +60,7 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route("/static/css/{*path}", get(static_css_get))
         .route("/static/js/{*path}", get(static_js_get))
         .route("/static/svg/{*path}", get(static_svg_get))
-        .route("live/accounts", get(try_json_get))
+        .route("/live/accounts", get(try_json_get))
         .with_state(app_state)
 }
 
