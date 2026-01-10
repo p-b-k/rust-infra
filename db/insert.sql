@@ -108,7 +108,21 @@ VALUES (3, (SELECT pkey FROM service WHERE svc_id = 'WEBUI'), 1, 0);
 INSERT INTO service_ver (pkey, fkey_svc, maj_ver, min_ver)
 VALUES (4, (SELECT pkey FROM service WHERE svc_id = 'SCHED'), 1, 0);
 
+-- Bind some services to some versions
 
+INSERT INTO product_service (pkey, fkey_prod_ver, fkey_svc_ver)
+VALUES ( 0, 14 /* WEBDEV 2.0 */,  0 /* AUTH 1.0 */);
 
+INSERT INTO product_service (pkey, fkey_prod_ver, fkey_svc_ver)
+VALUES ( 1, 14 /* WEBDEV 2.0 */,  3 /* WEBUI 1.0 */);
+
+INSERT INTO product_service (pkey, fkey_prod_ver, fkey_svc_ver)
+VALUES ( 2, 8 /* UTUNE 1.2 */,  0 /* AUTH 1.0 */);
+
+INSERT INTO product_service (pkey, fkey_prod_ver, fkey_svc_ver)
+VALUES ( 3, 8 /* UTUNE 1.2 */,  3 /* WEBUI 1.0 */);
+
+INSERT INTO product_service (pkey, fkey_prod_ver, fkey_svc_ver)
+VALUES ( 4, 8 /* UTUNE 1.2 */,  1 /* OSTORE 1.0 */);
 
 

@@ -68,6 +68,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "app"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "clap",
+ "env_logger",
+ "log",
+ "mysql",
+ "serde_json",
+]
+
+[[package]]
 name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -313,18 +325,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "data_src"
-version = "0.1.0"
-dependencies = [
- "axum",
- "clap",
- "env_logger",
- "log",
- "mysql",
- "serde_json",
-]
-
-[[package]]
 name = "derive_utils"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -518,21 +518,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "http_srv"
-version = "0.1.0"
-dependencies = [
- "axum",
- "clap",
- "env_logger",
- "http",
- "log",
- "mime",
- "mysql",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "httparse"
 version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -697,6 +682,21 @@ checksum = "7714e70437a7dc3ac8eb7e6f8df75fd8eb422675fc7678aff7364301092b1017"
 dependencies = [
  "equivalent",
  "hashbrown",
+]
+
+[[package]]
+name = "infra"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "clap",
+ "env_logger",
+ "http",
+ "log",
+ "mime",
+ "mysql",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]
