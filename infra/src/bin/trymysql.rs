@@ -20,12 +20,12 @@ struct Product {
     prod_name: String,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-struct Service {
-    pkey: u64,
-    svc_id: String,
-    svc_name: String,
-}
+// #[derive(Debug, PartialEq, Eq)]
+// struct Service {
+//     pkey: u64,
+//     svc_id: String,
+//     svc_name: String,
+// }
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {

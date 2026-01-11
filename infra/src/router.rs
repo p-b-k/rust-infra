@@ -3,11 +3,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{
-    Router, body::Body, extract::Path, extract::State, http::StatusCode as SC,
+    Json, Router, body::Body, extract::Path, extract::State, http::StatusCode as SC,
     response::IntoResponse, routing::get,
 };
 
 use http::response::Response;
+
+use crate::table::ColumnDef;
 
 use crate::{
     filecache::{FileCache, StaticFileCacheLogic, create_file_response},
@@ -61,6 +63,8 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route("/static/js/{*path}", get(static_js_get))
         .route("/static/svg/{*path}", get(static_svg_get))
         .route("/live/accounts", get(try_json_get))
+        .route("/test/table/head", get(get_test_head))
+        .route("/test/table/body", get(get_test_body))
         .with_state(app_state)
 }
 
@@ -223,3 +227,22 @@ async fn try_json_get() -> Result<Response<String>, ErrorResponse> {
         String::from("The service is not implemented yet"),
     ))
 }
+
+async fn get_test_head() -> Json<Vec<ColumnDef>> {
+    let head = [
+        ColumnDef {
+            column: String::from("prod_id"),
+            class: Some(String::from("test_id")),
+            text: String::from("Id"),
+        },
+        ColumnDef {
+            column: String::from("prod_name"),
+            class: Some(String::from("test_name")),
+            text: String::from("Product Name"),
+        },
+    ];
+
+    Json(Vec::from(head))
+}
+
+async fn get_test_body() {}

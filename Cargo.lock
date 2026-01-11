@@ -695,6 +695,7 @@ dependencies = [
  "log",
  "mime",
  "mysql",
+ "serde",
  "serde_json",
  "tokio",
 ]
