@@ -5,8 +5,8 @@
 
 DB_ROOT=$(dirname $0)
 DB_NAME=rusty
-USER_NAME=rusty_app
-USER_PASS=secret
+APP_USER_NAME=rusty_app
+APP_USER_PASS=secret
 
 # First, drop the database if it exists
 if [ -n "$(echo 'show databases' | sudo mysql | grep $DB_NAME)" ]; then
@@ -15,16 +15,17 @@ if [ -n "$(echo 'show databases' | sudo mysql | grep $DB_NAME)" ]; then
 fi
 
 # Second, create the DB user
-echo "(Re-)creating user $USER_NAME"
-echo "CREATE OR REPLACE USER ${USER_NAME}@localhost IDENTIFIED BY '$USER_PASS'" | sudo mysql
+echo "(Re-)creating user $APP_USER_NAME"
+echo "CREATE OR REPLACE USER ${APP_USER_NAME}@localhost IDENTIFIED BY '$APP_USER_PASS'" | sudo mysql
 
 # Second, create the DB schema
 echo "(Re-)creating DB $DB_NAME"
 echo "CREATE DATABASE ${DB_NAME};" | sudo mysql
 
 # Third, grant the DB user all access
-echo "Granting user $USER_NAME access on $DB_NAME"
-echo "GRANT ALL ON ${DB_NAME}.* TO '${USER_NAME}'@'localhost';" | sudo mysql
+echo "Granting user $APP_USER_NAME access on $DB_NAME"
+echo "GRANT ALL ON ${DB_NAME}.* TO '${APP_USER_NAME}'@'localhost';" | sudo mysql
+echo "GRANT ALL ON ${DB_NAME}.* TO '$(whoami)'@'localhost';" | sudo mysql
 
 # Fourth, create the schema
 echo "Initializing the schema on $DB_NAME"

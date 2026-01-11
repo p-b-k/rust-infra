@@ -1,3 +1,17 @@
 * {
-  font-family: sans-serif;
+  font-family        : sans-serif;
+  background         : #e8e7da;
+  margin             : 32px;
+}
+
+.test-table THEAD TR TD {
+  color              : red;
+}
+
+.test-table TBODY TR TD {
+  color              : blue;
+}
+
+.test-table TFOOT TR TD {
+  color              : green;
 }

@@ -1,0 +1,10 @@
+[
+  { "class"  : "id"
+  , "column" : "prod_id"
+  , "text"   : "Product Id"
+  }
+, { "class"  : "name"
+  , "column" : "prod_name"
+  , "text"   : "Product Name"
+  }
+]

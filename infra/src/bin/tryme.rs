@@ -2,6 +2,8 @@
 // Test executable for lib
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use std::env;
+
 use log::info;
 
 use infra::router::create_router;
@@ -47,8 +49,31 @@ async fn main() {
 }
 
 fn create_app_config() -> AppConfig {
-    let port = 7021;
-    let login_page = String::from("res/html/login.html");
+    let mut port = 7021;
+    let mut login_page = String::from("res/html/login.html");
+
+    // Process argument values and put them in the appropriate places
+    let args: Vec<String> = env::args().collect();
+    let mut i = 1;
+
+    while i < args.len() {
+        let next = &args[i];
+        // info!("arg = {next:?}");
+        if next == "--port" {
+            i = i + 1;
+            let port_str = &args[i];
+            info!(target: "read_parameters", "port_str = {port_str:?}");
+            port = port_str.parse().unwrap();
+        } else if next == "--login-page" {
+            i = i + 1;
+            login_page = args[i].clone();
+            info!(target: "read_parameters", "login_page = {}", login_page);
+        } else {
+            panic!("Unknown paramater: {next}");
+        }
+
+        i = i + 1;
+    }
 
     AppConfig { port, login_page }
 }

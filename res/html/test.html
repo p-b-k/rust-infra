@@ -1,9 +1,39 @@
 <!doctype html>
+<!-- -->
 <html>
   <head>
     <title>Testing HTML Cache</title>
+
+    <!-- Local CSS style -->
+    <link rel="stylesheet" href="/static/css/colors.css"/>
+    <link rel="stylesheet" href="/static/css/test.css"/>
+
+    <!-- Javascript File -->
+    <script src="/static/js/core.js"></script>
+    <script src="/static/js/table.js"></script>
+    <script src="/static/js/test.js"></script>
   </head>
+
   <body>
-    <h1>Hello World!</h1>
+    <h1>Testing Rusty Web Services</h1>
+
+    <hr/>
+
+    <h2>This is a table that will load data through REST calls to the Rusty server</h2>
+    <table class="test-table">
+      <thead id="test-head"/>
+      <tbody id="test-body"/>
+      <tfoot id="test-foot"/>
+    </table>
+
+    <script type="text/javascript">
+      console.log('The file has loaded. Repeat, the file has loaded');
+
+      let testTableData = {};
+      let headUrl = '/static/json/test-table-columns.json';
+      let bodyUrl = '/static/json/test-table-body.json';
+
+      populateTable('test-head', 'test-body', headUrl, bodyUrl, testTableData); 
+    </script>
   </body>
 </html>
