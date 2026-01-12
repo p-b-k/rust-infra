@@ -67,8 +67,10 @@ pub fn create_router(app_state: Arc<AppState>) -> Router {
         .route("/static/js/{*path}", get(static_js_get))
         .route("/static/svg/{*path}", get(static_svg_get))
         .route("/live/accounts", get(try_json_get))
-        .route("/test/table/head", get(get_test_head))
-        .route("/test/table/body", get(get_test_body))
+        .route("/test/prod/table/head", get(get_prod_test_head))
+        .route("/test/prod/table/body", get(get_prod_test_body))
+        .route("/test/svc/table/head", get(get_svc_test_head))
+        .route("/test/svc/table/body", get(get_svc_test_body))
         .with_state(app_state)
 }
 
@@ -232,7 +234,18 @@ async fn try_json_get() -> Result<Response<String>, ErrorResponse> {
     ))
 }
 
-async fn get_test_head() -> Json<Vec<ColumnDef>> {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create Product Table
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+struct Product {
+    pkey: u64,
+    prod_id: String,
+    prod_name: String,
+}
+
+async fn get_prod_test_head() -> Json<Vec<ColumnDef>> {
     let head = [
         ColumnDef {
             column: String::from("prod_id"),
@@ -249,25 +262,18 @@ async fn get_test_head() -> Json<Vec<ColumnDef>> {
     Json(Vec::from(head))
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-struct Product {
-    pkey: u64,
-    prod_id: String,
-    prod_name: String,
-}
-
-async fn get_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
-    info!("get_test_body: calling");
+async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
+    info!("get_prod_test_body: calling");
     let mut pool = state.pool.lock().unwrap();
 
-    info!("get_test_body: at a");
+    info!("get_prod_test_body: at a");
 
     let mut_pool = pool.as_mut();
-    info!("get_test_body: at a 1");
+    info!("get_prod_test_body: at a 1");
     let mut conn = mut_pool.unwrap().get_conn().unwrap();
-    info!("get_test_body: at b");
+    info!("get_prod_test_body: at b");
     let query = "SELECT pkey, prod_id, prod_name FROM product";
-    info!("get_test_body: at c");
+    info!("get_prod_test_body: at c");
 
     let products = &conn
         .query_map(query, |(pkey, prod_id, prod_name)| Product {
@@ -276,7 +282,60 @@ async fn get_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>>
             prod_name,
         })
         .unwrap();
-    info!("get_test_body: at d");
+    info!("get_prod_test_body: at d");
 
     Json(products.to_vec())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create Service Table
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+struct Service {
+    pkey: u64,
+    svc_id: String,
+    svc_name: String,
+}
+
+async fn get_svc_test_head() -> Json<Vec<ColumnDef>> {
+    let head = [
+        ColumnDef {
+            column: String::from("svc_id"),
+            class: Some(String::from("svc_id")),
+            text: String::from("Service Id"),
+        },
+        ColumnDef {
+            column: String::from("svc_name"),
+            class: Some(String::from("svc_name")),
+            text: String::from("Service Name"),
+        },
+    ];
+
+    Json(Vec::from(head))
+}
+
+async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Service>> {
+    info!("get_svc_test_body: calling");
+    let mut pool = state.pool.lock().unwrap();
+
+    info!("get_svc_test_body: at a");
+
+    let mut_pool = pool.as_mut();
+    info!("get_svc_test_body: at a 1");
+    let mut conn = mut_pool.unwrap().get_conn().unwrap();
+    info!("get_svc_test_body: at b");
+    let query = "SELECT pkey, svc_id, svc_name FROM service";
+    info!("get_svc_test_body: at c");
+
+    let services = &conn
+        .query_map(query, |(pkey, svc_id, svc_name)| Service {
+            pkey,
+            svc_id,
+            svc_name,
+        })
+        .unwrap();
+    info!("get_svc_test_body: at d");
+
+    Json(services.to_vec())
 }

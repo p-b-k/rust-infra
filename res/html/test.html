@@ -11,6 +11,7 @@
     <!-- Javascript File -->
     <script src="/static/js/core.js"></script>
     <script src="/static/js/table.js"></script>
+
     <script src="/static/js/test.js"></script>
   </head>
 
@@ -19,22 +20,36 @@
 
     <hr/>
 
-    <h2>This is a table that will load data through REST calls to the Rusty server</h2>
-    <table class="test-table">
-      <thead id="test-head"/>
-      <tbody id="test-body"/>
-      <tfoot id="test-foot"/>
+    <h2>This table loads the service table from the database</h2>
+    <table class="test-prod-table">
+      <thead id="test-prod-head"/>
+      <tbody id="test-prod-body"/>
+      <tfoot id="test-prod-foot"/>
+    </table>
+
+    <h2>This table loads the product table from the database</h2>
+    <table class="test-svc-table">
+      <thead id="test-svc-head"/>
+      <tbody id="test-svc-body"/>
+      <tfoot id="test-svc-foot"/>
     </table>
 
     <script type="text/javascript">
       console.log('The file has loaded. Repeat, the file has loaded');
 
-      let testTableData = {};
-      let headUrl = '/test/table/head';
-      // let bodyUrl = '/static/json/test-table-body.json';
-      let bodyUrl = '/test/table/body';
+      // Create the product table
+      let testProdTableData = {};
+      let headProdUrl = '/test/prod/table/head';
+      let bodyProdUrl = '/test/prod/table/body';
 
-      populateTable('test-head', 'test-body', headUrl, bodyUrl, testTableData); 
+      populateTable('test-prod-head', 'test-prod-body', headProdUrl, bodyProdUrl, testProdTableData); 
+
+      // Create the service table
+      let testSvcTableData = {};
+      let headSvcUrl = '/test/svc/table/head';
+      let bodySvcUrl = '/test/svc/table/body';
+
+      populateTable('test-svc-head', 'test-svc-body', headSvcUrl, bodySvcUrl, testSvcTableData); 
     </script>
   </body>
 </html>
