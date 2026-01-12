@@ -6,6 +6,8 @@ use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
 
+use log::info;
+
 use crate::filecache::{FileCache, StaticFileCacheLogic};
 
 #[derive(Clone)]
@@ -27,6 +29,7 @@ pub struct AppState {
 
 impl AppState {
     pub async fn set_connection_pool(&mut self, url: &String) {
+        info!("set_connection_pool called");
         let opts = Opts::from_url(url).unwrap();
         let new_pool = Pool::new(opts).unwrap();
         let mut pool = self.pool.lock().unwrap();
@@ -35,7 +38,7 @@ impl AppState {
     }
 }
 
-pub fn create_app_state(config: AppConfig) -> AppState {
+pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
     let html_cache = FileCache::new(
         StaticFileCacheLogic {},
         String::from("res/html"),
@@ -66,13 +69,16 @@ pub fn create_app_state(config: AppConfig) -> AppState {
         mime::IMAGE_SVG,
     );
 
+    let opts = Opts::from_url(db_url).unwrap();
+    let conn_pool = Pool::new(opts).unwrap();
+
     AppState {
         html_cache: Mutex::new(html_cache),
         json_cache: Mutex::new(json_cache),
         css_cache: Mutex::new(css_cache),
         js_cache: Mutex::new(js_cache),
         svg_cache: Mutex::new(svg_cache),
-        pool: Mutex::new(None),
+        pool: Mutex::new(Some(conn_pool)),
         config,
     }
 }

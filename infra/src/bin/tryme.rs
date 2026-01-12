@@ -21,26 +21,27 @@ async fn main() {
     info!("Server Config: set to run on port {}", cfg.port);
     let port = cfg.port;
 
-    info!("Creating application state");
-    let app_state = Arc::new(create_app_state(cfg));
-
-    let router = create_router(app_state);
-    info!("Created router");
-
-    let db_name = String::from("newsrv_app");
+    let db_name = String::from("rusty");
     let db_host = String::from("localhost");
-    let db_user = String::from("newsrv");
+    let db_user = String::from("rusty_app");
     let db_pass = String::from("secret");
     let db_port = 3306;
 
     let db_url = format!("mysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}");
-    info!("About to start connection pool on {db_url:?}");
+
+    info!("Creating application state");
+    let app_state = Arc::new(create_app_state(&db_url, cfg));
+
+    // info!("About to start connection pool on {db_url:?}");
     // app_state.set_connection_pool(&db_url);
 
     info!("About to start the server on port {port}");
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", port))
         .await
         .unwrap();
+
+    let router = create_router(app_state);
+    info!("Created router");
 
     info!("About to start serving requests");
     axum::serve(listener, router).await.unwrap();

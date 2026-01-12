@@ -9,6 +9,10 @@ use axum::{
 
 use http::response::Response;
 
+use serde::{Deserialize, Serialize};
+
+use mysql::prelude::Queryable;
+
 use crate::table::ColumnDef;
 
 use crate::{
@@ -233,7 +237,7 @@ async fn get_test_head() -> Json<Vec<ColumnDef>> {
         ColumnDef {
             column: String::from("prod_id"),
             class: Some(String::from("test_id")),
-            text: String::from("Id"),
+            text: String::from("Product Id"),
         },
         ColumnDef {
             column: String::from("prod_name"),
@@ -245,4 +249,34 @@ async fn get_test_head() -> Json<Vec<ColumnDef>> {
     Json(Vec::from(head))
 }
 
-async fn get_test_body() {}
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+struct Product {
+    pkey: u64,
+    prod_id: String,
+    prod_name: String,
+}
+
+async fn get_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
+    info!("get_test_body: calling");
+    let mut pool = state.pool.lock().unwrap();
+
+    info!("get_test_body: at a");
+
+    let mut_pool = pool.as_mut();
+    info!("get_test_body: at a 1");
+    let mut conn = mut_pool.unwrap().get_conn().unwrap();
+    info!("get_test_body: at b");
+    let query = "SELECT pkey, prod_id, prod_name FROM product";
+    info!("get_test_body: at c");
+
+    let products = &conn
+        .query_map(query, |(pkey, prod_id, prod_name)| Product {
+            pkey,
+            prod_id,
+            prod_name,
+        })
+        .unwrap();
+    info!("get_test_body: at d");
+
+    Json(products.to_vec())
+}
