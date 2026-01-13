@@ -12,7 +12,6 @@ use http::response::Response;
 use serde::{Deserialize, Serialize};
 
 use mysql::prelude::{FromRow, Queryable};
-use mysql::{FromRowError, Row};
 
 use crate::table::ColumnDef;
 
@@ -263,31 +262,6 @@ async fn get_prod_test_head() -> Json<Vec<ColumnDef>> {
     Json(Vec::from(head))
 }
 
-async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
-    info!("get_prod_test_body: calling");
-    let mut pool = state.pool.lock().unwrap();
-
-    info!("get_prod_test_body: at a");
-
-    let mut_pool = pool.as_mut();
-    info!("get_prod_test_body: at a 1");
-    let mut conn = mut_pool.unwrap().get_conn().unwrap();
-    info!("get_prod_test_body: at b");
-    let query = "SELECT pkey, prod_id, prod_name FROM product";
-    info!("get_prod_test_body: at c");
-
-    let products = &conn
-        .query_map(query, |(pkey, prod_id, prod_name)| Product {
-            pkey,
-            prod_id,
-            prod_name,
-        })
-        .unwrap();
-    info!("get_prod_test_body: at d");
-
-    Json(products.to_vec())
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Create Service Table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,28 +271,6 @@ struct Service {
     pkey: u64,
     svc_id: String,
     svc_name: String,
-}
-
-impl FromRow for Service {
-    fn from_row(_row: Row) -> Service {
-        // let columns = row.columns_ref();
-
-        Service {
-            pkey: 0,
-            svc_id: String::from("some id"),
-            svc_name: String::from("some name"),
-        }
-    }
-
-    fn from_row_opt(_row: Row) -> Result<Service, FromRowError> {
-        let svc = Service {
-            pkey: 0,
-            svc_id: String::from("some id"),
-            svc_name: String::from("some name"),
-        };
-
-        Ok(svc)
-    }
 }
 
 async fn get_svc_test_head() -> Json<Vec<ColumnDef>> {
@@ -338,34 +290,10 @@ async fn get_svc_test_head() -> Json<Vec<ColumnDef>> {
     Json(Vec::from(head))
 }
 
-async fn _get_svc_test_body_old(State(state): State<Arc<AppState>>) -> Json<Vec<Service>> {
-    info!("get_svc_test_body_old: calling");
-    let mut pool = state.pool.lock().unwrap();
-
-    info!("get_svc_test_body_old: at a");
-
-    let mut_pool = pool.as_mut();
-    info!("get_svc_test_body_old: at a 1");
-    let mut conn = mut_pool.unwrap().get_conn().unwrap();
-    info!("get_svc_test_body_old: at b");
-    let query = "SELECT pkey, svc_id, svc_name FROM service";
-    info!("get_svc_test_body_old: at c");
-
-    let services = &conn
-        .query_map(query, |(pkey, svc_id, svc_name)| Service {
-            pkey,
-            svc_id,
-            svc_name,
-        })
-        .unwrap();
-    info!("get_svc_test_body_old: at d");
-
-    Json(services.to_vec())
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Try and abstract out the boilerplate code
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Service>> {
     let services = get_table_body(
         state,
@@ -379,6 +307,21 @@ async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Servi
     .await;
 
     Json(services)
+}
+
+async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
+    let products = get_table_body(
+        state,
+        &String::from("SELECT pkey, prod_id, prod_name FROM product"),
+        |(pkey, prod_id, prod_name)| Product {
+            pkey,
+            prod_id,
+            prod_name,
+        },
+    )
+    .await;
+
+    Json(products)
 }
 
 pub async fn get_table_body<T, S>(state: Arc<AppState>, query: &String, proc: fn(T) -> S) -> Vec<S>
