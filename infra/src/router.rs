@@ -11,6 +11,7 @@ use http::response::Response;
 
 use serde::{Deserialize, Serialize};
 
+use mysql::prelude::FromRow;
 use mysql::prelude::Queryable;
 
 use crate::table::ColumnDef;
@@ -338,4 +339,33 @@ async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Servi
     info!("get_svc_test_body: at d");
 
     Json(services.to_vec())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Try and abstract out the boilerplate code
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub async fn get_table_body<T, S>(
+    State(state): State<Arc<AppState>>,
+    query: &String,
+    proc: fn(T) -> S,
+) -> Json<Vec<S>>
+where
+    T: FromRow,
+    S: Clone,
+{
+    info!("get_prod_test_body: calling");
+    let mut pool = state.pool.lock().unwrap();
+
+    info!("get_prod_test_body: at a");
+
+    let mut_pool = pool.as_mut();
+    info!("get_prod_test_body: at a 1");
+    let mut conn = mut_pool.unwrap().get_conn().unwrap();
+    info!("get_prod_test_body: at c");
+
+    let items = &conn.query_map(query, proc).unwrap();
+    info!("get_prod_test_body: at d");
+
+    Json(items.to_vec())
 }
