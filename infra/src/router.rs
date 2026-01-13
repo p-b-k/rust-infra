@@ -11,8 +11,8 @@ use http::response::Response;
 
 use serde::{Deserialize, Serialize};
 
-use mysql::prelude::FromRow;
-use mysql::prelude::Queryable;
+use mysql::prelude::{FromRow, Queryable};
+use mysql::{FromRowError, Row};
 
 use crate::table::ColumnDef;
 
@@ -297,6 +297,28 @@ struct Service {
     pkey: u64,
     svc_id: String,
     svc_name: String,
+}
+
+impl FromRow for Service {
+    fn from_row(row: Row) -> Service {
+        // let columns = row.columns_ref();
+
+        Service {
+            pkey: 0,
+            svc_id: String::from("some id"),
+            svc_name: String::from("some name"),
+        }
+    }
+
+    fn from_row_opt(row: Row) -> Result<Service, FromRowError> {
+        let svc = Service {
+            pkey: 0,
+            svc_id: String::from("some id"),
+            svc_name: String::from("some name"),
+        };
+
+        Ok(svc)
+    }
 }
 
 async fn get_svc_test_head() -> Json<Vec<ColumnDef>> {
