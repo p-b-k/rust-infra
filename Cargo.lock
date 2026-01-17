@@ -74,8 +74,10 @@ dependencies = [
  "axum",
  "clap",
  "env_logger",
+ "infra",
  "log",
  "mysql",
+ "serde",
  "serde_json",
 ]
 

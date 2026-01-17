@@ -2,30 +2,57 @@
 // Generic Datasource trait, and StdDS basic implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use mysql::Conn;
-use std::sync::Arc;
+use mysql::PooledConn;
+use mysql::prelude::{FromRow, Queryable};
 
-pub trait Record<T> {
-    fn from(&self) -> T;
+use log::info;
+
+pub struct DS<F, T>
+where
+    F: FromRow,
+    T: Clone,
+{
+    pub table: String,
+    pub fields: String,
+    pub cons: fn(F) -> T,
 }
 
-pub trait Query<T> {
-    fn execute(conn: &mut Conn) -> Vec<T>;
-}
-
-pub trait DataSource {
-    fn record<T>(conn: &mut Conn, table: &String, pkey: i32) -> Result<T, String>;
-    fn query<T>(conn: &mut Conn, name: &String) -> Result<Arc<Vec<T>>, String>;
-}
-
-pub struct StdDS {}
-
-impl DataSource for StdDS {
-    fn record<T>(_conn: &mut Conn, _table: &String, _pkey: i32) -> Result<T, String> {
-        Err(String::from("StdDs::record not implemented"))
+impl<F, T> DS<F, T>
+where
+    F: FromRow,
+    T: Clone,
+{
+    pub fn get(&self, conn: &mut PooledConn, pkey: u64) -> Result<T, String> {
+        let table = &self.table;
+        let fields = &self.fields;
+        let query = format!("SELECT pkey, {fields} FROM {table} WHERE pkey = {pkey}");
+        info!(target : "get", "QUERY: {query}");
+        let res = conn.query_map(query, self.cons);
+        match res {
+            Ok(vec) => match vec.len() {
+                0 => Err(String::from("No record found")),
+                1 => Ok(vec[0].clone()),
+                _ => Err(String::from("Multiple Records Found")),
+            },
+            Err(err) => Err(format!(
+                "Error retrieving {table} {pkey}: {}",
+                err.to_string()
+            )),
+        }
     }
 
-    fn query<T>(_conn: &mut Conn, _name: &String) -> Result<Arc<Vec<T>>, String> {
-        Err(String::from("StdDs::query not implemented"))
+    pub fn join(&self, conn: &mut PooledConn, pkey: u64, fkey: &String) -> Result<Vec<T>, String> {
+        let table = self.table.clone();
+        let fields = &self.fields;
+        let query = format!("SELECT pkey, {fields} FROM {table} WHERE {fkey} = {pkey}");
+        info!(target : "join", "QUERY: {query}");
+        let res = conn.query_map(query, self.cons);
+        match res {
+            Ok(product_vers) => Ok(product_vers),
+            Err(err) => Err(format!(
+                "Error retrieving {table} {pkey}: {}",
+                err.to_string()
+            )),
+        }
     }
 }
