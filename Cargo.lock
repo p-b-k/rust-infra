@@ -74,11 +74,13 @@ dependencies = [
  "axum",
  "clap",
  "env_logger",
+ "http",
  "infra",
  "log",
  "mysql",
  "serde",
  "serde_json",
+ "tokio",
 ]
 
 [[package]]
