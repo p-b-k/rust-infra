@@ -38,6 +38,7 @@ CREATE TABLE service_ver
 , rel_ver INTEGER
 , bld_ver INTEGER
 , bld_tag VARCHAR(128)
+, schema TEXT
 );
 
 CREATE TABLE product_service 

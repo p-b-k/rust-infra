@@ -1,0 +1,18 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create Schema Def type object
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+use infra::schema::{SchemaDef, TableDef};
+
+fn main() {
+    let product_def = TableDef {
+        name: String::from("product"),
+        fields: Box::new(Vec::from([])),
+    };
+
+    let schema_def = SchemaDef {
+        tables: Box::new(Vec::from([product_def])),
+    };
+
+    schema_def.display();
+}

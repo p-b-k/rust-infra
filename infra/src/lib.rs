@@ -6,5 +6,6 @@ pub mod datasource;
 pub mod error;
 pub mod filecache;
 pub mod router;
+pub mod schema;
 pub mod state;
 pub mod table;
