@@ -1,17 +1,60 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Create Schema Def type object
+// Create a sample schema and print it out and stuff
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use infra::schema::{SchemaDef, TableDef};
+use infra::schema::{DataType, FieldDef, SchemaDef, TableDef, TypeDef};
 
 fn main() {
     let product_def = TableDef {
         name: String::from("product"),
-        fields: Box::new(Vec::from([])),
+        fields: Box::new(Vec::from([
+            FieldDef {
+                name: String::from("pkey"),
+                type_def: TypeDef::PKey,
+                nullable: false,
+                unique: true,
+            },
+            FieldDef {
+                name: String::from("prod_id"),
+                type_def: TypeDef::Data(DataType::String(32)),
+                nullable: false,
+                unique: true,
+            },
+            FieldDef {
+                name: String::from("prod_name"),
+                type_def: TypeDef::Data(DataType::String(256)),
+                nullable: false,
+                unique: true,
+            },
+        ])),
+    };
+
+    let service_def = TableDef {
+        name: String::from("service"),
+        fields: Box::new(Vec::from([
+            FieldDef {
+                name: String::from("pkey"),
+                type_def: TypeDef::PKey,
+                nullable: false,
+                unique: true,
+            },
+            FieldDef {
+                name: String::from("svc_id"),
+                type_def: TypeDef::Data(DataType::String(32)),
+                nullable: false,
+                unique: true,
+            },
+            FieldDef {
+                name: String::from("svc_name"),
+                type_def: TypeDef::Data(DataType::String(256)),
+                nullable: false,
+                unique: true,
+            },
+        ])),
     };
 
     let schema_def = SchemaDef {
-        tables: Box::new(Vec::from([product_def])),
+        tables: Box::new(Vec::from([service_def, product_def])),
     };
 
     schema_def.display();
