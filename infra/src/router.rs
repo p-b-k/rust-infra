@@ -2,10 +2,7 @@
 // Configure the the router
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use axum::{
-    Json, Router, body::Body, extract::Path, extract::State, http::StatusCode as SC,
-    response::IntoResponse, routing::get,
-};
+use axum::{Json, Router, extract::Path, extract::State, http::StatusCode as SC, routing::get};
 
 use http::response::Response;
 
@@ -17,6 +14,7 @@ use crate::error::{ErrorResponse, make_error};
 use crate::table::ColumnDef;
 
 use crate::{
+    error::{ErrorResponse, make_error},
     filecache::{FileCache, StaticFileCacheLogic, create_file_response},
     state::AppState,
 };
