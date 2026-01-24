@@ -6,14 +6,14 @@ use std::env;
 
 use log::info;
 
-use app::rusty::prepare_router;
-
 // use infra::router::create_router;
 use infra::state::{AppConfig, create_app_state};
 
-use create::error::{ErrorResponse, make_error};
-
 use std::sync::Arc;
+
+use app::cache_routers::static_router;
+use app::json_routers::json_router;
+use app::rusty::basic_router;
 
 use axum::Router;
 
@@ -38,7 +38,8 @@ async fn main() {
         .unwrap();
 
     // let router = create_router(app_state);
-    let mut router: Router<()> = Router::new().with_state(app);
+    let router = Router::merge(static_router(app.clone()), basic_router(app.clone()))
+        .merge(json_router(app.clone()));
     info!("Created router");
 
     // prepare_router(&mut router);
