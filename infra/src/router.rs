@@ -10,7 +10,6 @@ use serde::{Deserialize, Serialize};
 
 use mysql::prelude::{FromRow, Queryable};
 
-use crate::error::{ErrorResponse, make_error};
 use crate::table::ColumnDef;
 
 use crate::{
