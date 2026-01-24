@@ -6,13 +6,18 @@ use axum::{Router, extract::State, http::StatusCode as SC, routing::get};
 
 use http::response::Response;
 
+use std::fs::read_to_string;
 use std::sync::Arc;
+
+use log::error;
+
+use infra::error::{ErrorResponse, make_error};
 
 use infra::filecache::create_file_response;
 use infra::state::AppState;
 
-pub fn prepare_router(router: &mut Router<()>) {
-    router.route("/login", get(login_page).post(login_action))
+pub fn prepare_router(router: &mut Router<Arc<AppState>>) {
+    router.route("/login", get(login_page).post(login_action));
     // .route("/favicon.ico", get(favicon))
     // .route("/test", get(get_test))
     // .route("/icon/{name}/{context}", get(context_icon))

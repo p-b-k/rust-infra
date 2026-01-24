@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use mysql::prelude::{FromRow, Queryable};
 
+use crate::error::{ErrorResponse, make_error};
 use crate::table::ColumnDef;
 
 use crate::{
@@ -26,30 +27,6 @@ use std::{
     fs::{exists, read_to_string},
     sync::Arc,
 };
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Error Response: contains both an error code and some kind of helpful message
-
-struct ErrorResponse {
-    status_code: SC,
-    error_msg: String,
-}
-
-impl IntoResponse for ErrorResponse {
-    fn into_response(self) -> Response<Body> {
-        Response::builder()
-            .status(self.status_code)
-            .body(Body::from(self.error_msg))
-            .unwrap()
-    }
-}
-
-fn make_error(status_code: SC, error_msg: String) -> ErrorResponse {
-    ErrorResponse {
-        status_code,
-        error_msg,
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Create Router Object

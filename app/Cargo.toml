@@ -14,3 +14,4 @@ infra = { path = "../infra" }
 serde = "1.0.228"
 tokio = "1.49.0"
 http = "1.4.0"
+mime = "0.3.17"
