@@ -1,0 +1,33 @@
+/* ****************************************************************************************************************** * 
+ * 
+ * ****************************************************************************************************************** */
+.search-bar IMG {
+    /* background            : green; */
+}
+
+.search-bar INPUT {
+    /* background            : orange; */
+    border                : 0px solid black;
+    border-bottom         : 2px solid #828282;
+    padding               : 0px;
+    margin                : 0px;
+}
+
+.search-bar * {
+  /* border                  : 4px solid green; */
+  margin                  : 0px;
+  padding                 : 0px;
+  /* margin-right            : 10px; */
+}
+
+.search-bar TD IMG {
+  margin-left             : 24px;
+}
+
+.search-bar TD:nth-child(1) IMG {
+  margin-left             : 0px;
+}
+
+.table-control TABLE {
+  margin                  : 0px;
+}
