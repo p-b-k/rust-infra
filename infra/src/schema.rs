@@ -84,6 +84,30 @@ impl Display for TableDef {
     }
 }
 
+pub struct FieldIter<'a> {
+    table: &'a TableDef,
+    index: usize,
+}
+
+impl Iterator for FieldIter<'_> {
+    type Item = FieldDef;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if (self.index == 0) {
+            Some(FieldDef {
+                name: String::from("pkey"),
+                type_def: TypeDef::PKey,
+                nullable: false,
+                unique: true,
+            })
+        } else if (self.index > self.table.fields.len()) {
+            None
+        } else {
+            Some(self.table.fields[self.index - 1].clone())
+        }
+    }
+}
+
 impl TableDef {
     pub fn create_sql(&self) -> String {
         let mut buff = String::new();
@@ -98,6 +122,13 @@ impl TableDef {
         }
         buff.push_str(");");
         buff
+    }
+
+    pub fn fields(&self) -> FieldIter<'_> {
+        FieldIter {
+            table: self,
+            index: 0,
+        }
     }
 }
 
