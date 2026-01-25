@@ -38,7 +38,7 @@ impl TypeDef {
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
                 DataType::Integer => out.push_str("INTEGER"),
                 DataType::Date => out.push_str("DATE"),
-                DataType::Clob => out.push_str("CLOB"),
+                DataType::Clob => out.push_str("TEXT"), // Using MySQL Syntax for now, TODO add RDBMS layer
                 DataType::Blob => out.push_str("BLOB"),
             },
         }
@@ -48,8 +48,8 @@ impl TypeDef {
 impl Display for TypeDef {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
         match self {
-            TypeDef::PKey => write!(f, "PKEY"),
-            TypeDef::FKey(table) => write!(f, "JOIN ({table})"),
+            TypeDef::PKey => write!(f, "pkey"),
+            TypeDef::FKey(table) => write!(f, "join({table})"),
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => write!(f, "string({size})"),
                 DataType::Integer => write!(f, "integer"),

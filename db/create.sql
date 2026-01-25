@@ -16,7 +16,7 @@ CREATE TABLE product
 
 CREATE TABLE product_ver
 ( pkey INTEGER PRIMARY KEY
-, fkey_prod INTEGER
+, fkey_prod INTEGER NOT NULL
 , maj_ver INTEGER NOT NULL
 , min_ver INTEGER NOT NULL
 , rel_ver INTEGER

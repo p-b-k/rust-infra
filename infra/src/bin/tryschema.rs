@@ -4,10 +4,30 @@
 
 use infra::schema::{DataType, FieldDef, FieldSpec, SchemaDef, TableDef, TypeDef};
 
-fn main() {
-    env_logger::init();
+use serde_json::{from_str, to_string};
 
-    let product_def = TableDef {
+fn mk_acct() -> TableDef {
+    TableDef {
+        name: String::from("account"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("acct_id"),
+                type_def: TypeDef::Data(DataType::String(64)),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("acct_name"),
+                type_def: TypeDef::Data(DataType::String(256)),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
+fn mk_prod() -> TableDef {
+    TableDef {
         name: String::from("product"),
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
@@ -23,9 +43,55 @@ fn main() {
                 unique: true,
             }),
         ])),
-    };
+    }
+}
 
-    let service_def = TableDef {
+fn mk_prod_ver() -> TableDef {
+    TableDef {
+        name: String::from("product_ver"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_prod"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("maj_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("min_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("rel_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: true,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("bld_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: true,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("bld_tag"),
+                type_def: TypeDef::Data(DataType::String(128)),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
+fn mk_svc() -> TableDef {
+    TableDef {
         name: String::from("service"),
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
@@ -41,10 +107,98 @@ fn main() {
                 unique: true,
             }),
         ])),
-    };
+    }
+}
+
+fn mk_svc_ver() -> TableDef {
+    TableDef {
+        name: String::from("service_ver"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_svc"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("maj_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("min_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("rel_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: true,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("bld_ver"),
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: true,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("bld_tag"),
+                type_def: TypeDef::Data(DataType::String(128)),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("schema"),
+                type_def: TypeDef::Data(DataType::Clob),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
+fn mk_prod_svc() -> TableDef {
+    TableDef {
+        name: String::from("service"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_prod_ver"),
+                type_def: TypeDef::FKey(String::from("product")),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_svc_ver"),
+                type_def: TypeDef::FKey(String::from("service")),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
+fn main() {
+    env_logger::init();
+
+    let account = mk_acct();
+    let product_def = mk_prod();
+    let product_ver_def = mk_prod_ver();
+    let service_def = mk_svc();
+    let service_ver_def = mk_svc_ver();
+    let product_service = mk_prod_svc();
 
     let schema_def = SchemaDef {
-        tables: Box::new(Vec::from([service_def, product_def])),
+        tables: Box::new(Vec::from([
+            account,
+            service_def,
+            service_ver_def,
+            product_def,
+            product_ver_def,
+            product_service,
+        ])),
     };
 
     // schema_def.display();
@@ -61,14 +215,33 @@ fn main() {
             Ok(json_str) => println!("{}", json_str),
             Err(e) => println!("Error: {}", e),
         }
-
-        println!("");
-        match serde_json::to_string(&schema_def) {
-            Ok(json_str) => println!("{}", json_str),
-            Err(e) => println!("Error: {}", e),
-        }
     }
 
     println!("");
     println!("==== WHOLE SCHEMA {padding}");
+    println!("");
+    match to_string(&schema_def) {
+        Ok(json_str) => {
+            println!("{}", json_str);
+            let res: Result<SchemaDef, serde_json::Error> = from_str(json_str.as_str());
+            println!("");
+            match res {
+                Ok(new_def) => {
+                    println!("==== Read Schema");
+                    println!("");
+                    if new_def == schema_def {
+                        println!("We have a match!");
+                    } else {
+                        println!("No matches here :()");
+                    }
+                }
+                Err(e) => {
+                    println!("Error: {}", e)
+                }
+            }
+        }
+        Err(e) => {
+            println!("Error: {}", e)
+        }
+    }
 }
