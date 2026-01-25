@@ -17,7 +17,6 @@ pub enum DataType {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum TypeDef {
-    PKey,
     FKey(String),
     Data(DataType),
 }
@@ -25,7 +24,6 @@ pub enum TypeDef {
 impl TypeDef {
     pub fn push_to_string(&self, out: &mut String) {
         match self {
-            TypeDef::PKey => out.push_str("PRIMARY KEY"),
             TypeDef::FKey(_) => out.push_str("INTEGER"),
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
@@ -41,7 +39,6 @@ impl TypeDef {
 impl Display for TypeDef {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
         match self {
-            TypeDef::PKey => write!(f, "PKEY"),
             TypeDef::FKey(table) => write!(f, "JOIN ({table})"),
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => write!(f, "string({size})"),
@@ -55,16 +52,33 @@ impl Display for TypeDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
-pub struct FieldDef {
+pub struct FieldSpec {
     pub name: String,
     pub type_def: TypeDef,
     pub nullable: bool,
     pub unique: bool,
 }
 
-impl Display for FieldDef {
+impl Display for FieldSpec {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
         write!(f, "{} : {}", self.name, self.type_def)
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum FieldDef {
+    PKey,
+    Field(FieldSpec),
+}
+
+impl Display for FieldDef {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
+        match self {
+            FieldDef::PKey => write!(f, "pkey"),
+            FieldDef::Field(field_spec) => {
+                write!(f, "{} : {}", field_spec.name, field_spec.type_def)
+            }
+        }
     }
 }
 
@@ -93,17 +107,15 @@ impl Iterator for FieldIter<'_> {
     type Item = FieldDef;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if (self.index == 0) {
-            Some(FieldDef {
-                name: String::from("pkey"),
-                type_def: TypeDef::PKey,
-                nullable: false,
-                unique: true,
-            })
-        } else if (self.index > self.table.fields.len()) {
+        if self.index == 0 {
+            self.index = self.index + 1;
+            Some(FieldDef::PKey)
+        } else if self.index > self.table.fields.len() {
             None
         } else {
-            Some(self.table.fields[self.index - 1].clone())
+            let field_index = self.index - 1;
+            self.index = self.index + 1;
+            Some(self.table.fields[field_index].clone())
         }
     }
 }
@@ -113,11 +125,16 @@ impl TableDef {
         let mut buff = String::new();
         let mut sep = " (";
         buff.push_str(format!("CREATE TABLE {}", self.name).as_str());
-        for field in self.fields.clone().into_iter() {
+        for field in self.fields() {
             buff.push_str(sep);
-            buff.push_str(&field.name);
-            buff.push(' ');
-            field.type_def.push_to_string(&mut buff);
+            match &field {
+                FieldDef::PKey => buff.push_str("pkey INTEGER PRIMARY KEY"),
+                FieldDef::Field(field_spec) => {
+                    buff.push_str(&field_spec.name);
+                    buff.push(' ');
+                    field_spec.type_def.push_to_string(&mut buff);
+                }
+            }
             sep = ", ";
         }
         buff.push_str(");");
