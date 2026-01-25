@@ -5,6 +5,8 @@
 use infra::schema::{DataType, FieldDef, FieldSpec, SchemaDef, TableDef, TypeDef};
 
 fn main() {
+    env_logger::init();
+
     let product_def = TableDef {
         name: String::from("product"),
         fields: Box::new(Vec::from([
@@ -45,5 +47,28 @@ fn main() {
         tables: Box::new(Vec::from([service_def, product_def])),
     };
 
-    schema_def.display();
+    // schema_def.display();
+    let padding = "=============";
+    for table in schema_def.tables() {
+        let name = table.name.to_uppercase();
+        println!("==== {name} {padding}");
+        println!("");
+        println!("{table}");
+        println!("");
+        println!("{};", table.create_sql());
+        println!("");
+        match serde_json::to_string(&table) {
+            Ok(json_str) => println!("{}", json_str),
+            Err(e) => println!("Error: {}", e),
+        }
+
+        println!("");
+        match serde_json::to_string(&schema_def) {
+            Ok(json_str) => println!("{}", json_str),
+            Err(e) => println!("Error: {}", e),
+        }
+    }
+
+    println!("");
+    println!("==== WHOLE SCHEMA {padding}");
 }

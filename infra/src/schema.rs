@@ -17,13 +17,22 @@ pub enum DataType {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum TypeDef {
+    PKey,
     FKey(String),
     Data(DataType),
 }
 
 impl TypeDef {
+    pub fn as_data_type(&self) -> DataType {
+        match self {
+            TypeDef::PKey => DataType::Integer,
+            TypeDef::FKey(_) => DataType::Integer,
+            TypeDef::Data(data_type) => data_type.clone(),
+        }
+    }
     pub fn push_to_string(&self, out: &mut String) {
         match self {
+            TypeDef::PKey => out.push_str("INTEGER"),
             TypeDef::FKey(_) => out.push_str("INTEGER"),
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
@@ -39,6 +48,7 @@ impl TypeDef {
 impl Display for TypeDef {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
         match self {
+            TypeDef::PKey => write!(f, "PKEY"),
             TypeDef::FKey(table) => write!(f, "JOIN ({table})"),
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => write!(f, "string({size})"),
@@ -69,6 +79,22 @@ impl Display for FieldSpec {
 pub enum FieldDef {
     PKey,
     Field(FieldSpec),
+}
+
+impl FieldDef {
+    pub fn name(&self) -> &str {
+        match self {
+            FieldDef::PKey => "pkey",
+            FieldDef::Field(field_spec) => field_spec.name.as_str(),
+        }
+    }
+
+    pub fn type_def(&self) -> DataType {
+        match self {
+            FieldDef::PKey => DataType::Integer,
+            FieldDef::Field(field_spec) => field_spec.type_def.as_data_type(),
+        }
+    }
 }
 
 impl Display for FieldDef {
@@ -133,11 +159,17 @@ impl TableDef {
                     buff.push_str(&field_spec.name);
                     buff.push(' ');
                     field_spec.type_def.push_to_string(&mut buff);
+                    if field_spec.unique {
+                        buff.push_str(" UNIQUE");
+                    }
+                    if !field_spec.nullable {
+                        buff.push_str(" NOT NULL");
+                    }
                 }
             }
             sep = ", ";
         }
-        buff.push_str(");");
+        buff.push_str(")");
         buff
     }
 
@@ -154,12 +186,38 @@ pub struct SchemaDef {
     pub tables: Box<Vec<TableDef>>,
 }
 
+pub struct TableIter<'a> {
+    schema: &'a SchemaDef,
+    index: usize,
+}
+
 impl SchemaDef {
     pub fn display(&self) {
-        println!("I am a schema!");
         for table in self.tables.clone().into_iter() {
             println!("TABLE: {table}");
             println!("{}", table.create_sql())
+        }
+    }
+
+    pub fn tables(&self) -> TableIter<'_> {
+        TableIter {
+            schema: self,
+            index: 0,
+        }
+    }
+}
+
+impl<'a> Iterator for TableIter<'a> {
+    type Item = &'a TableDef;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let index = self.index;
+        let tab_cnt = self.schema.tables.len();
+        if index < tab_cnt {
+            self.index = index + 1;
+            Some(&self.schema.tables[index])
+        } else {
+            None
         }
     }
 }
