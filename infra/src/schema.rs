@@ -182,8 +182,20 @@ impl TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub enum GrantInfo {
+    All,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct DBUser {
+    pub role_id: String,
+    pub grants: Box<Vec<GrantInfo>>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SchemaDef {
     pub tables: Box<Vec<TableDef>>,
+    pub users: Box<Vec<DBUser>>,
 }
 
 pub struct TableIter<'a> {

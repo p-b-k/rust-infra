@@ -2,7 +2,9 @@
 // Create a sample schema and print it out and stuff
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use infra::schema::{DataType, FieldDef, FieldSpec, SchemaDef, TableDef, TypeDef};
+use infra::schema::{
+    DBUser, DataType, FieldDef, FieldSpec, GrantInfo, SchemaDef, TableDef, TypeDef,
+};
 
 use serde_json::{from_str, to_string};
 
@@ -191,6 +193,10 @@ fn main() {
     let product_service = mk_prod_svc();
 
     let schema_def = SchemaDef {
+        users: Box::new(Vec::from([DBUser {
+            role_id: String::from("app"),
+            grants: Box::new(Vec::from([GrantInfo::All])),
+        }])),
         tables: Box::new(Vec::from([
             account,
             service_def,
