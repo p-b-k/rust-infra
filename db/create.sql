@@ -47,7 +47,6 @@ CREATE TABLE product_service
 , fkey_svc_ver INTEGER NOT NULL
 );
 
-
 CREATE TABLE request
 ( pkey INTEGER PRIMARY KEY
 , req_type VARCHAR(64)

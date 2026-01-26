@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub enum DataType {
     String(u32),
     Integer,
-    Date,
+    Timestamp,
     Clob,
     Blob,
 }
@@ -37,7 +37,7 @@ impl TypeDef {
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
                 DataType::Integer => out.push_str("INTEGER"),
-                DataType::Date => out.push_str("DATE"),
+                DataType::Timestamp => out.push_str("DATE"),
                 DataType::Clob => out.push_str("TEXT"), // Using MySQL Syntax for now, TODO add RDBMS layer
                 DataType::Blob => out.push_str("BLOB"),
             },
@@ -53,7 +53,7 @@ impl Display for TypeDef {
             TypeDef::Data(data_type) => match data_type {
                 DataType::String(size) => write!(f, "string({size})"),
                 DataType::Integer => write!(f, "integer"),
-                DataType::Date => write!(f, "date"),
+                DataType::Timestamp => write!(f, "date"),
                 DataType::Clob => write!(f, "clob"),
                 DataType::Blob => write!(f, "blob"),
             },
