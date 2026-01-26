@@ -16,7 +16,7 @@ fi
 
 # Second, create the DB user
 echo "(Re-)creating user $APP_USER_NAME"
-echo "CREATE OR REPLACE USER ${APP_USER_NAME}@localhost IDENTIFIED BY '$APP_USER_PASS'" | sudo mysql
+echo "CREATE OR REPLACE USER '${APP_USER_NAME}'@'localhost' IDENTIFIED BY '$APP_USER_PASS'" | sudo mysql
 
 # Second, create the DB schema
 echo "(Re-)creating DB $DB_NAME"
@@ -29,9 +29,9 @@ echo "GRANT ALL ON ${DB_NAME}.* TO '$(whoami)'@'localhost';" | sudo mysql
 
 # Fourth, create the schema
 echo "Initializing the schema on $DB_NAME"
-cat $DB_ROOT/create.sql | sudo mysql $DB_NAME
+cat $DB_ROOT/cp.create.sql | sudo mysql $DB_NAME
 
 # Finally, insert the sample data
 echo "Populating the data in $DB_NAME"
-cat $DB_ROOT/insert.sql | sudo mysql $DB_NAME
+cat $DB_ROOT/cp.sample.insert.sql | sudo mysql $DB_NAME
 
