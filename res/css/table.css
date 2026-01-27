@@ -1,6 +1,7 @@
 /* ****************************************************************************************************************** * 
  * 
  * ****************************************************************************************************************** */
+
 .search-bar IMG {
     /* background            : green; */
 }
@@ -17,12 +18,14 @@
   /* border                  : 4px solid green; */
   margin                  : 0px;
   padding                 : 0px;
+  background              : #FFFFDF;
   /* margin-right            : 10px; */
   /* background              : orange; */
 }
 
 .search-bar TD IMG {
-  margin-left             : 24px;
+  margin-right            : 12px;
+  margin-left             : 12px;
 }
 
 .search-bar TD:nth-child(1) IMG {
@@ -37,11 +40,14 @@
   border                  : 1px solid #000030;
 }
 
-.table-control TABLE{
+.table-control TABLE {
   width                   : 100%;
+  border-collapse         : collapse;
 }
 
 .table-header {
   font-size               : large;
   font-weight             : bold;
+  margin                  : 0px;
+  padding-left            : 10px;
 }
