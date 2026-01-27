@@ -30,7 +30,7 @@ where
     T: FromRow,
     S: Clone,
 {
-    info!("get_prod_test_body: calling");
+    info!(target: "get_table_body", "calling: {query}");
     let mut pool = state.pool.lock().unwrap();
 
     let mut_pool = pool.as_mut();

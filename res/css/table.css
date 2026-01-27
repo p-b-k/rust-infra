@@ -18,6 +18,7 @@
   margin                  : 0px;
   padding                 : 0px;
   /* margin-right            : 10px; */
+  /* background              : orange; */
 }
 
 .search-bar TD IMG {
@@ -30,4 +31,17 @@
 
 .table-control TABLE {
   margin                  : 0px;
+}
+
+.table-control {
+  border                  : 1px solid #000030;
+}
+
+.table-control TABLE{
+  width                   : 100%;
+}
+
+.table-header {
+  font-size               : large;
+  font-weight             : bold;
 }
