@@ -1,3 +1,3 @@
 [workspace]
 resolver="3"
-members = ["infra", "app", "auth"]
+members = ["infra", "app", "ui", "auth"]

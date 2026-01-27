@@ -8,6 +8,10 @@ use infra::schema::{
 
 use serde_json::{from_str, to_string};
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Define the tables
+// ---------------------------------------------------------------------------------------------------------------------
+
 fn mk_acct() -> TableDef {
     TableDef {
         name: String::from("account"),
@@ -182,6 +186,56 @@ fn mk_prod_svc() -> TableDef {
     }
 }
 
+fn mk_req() -> TableDef {
+    TableDef {
+        name: String::from("request"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("req_type"),
+                type_def: TypeDef::Data(DataType::String(64)),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("req_start"),
+                type_def: TypeDef::Data(DataType::Timestamp),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("req_status"),
+                type_def: TypeDef::Data(DataType::String(64)),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
+fn mk_task() -> TableDef {
+    TableDef {
+        name: String::from("task"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_prod_ver"),
+                type_def: TypeDef::FKey(String::from("product")),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_req"),
+                type_def: TypeDef::FKey(String::from("request")),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Now create the main function
+// ---------------------------------------------------------------------------------------------------------------------
+
 fn main() {
     env_logger::init();
 
@@ -191,6 +245,8 @@ fn main() {
     let service_def = mk_svc();
     let service_ver_def = mk_svc_ver();
     let product_service = mk_prod_svc();
+    let request = mk_req();
+    let task = mk_task();
 
     let schema_def = SchemaDef {
         users: Box::new(Vec::from([DBUser {
@@ -204,6 +260,8 @@ fn main() {
             product_def,
             product_ver_def,
             product_service,
+            request,
+            task,
         ])),
     };
 

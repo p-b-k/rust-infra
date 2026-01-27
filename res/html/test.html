@@ -7,6 +7,7 @@
     <!-- Local CSS style -->
     <link rel="stylesheet" href="/static/css/colors.css"/>
     <link rel="stylesheet" href="/static/css/test.css"/>
+    <link rel="stylesheet" href="/static/css/table.css"/>
 
     <!-- Javascript File -->
     <script src="/static/js/core.js"></script>
@@ -22,18 +23,40 @@
     <hr/>
 
     <h2>This table loads the service table from the database</h2>
-    <table class="test-prod-table">
-      <thead id="test-prod-head"/>
-      <tbody id="test-prod-body"/>
-      <tfoot id="test-prod-foot"/>
-    </table>
+    <div id="test-prod-table-top" class="table-control">
+      <div class="table-header">Services</div>
+      <table id="test-prod-filter" class="search-bar">
+        <tr>
+          <td><img src="/static/svg/search.svg" height="16" width="16"/></td>
+          <td><input/></td>
+          <td><img src="/static/svg/copy.svg" height="16" width="16"/></td>
+          <td><img src="/static/svg/reload.svg" height="16" width="16"/></td>
+        </tr>
+      </table>
+      <table class="test-prod-table">
+        <thead id="test-prod-head"/>
+        <tbody id="test-prod-body"/>
+        <tfoot id="test-prod-foot"/>
+      </table>
+    </div>
 
     <h2>This table loads the product table from the database</h2>
-    <table class="test-svc-table">
-      <thead id="test-svc-head"/>
-      <tbody id="test-svc-body"/>
-      <tfoot id="test-svc-foot"/>
-    </table>
+    <div id="test-svc-table-top" class="table-control">
+      <div class="table-header">Products</div>
+      <table id="test-svc-filter" class="search-bar">
+        <tr>
+          <td><img src="/static/svg/search.svg" height="16" width="16"/></td>
+          <td><input/></td>
+          <td><img src="/static/svg/copy.svg" height="16" width="16"/></td>
+          <td><img src="/static/svg/reload.svg" height="16" width="16"/></td>
+        </tr>
+      </table>
+      <table class="test-svc-table">
+        <thead id="test-svc-head"/>
+        <tbody id="test-svc-body"/>
+        <tfoot id="test-svc-foot"/>
+      </table>
+    <div>
 
     <script type="text/javascript">
       console.log('The file has loaded. Repeat, the file has loaded');

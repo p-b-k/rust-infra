@@ -35,7 +35,7 @@ function rePopulateHead (headId, data) {
     if (headData) {
       let tr = document.createElement('tr');
       thead.appendChild(tr);
-      headData.forEach(function (col) { addColumnToHead (tr, col); });
+      headData.columns.forEach(function (col) { addColumnToHead (tr, col); });
     } else {
       console.log('rePopulateHead: No column data found');
     }
@@ -58,7 +58,7 @@ function rePopulateBody (bodyId, data) {
         bodyData.forEach(function (row) {
           let tr = document.createElement('tr');
           tbody.appendChild(tr);
-          headData.forEach (function (col) {
+          headData.columns.forEach (function (col) {
             appendBodyTd (tr, row, col);
           });
         });

@@ -8,7 +8,7 @@ use mysql::prelude::{FromRow, Queryable};
 use std::sync::Arc;
 
 use infra::state::AppState;
-use infra::table::ColumnDef;
+use ui::table::{ColumnDef, TableDef};
 
 use crate::data::{Product, Service};
 
@@ -30,37 +30,34 @@ where
     T: FromRow,
     S: Clone,
 {
-    info!("get_prod_test_body: calling");
+    info!(target: "get_table_body", "calling: {query}");
     let mut pool = state.pool.lock().unwrap();
 
-    info!("get_prod_test_body: at a");
-
     let mut_pool = pool.as_mut();
-    info!("get_prod_test_body: at a 1");
     let mut conn = mut_pool.unwrap().get_conn().unwrap();
-    info!("get_prod_test_body: at c");
 
     let items = &conn.query_map(query, proc).unwrap();
-    info!("get_prod_test_body: at d");
 
     items.to_vec()
 }
 
-async fn get_prod_test_head() -> Json<Vec<ColumnDef>> {
-    let head = [
-        ColumnDef {
-            column: String::from("prod_id"),
-            class: Some(String::from("test_id")),
-            text: String::from("Product Id"),
-        },
-        ColumnDef {
-            column: String::from("prod_name"),
-            class: Some(String::from("test_name")),
-            text: String::from("Product Name"),
-        },
-    ];
-
-    Json(Vec::from(head))
+async fn get_prod_test_head() -> Json<Box<TableDef>> {
+    Json(Box::new(TableDef {
+        search_url: None,
+        refresh_url: None,
+        columns: Box::new(Vec::from([
+            ColumnDef {
+                column: String::from("prod_id"),
+                class: Some(String::from("test_id")),
+                text: String::from("Product Id"),
+            },
+            ColumnDef {
+                column: String::from("prod_name"),
+                class: Some(String::from("test_name")),
+                text: String::from("Product Name"),
+            },
+        ])),
+    }))
 }
 
 async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
@@ -78,21 +75,23 @@ async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Prod
     Json(products)
 }
 
-async fn get_svc_test_head() -> Json<Vec<ColumnDef>> {
-    let head = [
-        ColumnDef {
-            column: String::from("svc_id"),
-            class: Some(String::from("svc_id")),
-            text: String::from("Service Id"),
-        },
-        ColumnDef {
-            column: String::from("svc_name"),
-            class: Some(String::from("svc_name")),
-            text: String::from("Service Name"),
-        },
-    ];
-
-    Json(Vec::from(head))
+async fn get_svc_test_head() -> Json<Box<TableDef>> {
+    Json(Box::new(TableDef {
+        search_url: None,
+        refresh_url: None,
+        columns: Box::new(Vec::from([
+            ColumnDef {
+                column: String::from("svc_id"),
+                class: Some(String::from("svc_id")),
+                text: String::from("Service Id"),
+            },
+            ColumnDef {
+                column: String::from("svc_name"),
+                class: Some(String::from("svc_name")),
+                text: String::from("Service Name"),
+            },
+        ])),
+    }))
 }
 
 async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Service>> {
