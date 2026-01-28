@@ -10,6 +10,8 @@
   font-weight        : bold;
   font-size          : large;
   background         : #000000;
+  padding-top        : 10px;
+  padding-bottom     : 10px;
 }
 
 .test-prod-table THEAD TR TD SPAN,
