@@ -13,14 +13,16 @@ pub struct ColumnDef {
 
 #[derive(Deserialize, Serialize)]
 pub struct TableDef {
+    pub title : String,
     pub search_url: Option<String>,
     pub refresh_url: Option<String>,
     pub columns: Box<Vec<ColumnDef>>,
 }
 
 impl TableDef {
-    pub fn new() -> TableDef {
+    pub fn new(title : &str) -> TableDef {
         TableDef {
+            title : String::from(title),
             search_url: None,
             refresh_url: None,
             columns: Box::new(Vec::from([])),

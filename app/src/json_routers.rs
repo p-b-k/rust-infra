@@ -43,6 +43,7 @@ where
 
 async fn get_prod_test_head() -> Json<Box<TableDef>> {
     Json(Box::new(TableDef {
+        title : String::from("Products"),
         search_url: None,
         refresh_url: None,
         columns: Box::new(Vec::from([
@@ -77,6 +78,7 @@ async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Prod
 
 async fn get_svc_test_head() -> Json<Box<TableDef>> {
     Json(Box::new(TableDef {
+        title : String::from("Services"),
         search_url: None,
         refresh_url: None,
         columns: Box::new(Vec::from([
