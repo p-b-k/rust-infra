@@ -57,8 +57,24 @@ async fn login_page(State(state): State<Arc<AppState>>) -> Result<Response<Strin
     }
 }
 
-async fn login_action() {
+async fn login_action() -> Result<Response<String>, ErrorResponse> {
     // info!(target: "login_action", "called with some data, presumably");
+    Err(make_error(
+        SC::NOT_IMPLEMENTED,
+        String::from("favicon not yet implemented")))
 }
 
-async fn favicon() {}
+async fn favicon()  -> Result<Response<String>, ErrorResponse>{
+    let favicon = String::from("res/svg/icon.svg");
+    let mimetype = format!("{}", mime::SVG);
+    match read_to_string(&favicon) {
+        Ok(contents) => Ok(create_file_response(&contents, &mimetype)),
+        Err(err) => {
+            error!(target: "favicon", "error getting favicon: {}", err.kind());
+            Err(make_error(
+                SC::INTERNAL_SERVER_ERROR,
+                format!("error getting login page: {}", err.kind())
+            ))
+        }
+    }
+}
