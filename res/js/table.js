@@ -26,12 +26,12 @@ function appendBodyTd (tr, row, col) {
   span.classList.add(col.class);
 }
 
-function rePopulateHead (headId, data) {
-  thead = document.getElementById(headId);
+function rePopulateHead (tableId, data) {
+  thead = document.getElementById(tableId);
   if (thead) {
     thead.innerHTML = '';
 
-    let headData = data.head;
+    let headData = data[tableId].head;
     if (headData) {
       let tr = document.createElement('tr');
       thead.appendChild(tr);
@@ -41,19 +41,19 @@ function rePopulateHead (headId, data) {
     }
     
   } else {
-    console.log('rePopulateHead: thead not found for ' + headId);
+    console.log('rePopulateHead: thead not found for ' + tableId);
   }
 }
 
 
-function rePopulateBody (bodyId, data) {
-  tbody = document.getElementById(bodyId);
+function rePopulateBody (tableId, data) {
+  tbody = document.getElementById(tableId);
   if (tbody) {
     tbody.innerHTML = '';
 
-    let bodyData = data.body;
+    let bodyData = data[tableId].body;
     if (bodyData) {
-      let headData = data.head;
+      let headData = data[tableId].head;
       if (headData) {
         bodyData.forEach(function (row) {
           let tr = document.createElement('tr');
@@ -75,17 +75,67 @@ function rePopulateBody (bodyId, data) {
 }
 
 
-function populateTable (headId, bodyId, headUrl, bodyUrl, data) {
+function populateTable (tableId, headUrl, bodyUrl, data) {
   let bodyCallback = function (obj) {
-    data.body = obj;
+    data[tableId].body = obj;
 
     rePopulateBody (bodyId, data);
   }
 
   let headCallback = function (obj) {
-    data.head = obj;
+    data[tableId].head = obj;
 
-    rePopulateHead (headId, data);
+    let toolBar = document.createElement('table');
+    toolBar.classList = [ 'search-bar' ];
+
+    let tr = document.createElement('tr');
+    tr.classList = [ 'search-bar' ];
+
+    let title = document.createEleent('td');
+    title.width = "99%";
+
+    let titleDiv =  document.createEleent('div');
+    titleDiv.classList = [ 'table-header' ];
+    titleDiv.innerText = obj.title;
+    title.appendChild(titleDiv);
+    tr.append(title);
+    
+    if (obj.searchUrl) {
+      let iconTd = document.createEleent('td)');
+      let img = document.createElement('img');
+      img.src = "/static/svg/search.svg";
+      img.height = "16";
+      img.width = "16";
+      iconTd.appendChild(img);
+      tr.appendChild(iconTd);
+
+      let inputTd = document.createElement('td');
+      let input = document.createElement('input');
+      inputTd.appendChild(input);
+      tr.appendChild(inputTd);
+    }
+
+    {
+      let td = document.createEleent('td)');
+      let img = document.createElement('img');
+      img.src = "/static/svg/search.svg";
+      img.height = "16";
+      img.width = "16";
+      td.appendChild(img);
+      tr.appendChild(td);
+    }
+
+    {
+      let td = document.createEleent('td)');
+      let img = document.createElement('img');
+      img.src = "/static/svg/search.svg";
+      img.height = "16";
+      img.width = "16";
+      td.appendChild(img);
+      tr.appendChild(td);
+    }
+
+    rePopulateHead (tableId, data);
     processGetRequest(bodyUrl, bodyCallback);
   }
 
