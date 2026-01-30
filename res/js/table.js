@@ -70,20 +70,19 @@ function rePopulateBody (tableId, data) {
     }
     
   } else {
-    console.log('rePopulateBody: tbody not found for ' + bodyId);
+    console.log('rePopulateBody: tbody not found for ' + tableId);
   }
 }
-
 
 function populateTable (tableId, headUrl, bodyUrl, data) {
   let bodyCallback = function (obj) {
     data[tableId].body = obj;
 
-    rePopulateBody (bodyId, data);
+    rePopulateBody (tableId, data);
   }
 
   let headCallback = function (obj) {
-    data[tableId].head = obj;
+    data[tableId]['head'] = obj;
 
     let toolBar = document.createElement('table');
     toolBar.classList = [ 'search-bar' ];
@@ -91,17 +90,17 @@ function populateTable (tableId, headUrl, bodyUrl, data) {
     let tr = document.createElement('tr');
     tr.classList = [ 'search-bar' ];
 
-    let title = document.createEleent('td');
+    let title = document.createElement('td');
     title.width = "99%";
 
-    let titleDiv =  document.createEleent('div');
+    let titleDiv =  document.createElement('div');
     titleDiv.classList = [ 'table-header' ];
     titleDiv.innerText = obj.title;
     title.appendChild(titleDiv);
     tr.append(title);
     
     if (obj.searchUrl) {
-      let iconTd = document.createEleent('td)');
+      let iconTd = document.createElement('td');
       let img = document.createElement('img');
       img.src = "/static/svg/search.svg";
       img.height = "16";
@@ -116,7 +115,7 @@ function populateTable (tableId, headUrl, bodyUrl, data) {
     }
 
     {
-      let td = document.createEleent('td)');
+      let td = document.createElement('td');
       let img = document.createElement('img');
       img.src = "/static/svg/search.svg";
       img.height = "16";
@@ -126,7 +125,7 @@ function populateTable (tableId, headUrl, bodyUrl, data) {
     }
 
     {
-      let td = document.createEleent('td)');
+      let td = document.createElement('td');
       let img = document.createElement('img');
       img.src = "/static/svg/search.svg";
       img.height = "16";
@@ -139,50 +138,6 @@ function populateTable (tableId, headUrl, bodyUrl, data) {
     processGetRequest(bodyUrl, bodyCallback);
   }
 
+  data[tableId] = {};
   processGetRequest(headUrl, headCallback);
 }
-
-
-
-
-// function populateTableHead (id, url) {
-//   let callback = function (obj) {
-//     console.log('populateTableHead: obj = ' + obj);    
-//     let thead = document.getElementById(id);
-//     thead.innerText = '';
-
-//     let tr = document.createElement('tr');
-//     thead.appendChild(tr);
-//     obj.forEach(function (cdef) { addColumnToHead (tr, cdef); })
-
-//     return obj;
-//   };
-
-//   console.log('populateTableHead: about to run callback');
-//   return processGetRequest(url, callback);
-// }
-
-// function populateTableBody (id, url, cols) {
-//   const callback = function (obj) {
-//     console.log('populateTableBody: obj = ' + obj);    
-//     let tbody = document.getElementById(id);
-//     console.log('populateTableBody: tbody = ' + tbody);    
-
-//     tbody.innerText = '';
-
-//     obj.forEach (function (row) {
-//       let tr = document.createElement('tr');
-//       tbody.append(tr);
-
-//       cols.forEach (function (col) { appendBodyTd (tr, row, col); })  })
-//   };
-
-//   processGetRequest(url, callback);
-// }
-
-// function populateTable (headId, bodyId, headUrl, bodyUrl) {
-//   let cols = populateTableHead (headId, headUrl);
-//   console.log('populateTable: cols = ' + cols);
-//   populateTableBody (bodyId, bodyUrl, cols);
-// }
-
