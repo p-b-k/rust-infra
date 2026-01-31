@@ -176,13 +176,13 @@ fn mk_prod_svc() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
-                type_def: TypeDef::FKey(String::from("product")),
+                type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_svc_ver"),
-                type_def: TypeDef::FKey(String::from("service")),
+                type_def: TypeDef::FKey(String::from("service_ver")),
                 nullable: false,
                 unique: true,
             }),
@@ -222,7 +222,7 @@ fn mk_task() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
-                type_def: TypeDef::FKey(String::from("product")),
+                type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
                 unique: true,
             }),
@@ -241,7 +241,7 @@ fn mk_tent() -> TableDef {
         name: String::from("tenant"),
         fields: Box::new(Vec::from([FieldDef::Field(FieldSpec {
             name: String::from("fkey_acct"),
-            type_def: TypeDef::FKey(String::from("account")),
+            type_def: TypeDef::FKey(String::from("tenant")),
             nullable: false,
             unique: true,
         })])),
@@ -254,13 +254,13 @@ fn mk_prod_tent() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_tnet"),
-                type_def: TypeDef::FKey(String::from("account")),
+                type_def: TypeDef::FKey(String::from("product_tenant")),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
-                type_def: TypeDef::FKey(String::from("account")),
+                type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
                 unique: true,
             }),
