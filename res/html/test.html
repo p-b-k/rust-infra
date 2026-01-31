@@ -25,26 +25,20 @@
 
     <h2>This table loads the product table from the database</h2>
     <div id="prod-table">
+      <script type="text/javascript">
+        populateTable('prod-table', '/test/prod/table/head', '/test/prod/table/body'); 
+      </script>
     </div>
 
     <h2>This table loads the service table from the database</h2>
     <div id="svc-table">
+      <script type="text/javascript">
+        populateTable('svc-table', '/test/svc/table/head', '/test/svc/table/body'); 
+      </script>
     </div>
 
     <script type="text/javascript">
       console.log('The file has loaded. Repeat, the file has loaded');
-
-      // Create the product table
-      let headProdUrl = '/test/prod/table/head';
-      let bodyProdUrl = '/test/prod/table/body';
-
-      populateTable('prod-table', headProdUrl, bodyProdUrl); 
-
-      // Create the service table
-      let headSvcUrl = '/test/svc/table/head';
-      let bodySvcUrl = '/test/svc/table/body';
-
-      populateTable('svc-table', headSvcUrl, bodySvcUrl); 
     </script>
   </body>
 </html>
