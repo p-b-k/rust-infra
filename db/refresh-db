@@ -3,7 +3,7 @@
 ## Drop (if it exists) Existing rusty DB and recreates it with initial data
 ########################################################################################################################
 
-DB_ROOT=$(dirname $0)
+DB_ROOT=${DB_ROOT:-$(dirname $0)}
 
 DEF_DB_NAME=cplane
 DB_NAME=$DEF_DB_NAME
