@@ -11,14 +11,26 @@ DB_NAME=$DEF_DB_NAME
 DEF_DB_PASS=secret
 DB_PASS=$DEF_DB_PASS
 
+if [ -z "$MYSQL_PASSWORD" ]; then
+  echo -n "Enter MySql password: "
+  read -s MYSQL_PASSWORD
+  echo
+fi
+
+echo | mysql --password=$MYSQL_PASSWORD || INVALID_PASSWORD=true
+
+if [ -n "$INVALID_PASSWORD" ]; then
+  exit 1
+fi
+
 ########################################################################################################################
 ## CREATE SOME FUNCTIONS
 ########################################################################################################################
  
 function drop_db () {
-  if [ -n "$(echo 'show databases' | sudo mysql | grep ^${1}$)" ]; then
+  if [ -n "$(echo 'show databases' | mysql --password=$MYSQL_PASSWORD | grep ^${1}$)" ]; then
     echo "Dropping DB $1"
-    echo "DROP DATABASE $1;" | sudo mysql
+    echo "DROP DATABASE $1;" | mysql --password=$MYSQL_PASSWORD
   else
     echo "No database $1 to drop"
   fi
@@ -29,13 +41,13 @@ function create_user () {
   password=$2
 
   echo "(Re-)creating user $username"
-  echo "CREATE OR REPLACE USER '${username}'@'localhost' IDENTIFIED BY '$password'" | sudo mysql
+  echo "CREATE OR REPLACE USER '${username}'@'localhost' IDENTIFIED BY '$password'" | mysql  --password=$MYSQL_PASSWORD
 }
 
 function create_db () {
   dbname=$1
   echo "(Re-)creating DB $dbname"
-  echo "CREATE DATABASE ${dbname};" | sudo mysql
+  echo "CREATE DATABASE ${dbname};" | mysql  --password=$MYSQL_PASSWORD
 }
 
 function grant_access () {
@@ -43,8 +55,8 @@ function grant_access () {
   username=$2
   
   echo "Granting user $username access on $dbname"
-  echo "GRANT ALL ON ${dbname}.* TO '${username}'@'localhost';" | sudo mysql
-  echo "GRANT ALL ON ${dbname}.* TO '$(whoami)'@'localhost';" | sudo mysql
+  echo "GRANT ALL ON ${dbname}.* TO '${username}'@'localhost';" | mysql --password=$MYSQL_PASSWORD
+  echo "GRANT ALL ON ${dbname}.* TO '$(whoami)'@'localhost';" | mysql --password=$MYSQL_PASSWORD
 }
 
 function create_schema () {
@@ -52,14 +64,14 @@ function create_schema () {
   schemafile=$2
 
   echo "Initializing the schema on $dbname"
-  cat $schemafile | sudo mysql $dbname
+  cat $schemafile | mysql --password=$MYSQL_PASSWORD $dbname
 }
 
 function insert_sample_data () {
   dbname=$1
   datafile=$2
   echo "Populating the data in $dbname"
-  cat $datafile | sudo mysql $dbname
+  cat $datafile | mysql --password=$MYSQL_PASSWORD $dbname
 }
 
 function resolve_schema_file_name () {
