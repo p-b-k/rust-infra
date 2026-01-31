@@ -1,12 +1,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Create a sample schema and print it out and stuff
+// Define the Control Plane schema
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use infra::schema::{
     DBUser, DataType, FieldDef, FieldSpec, GrantInfo, SchemaDef, TableDef, TypeDef,
 };
-
-use serde_json::{from_str, to_string};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Define the tables
@@ -101,6 +99,12 @@ fn mk_svc() -> TableDef {
         name: String::from("service"),
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
+                name: String::from("is_global"),
+                type_def: TypeDef::Data(DataType::Boolean),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
                 name: String::from("svc_id"),
                 type_def: TypeDef::Data(DataType::String(32)),
                 nullable: false,
@@ -168,7 +172,7 @@ fn mk_svc_ver() -> TableDef {
 
 fn mk_prod_svc() -> TableDef {
     TableDef {
-        name: String::from("service"),
+        name: String::from("product_service"),
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
@@ -232,13 +236,43 @@ fn mk_task() -> TableDef {
     }
 }
 
+fn mk_tent() -> TableDef {
+    TableDef {
+        name: String::from("tenant"),
+        fields: Box::new(Vec::from([FieldDef::Field(FieldSpec {
+            name: String::from("fkey_acct"),
+            type_def: TypeDef::FKey(String::from("account")),
+            nullable: false,
+            unique: true,
+        })])),
+    }
+}
+
+fn mk_prod_tent() -> TableDef {
+    TableDef {
+        name: String::from("product_tenant"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_tnet"),
+                type_def: TypeDef::FKey(String::from("account")),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("fkey_prod_ver"),
+                type_def: TypeDef::FKey(String::from("account")),
+                nullable: false,
+                unique: true,
+            }),
+        ])),
+    }
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Now create the main function
 // ---------------------------------------------------------------------------------------------------------------------
 
-fn main() {
-    env_logger::init();
-
+pub fn build_schema_def() -> SchemaDef {
     let account = mk_acct();
     let product_def = mk_prod();
     let product_ver_def = mk_prod_ver();
@@ -247,8 +281,10 @@ fn main() {
     let product_service = mk_prod_svc();
     let request = mk_req();
     let task = mk_task();
+    let tenant = mk_tent();
+    let product_tenant = mk_prod_tent();
 
-    let schema_def = SchemaDef {
+    SchemaDef {
         users: Box::new(Vec::from([DBUser {
             role_id: String::from("app"),
             grants: Box::new(Vec::from([GrantInfo::All])),
@@ -262,50 +298,8 @@ fn main() {
             product_service,
             request,
             task,
+            tenant,
+            product_tenant,
         ])),
-    };
-
-    // schema_def.display();
-    let padding = "=============";
-    for table in schema_def.tables() {
-        let name = table.name.to_uppercase();
-        println!("==== {name} {padding}");
-        println!("");
-        println!("{table}");
-        println!("");
-        println!("{};", table.create_sql());
-        println!("");
-        match serde_json::to_string(&table) {
-            Ok(json_str) => println!("{}", json_str),
-            Err(e) => println!("Error: {}", e),
-        }
-    }
-
-    println!("");
-    println!("==== WHOLE SCHEMA {padding}");
-    println!("");
-    match to_string(&schema_def) {
-        Ok(json_str) => {
-            println!("{}", json_str);
-            let res: Result<SchemaDef, serde_json::Error> = from_str(json_str.as_str());
-            println!("");
-            match res {
-                Ok(new_def) => {
-                    println!("==== Read Schema");
-                    println!("");
-                    if new_def == schema_def {
-                        println!("We have a match!");
-                    } else {
-                        println!("No matches here :()");
-                    }
-                }
-                Err(e) => {
-                    println!("Error: {}", e)
-                }
-            }
-        }
-        Err(e) => {
-            println!("Error: {}", e)
-        }
     }
 }

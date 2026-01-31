@@ -11,9 +11,9 @@ use infra::state::{AppConfig, create_app_state};
 
 use std::sync::Arc;
 
-use app::cache_routers::static_router;
-use app::json_routers::json_router;
-use app::rusty::basic_router;
+use cplane::cache_routers::static_router;
+use cplane::json_routers::json_router;
+use cplane::rusty::basic_router;
 
 use axum::Router;
 

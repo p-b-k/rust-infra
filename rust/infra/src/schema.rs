@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum DataType {
+    Boolean,
     String(u32),
     Integer,
     Timestamp,
@@ -35,6 +36,7 @@ impl TypeDef {
             TypeDef::PKey => out.push_str("INTEGER"),
             TypeDef::FKey(_) => out.push_str("INTEGER"),
             TypeDef::Data(data_type) => match data_type {
+                DataType::Boolean => out.push_str("VARCHAR(1)"),
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
                 DataType::Integer => out.push_str("INTEGER"),
                 DataType::Timestamp => out.push_str("DATE"),
@@ -51,6 +53,7 @@ impl Display for TypeDef {
             TypeDef::PKey => write!(f, "pkey"),
             TypeDef::FKey(table) => write!(f, "join({table})"),
             TypeDef::Data(data_type) => match data_type {
+                DataType::Boolean => write!(f, "bool"),
                 DataType::String(size) => write!(f, "string({size})"),
                 DataType::Integer => write!(f, "integer"),
                 DataType::Timestamp => write!(f, "date"),

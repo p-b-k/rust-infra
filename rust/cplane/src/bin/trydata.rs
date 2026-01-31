@@ -2,7 +2,7 @@
 // Generic Datasource trait, and StdDS basic implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use app::data::{product, product_ver};
+use cplane::data::{product, product_ver};
 
 use mysql::Pool;
 
