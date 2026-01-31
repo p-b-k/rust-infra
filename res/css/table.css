@@ -46,10 +46,23 @@
 }
 
 .table-header {
-  font-size               : large;
+  font-size               : x-large;
   font-weight             : bold;
   margin                  : 0px;
-  padding-left            : 10px;
+  padding-left            : 32px;
   margin-top              : 10px;
   margin-bottom           : 10px;
+}
+
+.column-header * {
+  color                   : #FFFFA3;
+  background              : #102373;
+  text-align              : left;
+  padding-top             : 6px;
+  padding-bottom          : 6px;
+}
+
+.table-data * {
+  background              : #FFE3D8;
+  font-size               : small;
 }

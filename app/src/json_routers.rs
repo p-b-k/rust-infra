@@ -22,6 +22,7 @@ pub fn json_router(app: Arc<AppState>) -> Router<()> {
         .route("/test/prod/table/body", get(get_prod_test_body))
         .route("/test/svc/table/head", get(get_svc_test_head))
         .route("/test/svc/table/body", get(get_svc_test_body))
+        .route("/test/svc/table/search", get(get_svc_test_search))
         .with_state(app)
 }
 
@@ -43,7 +44,7 @@ where
 
 async fn get_prod_test_head() -> Json<Box<TableDef>> {
     Json(Box::new(TableDef {
-        title : String::from("Products"),
+        title: String::from("Products"),
         search_url: None,
         refresh_url: None,
         columns: Box::new(Vec::from([
@@ -78,8 +79,8 @@ async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Prod
 
 async fn get_svc_test_head() -> Json<Box<TableDef>> {
     Json(Box::new(TableDef {
-        title : String::from("Services"),
-        search_url: None,
+        title: String::from("Services"),
+        search_url: Some(String::from("/test/svc/table/search")),
         refresh_url: None,
         columns: Box::new(Vec::from([
             ColumnDef {
@@ -94,6 +95,10 @@ async fn get_svc_test_head() -> Json<Box<TableDef>> {
             },
         ])),
     }))
+}
+
+async fn get_svc_test_search(State(_state): State<Arc<AppState>>) -> Json<Vec<Service>> {
+    Json(Vec::from([]))
 }
 
 async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Service>> {

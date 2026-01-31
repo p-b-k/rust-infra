@@ -17,63 +17,34 @@
   </head>
 
   <body>
+    <script type="text/javascript"> let data = {}; </script>
     <h1>Testing Rusty Web Services</h1>
     <h3>Loads the data from the DB and uses JS to dynamically write the tables</h3>
 
     <hr/>
 
-    <h2>This table loads the service table from the database</h2>
-    <div id="test-prod-table-top" class="table-control">
-      <table id="test-prod-filter" class="search-bar">
-        <tr>
-          <td width="99%"><div class="table-header">Services</div></td>
-          <td><img src="/static/svg/search.svg" height="16" width="16"/></td>
-          <td><input/></td>
-          <td><img src="/static/svg/copy.svg" height="16" width="16"/></td>
-          <td><img src="/static/svg/reload.svg" height="16" width="16"/></td>
-        </tr>
-      </table>
-      <table class="test-prod-table">
-        <thead id="test-prod-head"/>
-        <tbody id="test-prod-body"/>
-        <tfoot id="test-prod-foot"/>
-      </table>
+    <h2>This table loads the product table from the database</h2>
+    <div id="prod-table">
     </div>
 
-    <h2>This table loads the product table from the database</h2>
-    <div id="test-svc-table-top" class="table-control">
-      <table id="test-svc-filter" class="search-bar">
-        <tr>
-          <td width="99%"><div class="table-header">Products</div></td>
-          <td><img src="/static/svg/search.svg" height="16" width="16"/></td>
-          <td><input/></td>
-          <td><img src="/static/svg/copy.svg" height="16" width="16"/></td>
-          <td><img src="/static/svg/reload.svg" height="16" width="16"/></td>
-        </tr>
-      </table>
-      <table class="test-svc-table">
-        <thead id="test-svc-head"/>
-        <tbody id="test-svc-body"/>
-        <tfoot id="test-svc-foot"/>
-      </table>
-    <div>
+    <h2>This table loads the service table from the database</h2>
+    <div id="svc-table">
+    </div>
 
     <script type="text/javascript">
       console.log('The file has loaded. Repeat, the file has loaded');
 
       // Create the product table
-      let testProdTableData = {};
       let headProdUrl = '/test/prod/table/head';
       let bodyProdUrl = '/test/prod/table/body';
 
-      populateTable('test-prod-head', headProdUrl, bodyProdUrl, testProdTableData); 
+      populateTable('prod-table', headProdUrl, bodyProdUrl); 
 
       // Create the service table
-      let testSvcTableData = {};
       let headSvcUrl = '/test/svc/table/head';
       let bodySvcUrl = '/test/svc/table/body';
 
-      populateTable('test-svc-head', headSvcUrl, bodySvcUrl, testSvcTableData); 
+      populateTable('svc-table', headSvcUrl, bodySvcUrl); 
     </script>
   </body>
 </html>
