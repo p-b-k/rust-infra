@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use infra::schema::SchemaDef;
+use std::env;
 
 use cplane::schema::build_schema_def;
 
@@ -12,10 +13,65 @@ use serde_json::{from_str, to_string};
 // Now create the main function
 // ---------------------------------------------------------------------------------------------------------------------
 
+enum TableFormat {
+    Display,
+    SQL,
+    Json,
+}
+
+struct AppConfig {
+    tables: Option<Box<Vec<String>>>,
+    format: TableFormat,
+}
+
+fn string_to_table_format(fmt: &str) -> Result<TableFormat, String> {
+    if fmt == "json" {
+        Ok(TableFormat::Json)
+    } else if fmt == "sql" {
+        Ok(TableFormat::SQL)
+    } else if fmt == "display" {
+        Ok(TableFormat::Display)
+    } else {
+        Err(format!("Unkonwn format: {fmt}"))
+    }
+}
+
+fn create_config(schema_def: &SchemaDef) -> AppConfig {
+    let mut tab_vec = Box::new(Vec::new());
+    let mut format = TableFormat::Display;
+
+    let args: Vec<String> = env::args().collect();
+
+    let mut i = 0;
+    while i < args.len() {
+        i = i + 1;
+        let next = &args[i];
+        if next == "--fmt" {
+            i = i + i;
+            format = string_to_table_format(&args[i]).unwrap();
+        } else if next == "--table" {
+            i = i + i;
+            let table = &args[i];
+            tab_vec.push(String::from(table));
+        } else {
+            panic!("Unknown parameter: {next}");
+        }
+    }
+
+    let tables = if tab_vec.is_empty() {
+        None
+    } else {
+        Some(tab_vec)
+    };
+
+    AppConfig { tables, format }
+}
+
 fn main() {
     env_logger::init();
 
     let schema_def = build_schema_def();
+    let cfg = create_config(&schema_def);
 
     // schema_def.display();
     let padding = "=============";
