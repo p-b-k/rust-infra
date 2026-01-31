@@ -15,7 +15,7 @@ fn main() {
 
     println!("Hello World!");
 
-    let url = "mysql://rusty_app:secret@localhost:3306/rusty";
+    let url = "mysql://cplane_app:secret@localhost:3306/cplane";
 
     info!("Creating connection pool to {url:?}");
     let pool = Pool::new(url).unwrap();

@@ -1,0 +1,164 @@
+#!/bin/bash
+########################################################################################################################
+## Drop (if it exists) Existing rusty DB and recreates it with initial data
+########################################################################################################################
+
+DB_ROOT=$(dirname $0)
+
+DEF_DB_NAME=cplane
+DB_NAME=$DEF_DB_NAME
+
+DEF_DB_PASS=secret
+DB_PASS=$DEF_DB_PASS
+
+########################################################################################################################
+## CREATE SOME FUNCTIONS
+########################################################################################################################
+ 
+function drop_db () {
+  if [ -n "$(echo 'show databases' | sudo mysql | grep ^${1}$)" ]; then
+    echo "Dropping DB $1"
+    echo "DROP DATABASE $1;" | sudo mysql
+  else
+    echo "No database $1 to drop"
+  fi
+}
+
+function create_user () {
+  username=$1 
+  password=$2
+
+  echo "(Re-)creating user $username"
+  echo "CREATE OR REPLACE USER '${username}'@'localhost' IDENTIFIED BY '$password'" | sudo mysql
+}
+
+function create_db () {
+  dbname=$1
+  echo "(Re-)creating DB $dbname"
+  echo "CREATE DATABASE ${dbname};" | sudo mysql
+}
+
+function grant_access () {
+  dbname=$1
+  username=$2
+  
+  echo "Granting user $username access on $dbname"
+  echo "GRANT ALL ON ${dbname}.* TO '${username}'@'localhost';" | sudo mysql
+  echo "GRANT ALL ON ${dbname}.* TO '$(whoami)'@'localhost';" | sudo mysql
+}
+
+function create_schema () {
+  dbname=$1
+  schemafile=$2
+
+  echo "Initializing the schema on $dbname"
+  cat $schemafile | sudo mysql $dbname
+}
+
+function insert_sample_data () {
+  dbname=$1
+  datafile=$2
+  echo "Populating the data in $dbname"
+  cat $datafile | sudo mysql $dbname
+}
+
+function resolve_schema_file_name () {
+  echo "$DB_ROOT/${1}.create.sql"
+}
+
+function resolve_data_file_name () {
+  echo "$DB_ROOT/${1}.sample.insert.sql"
+}
+
+########################################################################################################################
+## CREATE THE DATABASE
+########################################################################################################################
+
+while [ -n "$1" ]; do
+  case $1 in
+    --db)
+      shift
+      if [ -n "$1" ]; then
+        DB_NAME=$1
+      else
+        echo "The --db flag requires an argument" >&2
+        exit 1
+      fi
+    ;;
+
+    --pass)
+      shift
+      if [ -n "$1" ]; then
+        DB_PASS=$1
+      else
+        echo "The --pass flag requires an argument" >&2
+        exit 1
+      fi
+    ;;
+
+    --user)
+      shift
+      if [ -n "$1" ]; then
+        DB_USER=$1
+      else
+        echo "The --user flag requires an argument" >&2
+        exit 1
+      fi
+    ;;
+
+    --help)
+      echo "Refreshes a database (default is $DEF_DB_NAME) and user (default is ${DEF_DB_NAME}_app/$DEF_DB_PASS)."
+      echo "If there is no $DB_ROOT/{db}.create.sql file the $(basename $0) will fail."
+      echo "If a $DB_ROOT/{db}.sample.insert.sql file is present it will load that as well."
+      echo
+      echo "Syntax: $(basename $0) [--help] [--db <database name>] [--user <db login name>] [--pass <db password>]"
+      exit 0
+    ;;
+
+    *)
+      echo "Unknown parameter: '$1'. Try running '$(basename $0) --help'" >&2
+      exit 1
+    ;;
+  esac
+
+  shift
+done
+ 
+if [ -z "$DB_USER" ]; then
+  DB_USER="${DB_NAME}_app"
+fi
+
+SCHEMA_FILE=$(resolve_schema_file_name $DB_NAME)
+DATA_FILE=$(resolve_data_file_name $DB_NAME)
+
+if [ -f $SCHEMA_FILE ]; then
+  echo "Loading data from schema file $SCHEMA_FILE"
+else
+  echo "There is no schema create file at '$SCHEMA_FILE' to load, aborting" >&2
+  exit 1
+fi
+
+# Drop the database if it exists
+drop_db $DB_NAME
+
+# Create the DB user
+create_user $DB_USER $DB_PASS
+
+# Create the DB schema
+create_db $DB_NAME
+
+# Grant the DB user all access
+grant_access $DB_NAME $DB_USER
+
+# Create the schema
+SCHEMA_FILE=$SCHEMA_FILE
+create_schema $DB_NAME $SCHEMA_FILE
+
+# Insert the sample data
+if [ $DATA_FILE ]; then
+  insert_sample_data $DB_NAME $DATA_FILE
+else
+  echo "No sample data to load at $DATA_FILE"
+fi
+
+

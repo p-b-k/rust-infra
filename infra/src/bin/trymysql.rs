@@ -31,7 +31,7 @@ struct Product {
 async fn main() {
     env_logger::init();
 
-    let url = "mysql://rusty_app:secret@localhost:3306/rusty";
+    let url = "mysql://cplane_app:secret@localhost:3306/cplane";
     info!("Creating connection pool to {url}");
     let pool = Pool::new(url).unwrap();
     info!("Created connection pool");

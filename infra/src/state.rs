@@ -44,8 +44,8 @@ impl AppConfig {
             port: 7021,
             login_page: String::from("res/html/login.html"),
             db: DbConfig {
-                name: String::from("rusty"),
-                user: String::from("rusty_app"),
+                name: String::from("cplane"),
+                user: String::from("cplane_app"),
                 pass: String::from("secret"),
                 host: String::from("localhost"),
                 port: 3306,
