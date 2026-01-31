@@ -20,6 +20,7 @@ pub fn json_router(app: Arc<AppState>) -> Router<()> {
     Router::new()
         .route("/test/prod/table/head", get(get_prod_test_head))
         .route("/test/prod/table/body", get(get_prod_test_body))
+        .route("/test/prod/table/refresh", get(get_prod_test_refresh))
         .route("/test/svc/table/head", get(get_svc_test_head))
         .route("/test/svc/table/body", get(get_svc_test_body))
         .route("/test/svc/table/search", get(get_svc_test_search))
@@ -46,7 +47,7 @@ async fn get_prod_test_head() -> Json<Box<TableDef>> {
     Json(Box::new(TableDef {
         title: String::from("Products"),
         search_url: None,
-        refresh_url: None,
+        refresh_url: Some(String::from("/test/prod/table/refresh")),
         columns: Box::new(Vec::from([
             ColumnDef {
                 column: String::from("prod_id"),
@@ -63,6 +64,21 @@ async fn get_prod_test_head() -> Json<Box<TableDef>> {
 }
 
 async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
+    let products = get_table_body(
+        state,
+        &String::from("SELECT pkey, prod_id, prod_name FROM product"),
+        |(pkey, prod_id, prod_name)| Product {
+            pkey,
+            prod_id,
+            prod_name,
+        },
+    )
+    .await;
+
+    Json(products)
+}
+
+async fn get_prod_test_refresh(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
     let products = get_table_body(
         state,
         &String::from("SELECT pkey, prod_id, prod_name FROM product"),

@@ -5,15 +5,21 @@
 -- A Couple of accounts
 
 INSERT INTO account (pkey, acct_id, acct_name)
-VALUES (0, 'ACT1', 'First Account');
+VALUES (0, 'SCARPERCO', 'Scarperco Premium Software Services');
 
 INSERT INTO account (pkey, acct_id, acct_name)
-VALUES (1, 'ACT2', 'Second Account');
+VALUES (1, 'WBULL', 'The Weeping Bull, Public House');
+
+INSERT INTO account (pkey, acct_id, acct_name)
+VALUES (2, 'BFBG', 'Big Frankie''s Bar and Grill');
+
+INSERT INTO account (pkey, acct_id, acct_name)
+VALUES (3, 'MROTH', 'Le Maison Richeliu');
 
 -- Some Products
 
 INSERT INTO product (pkey, prod_id, prod_name)
-VALUES (0, 'PIXTORE', 'Photo Storage');
+VALUES (0, 'CPLANE', 'Control Plane');
 
 INSERT INTO product (pkey, prod_id, prod_name)
 VALUES (1, 'UTUNE', 'Music Library and Storage');
@@ -26,16 +32,16 @@ VALUES (2, 'WEBED', 'Web Editor');
 -- PIXTORE
 
 INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver)
-VALUES (0, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 0, 1);
+VALUES (0, (SELECT pkey FROM product WHERE prod_id = 'CPLANE'), 0, 0);
 
-INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver)
-VALUES (1, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 0, 2);
+-- INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver)
+-- VALUES (1, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 0, 2);
 
-INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver, bld_tag)
-VALUES (2, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 1, 0, 'beta');
+-- INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver, bld_tag)
+-- VALUES (2, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 1, 0, 'beta');
 
-INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver)
-VALUES (3, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 1, 0);
+-- INSERT INTO product_ver (pkey, fkey_prod, maj_ver, min_ver)
+-- VALUES (3, (SELECT pkey FROM product WHERE prod_id = 'PIXTORE'), 1, 0);
 
 -- UTUNE
 

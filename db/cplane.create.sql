@@ -2,11 +2,19 @@
 -- Create a Control Plane schema
 -- =====================================================================================================================
 
+--
+-- Customer Information
+-- 
+
 CREATE TABLE account
 ( pkey INTEGER PRIMARY KEY
 , acct_id VARCHAR (64) UNIQUE NOT NULL
 , acct_name VARCHAR (256) UNIQUE NOT NULL
 );
+
+--
+-- Basic Product and Service Definitions
+-- 
 
 CREATE TABLE product
 ( pkey INTEGER PRIMARY KEY
@@ -46,6 +54,25 @@ CREATE TABLE product_service
 , fkey_prod_ver INTEGER NOT NULL
 , fkey_svc_ver INTEGER NOT NULL
 );
+
+--
+-- Tenancies
+-- 
+
+CREATE TABLE tenant
+( pkey INTEGER PRIMARY KEY
+, fkey_acct INTEGER NOT NULL
+);
+
+CREATE TABLE product_tenant
+( pkey INTEGER PRIMARY KEY
+, fkey_tnet INTEGER NOT NULL
+, fkey_prod_ver INTEGER NOT NULL
+);
+
+--
+-- Request Processing
+-- 
 
 CREATE TABLE request
 ( pkey INTEGER PRIMARY KEY
