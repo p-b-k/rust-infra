@@ -11,6 +11,8 @@ DB_NAME=$DEF_DB_NAME
 DEF_DB_PASS=secret
 DB_PASS=$DEF_DB_PASS
 
+INIT_SCHEMA=true
+
 if [ -z "$MYSQL_PASSWORD" ]; then
   echo -n "Enter MySql password: "
   read -s MYSQL_PASSWORD
@@ -127,6 +129,10 @@ while [ -n "$1" ]; do
       exit 0
     ;;
 
+    --empty)
+      INIT_SCHEMA=
+    ;;
+
     *)
       echo "Unknown parameter: '$1'. Try running '$(basename $0) --help'" >&2
       exit 1
@@ -143,11 +149,13 @@ fi
 SCHEMA_FILE=$(resolve_schema_file_name $DB_NAME)
 DATA_FILE=$(resolve_data_file_name $DB_NAME)
 
-if [ -f $SCHEMA_FILE ]; then
-  echo "Loading data from schema file $SCHEMA_FILE"
-else
-  echo "There is no schema create file at '$SCHEMA_FILE' to load, aborting" >&2
-  exit 1
+if [ -n "$INIT_SCHEMA" ]; then
+  if [ -f $SCHEMA_FILE ]; then
+    echo "Loading data from schema file $SCHEMA_FILE"
+  else
+    echo "There is no schema create file at '$SCHEMA_FILE' to load, aborting" >&2
+    exit 1
+  fi
 fi
 
 # Drop the database if it exists
@@ -163,14 +171,15 @@ create_db $DB_NAME
 grant_access $DB_NAME $DB_USER
 
 # Create the schema
-SCHEMA_FILE=$SCHEMA_FILE
-create_schema $DB_NAME $SCHEMA_FILE
+if [ -n "$INIT_SCHEMA" ]; then
+  create_schema $DB_NAME $SCHEMA_FILE
 
-# Insert the sample data
-if [ $DATA_FILE ]; then
-  insert_sample_data $DB_NAME $DATA_FILE
-else
-  echo "No sample data to load at $DATA_FILE"
+  # Insert the sample data
+  if [ -f $DATA_FILE ]; then
+    insert_sample_data $DB_NAME $DATA_FILE
+  else
+    echo "No sample data to load at $DATA_FILE"
+  fi
 fi
 
 

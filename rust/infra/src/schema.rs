@@ -70,6 +70,7 @@ pub struct FieldSpec {
     pub type_def: TypeDef,
     pub nullable: bool,
     pub unique: bool,
+    pub default: Option<String>,
 }
 
 impl Display for FieldSpec {
@@ -167,6 +168,12 @@ impl TableDef {
                     }
                     if !field_spec.nullable {
                         buff.push_str(" NOT NULL");
+                    }
+                    match &field_spec.default {
+                        Some(val) => {
+                            buff.push_str(format!(" DEFAULT {val}").as_str());
+                        }
+                        None => {}
                     }
                 }
             }

@@ -16,12 +16,14 @@ fn mk_acct() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("acct_id"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(64)),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("acct_name"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(256)),
                 nullable: false,
                 unique: true,
@@ -36,12 +38,14 @@ fn mk_prod() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("prod_id"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(32)),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("prod_name"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(256)),
                 nullable: false,
                 unique: true,
@@ -56,38 +60,44 @@ fn mk_prod_ver() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("maj_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("min_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("rel_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: true,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("bld_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: true,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("bld_tag"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(128)),
-                nullable: false,
+                nullable: true,
                 unique: true,
             }),
         ])),
@@ -100,18 +110,21 @@ fn mk_svc() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("is_global"),
+                default: Some(String::from("'Y'")),
                 type_def: TypeDef::Data(DataType::Boolean),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("svc_id"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(32)),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("svc_name"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(256)),
                 nullable: false,
                 unique: true,
@@ -126,44 +139,51 @@ fn mk_svc_ver() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_svc"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("maj_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("min_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("rel_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: true,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("bld_ver"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: true,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("bld_tag"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(128)),
-                nullable: false,
+                nullable: true,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("schema"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Clob),
-                nullable: false,
+                nullable: true,
                 unique: true,
             }),
         ])),
@@ -176,15 +196,17 @@ fn mk_prod_svc() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
+                default: None,
                 type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
-                unique: true,
+                unique: false,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_svc_ver"),
+                default: None,
                 type_def: TypeDef::FKey(String::from("service_ver")),
                 nullable: false,
-                unique: true,
+                unique: false,
             }),
         ])),
     }
@@ -196,18 +218,21 @@ fn mk_req() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("req_type"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(64)),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("req_start"),
+                default: None,
                 type_def: TypeDef::Data(DataType::Timestamp),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("req_status"),
+                default: None,
                 type_def: TypeDef::Data(DataType::String(64)),
                 nullable: false,
                 unique: true,
@@ -222,12 +247,14 @@ fn mk_task() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
+                default: None,
                 type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_req"),
+                default: None,
                 type_def: TypeDef::FKey(String::from("request")),
                 nullable: false,
                 unique: true,
@@ -241,6 +268,7 @@ fn mk_tent() -> TableDef {
         name: String::from("tenant"),
         fields: Box::new(Vec::from([FieldDef::Field(FieldSpec {
             name: String::from("fkey_acct"),
+            default: None,
             type_def: TypeDef::FKey(String::from("tenant")),
             nullable: false,
             unique: true,
@@ -254,12 +282,14 @@ fn mk_prod_tent() -> TableDef {
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_tnet"),
+                default: None,
                 type_def: TypeDef::FKey(String::from("product_tenant")),
                 nullable: false,
                 unique: true,
             }),
             FieldDef::Field(FieldSpec {
                 name: String::from("fkey_prod_ver"),
+                default: None,
                 type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
                 unique: true,
