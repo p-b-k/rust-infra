@@ -271,7 +271,7 @@ fn mk_tent() -> TableDef {
             default: None,
             type_def: TypeDef::FKey(String::from("tenant")),
             nullable: false,
-            unique: true,
+            unique: false,
         })])),
     }
 }

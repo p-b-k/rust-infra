@@ -6,7 +6,7 @@ use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
 
-use log::info;
+use log::debug;
 
 use crate::filecache::{FileCache, StaticFileCacheLogic};
 
@@ -67,7 +67,7 @@ pub struct AppState {
 
 impl AppState {
     pub async fn set_connection_pool(&mut self, url: &String) {
-        info!("set_connection_pool called");
+        debug!("set_connection_pool called");
         let opts = Opts::from_url(url).unwrap();
         let new_pool = Pool::new(opts).unwrap();
         let mut pool = self.pool.lock().unwrap();

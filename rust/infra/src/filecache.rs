@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use http::response::Response;
-use log::info;
+use log::debug;
 use mime::Mime;
 use std::collections::HashMap;
 use std::fs::{exists, metadata, read_to_string};
@@ -52,13 +52,13 @@ where
 
     pub fn lookup_file(&mut self, file_name: &String) -> Result<Response<String>, String> {
         if exists(file_name).unwrap() {
-            // info!(target: "lookup_file", "file {file_name} exists");
+            // debug!(target: "lookup_file", "file {file_name} exists");
             let mimetype = format!("{}", self.mime_type);
             match self.cache.get(file_name) {
                 Some(entry) => {
-                    // info!(target: "lookup_file", "found an entry for {file_name}");
+                    // debug!(target: "lookup_file", "found an entry for {file_name}");
                     if self.logic.needs_update(entry.timestamp, file_name) {
-                        info!(target: "lookup_file", "{file_name} is out of date and needs to be updated");
+                        debug!(target: "lookup_file", "{file_name} is out of date and needs to be updated");
                         let data = self.logic.process_path(file_name);
                         let return_data = data.clone();
                         let timestamp = metadata(file_name).unwrap().modified().unwrap();
@@ -66,12 +66,12 @@ where
                             .insert(file_name.clone(), FileCacheEntry { data, timestamp });
                         Ok(create_file_response(&return_data, &mimetype))
                     } else {
-                        // info!(target: "lookup_file", "{file_name} is current and is being returned as is");
+                        // debug!(target: "lookup_file", "{file_name} is current and is being returned as is");
                         Ok(create_file_response(&entry.data, &mimetype))
                     }
                 }
                 None => {
-                    // info!(target: "lookup_file", "{file_name} needs to be added to the cache");
+                    // debug!(target: "lookup_file", "{file_name} needs to be added to the cache");
                     let data = self.logic.process_path(file_name);
                     let return_data = data.clone();
                     let timestamp = metadata(file_name).unwrap().modified().unwrap();
@@ -91,14 +91,14 @@ pub struct StaticFileCacheLogic {}
 impl CacheLogic for StaticFileCacheLogic {
     fn process_path(&self, file_name: &String) -> String {
         // Assume the file exists
-        info!(target: "CacheLogic::process_path", "calling on {file_name}");
+        debug!(target: "CacheLogic::process_path", "calling on {file_name}");
         read_to_string(file_name).unwrap()
     }
 
     fn needs_update(&self, timestamp: SystemTime, file_name: &String) -> bool {
         // Assume the file exists
         // let time_elapsed = timestamp.elapsed().unwrap().as_secs();
-        // info!(target: "CacheLogic::needs_update", "calling on {time_elapsed}, {file_name}");
+        // debug!(target: "CacheLogic::needs_update", "calling on {time_elapsed}, {file_name}");
         timestamp < metadata(file_name).unwrap().modified().unwrap()
     }
 }

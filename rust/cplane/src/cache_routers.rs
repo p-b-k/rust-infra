@@ -29,14 +29,14 @@ async fn static_html_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,
 ) -> Result<Response<String>, ErrorResponse> {
-    // info!(target: "static_html_get", "called with path {path:?}");
+    // debug!(target: "static_html_get", "called with path {path:?}");
 
     let html_cache = &mut state.html_cache.lock().unwrap();
     let static_root = html_cache.root.clone();
 
     let full_path = format!("{}/{}", static_root, path);
 
-    // info!(target: "static_html_get", "full static path is {full_path:?}");
+    // debug!(target: "static_html_get", "full static path is {full_path:?}");
 
     static_get(html_cache, &full_path)
 }
@@ -45,14 +45,14 @@ async fn static_json_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,
 ) -> Result<Response<String>, ErrorResponse> {
-    // info!(target: "static_json_get", "called with path {path:?}");
+    // debug!(target: "static_json_get", "called with path {path:?}");
 
     let json_cache = &mut state.json_cache.lock().unwrap();
     let static_root = json_cache.root.clone();
 
     let full_path = format!("{}/{}", static_root, path);
 
-    // info!(target: "static_json_get", "full static path is {full_path:?}");
+    // debug!(target: "static_json_get", "full static path is {full_path:?}");
 
     static_get(json_cache, &full_path)
 }
@@ -61,14 +61,14 @@ async fn static_css_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,
 ) -> Result<Response<String>, ErrorResponse> {
-    // info!(target: "static_css_get", "called with path {path:?}");
+    // debug!(target: "static_css_get", "called with path {path:?}");
 
     let css_cache = &mut state.css_cache.lock().unwrap();
     let static_root = css_cache.root.clone();
 
     let full_path = format!("{}/{}", static_root, path);
 
-    // info!(target: "static_css_get", "full static path is {full_path:?}");
+    // debug!(target: "static_css_get", "full static path is {full_path:?}");
 
     static_get(css_cache, &full_path)
 }
@@ -77,14 +77,14 @@ async fn static_js_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,
 ) -> Result<Response<String>, ErrorResponse> {
-    // info!(target: "static_js_get", "called with path {path:?}");
+    // debug!(target: "static_js_get", "called with path {path:?}");
 
     let js_cache = &mut state.js_cache.lock().unwrap();
     let static_root = js_cache.root.clone();
 
     let full_path = format!("{}/{}", static_root, path);
 
-    // info!(target: "static_js_get", "full static path is {full_path:?}");
+    // debug!(target: "static_js_get", "full static path is {full_path:?}");
 
     static_get(js_cache, &full_path)
 }
@@ -93,14 +93,14 @@ async fn static_svg_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,
 ) -> Result<Response<String>, ErrorResponse> {
-    // info!(target: "static_svg_get", "called with path {path:?}");
+    // debug!(target: "static_svg_get", "called with path {path:?}");
 
     let svg_cache = &mut state.svg_cache.lock().unwrap();
     let static_root = svg_cache.root.clone();
 
     let full_path = format!("{}/{}", static_root, path);
 
-    // info!(target: "static_svg_get", "full static path is {full_path:?}");
+    // debug!(target: "static_svg_get", "full static path is {full_path:?}");
 
     static_get(svg_cache, &full_path)
 }

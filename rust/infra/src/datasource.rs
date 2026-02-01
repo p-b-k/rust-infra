@@ -5,7 +5,7 @@
 use mysql::PooledConn;
 use mysql::prelude::{FromRow, Queryable};
 
-use log::info;
+use log::debug;
 
 pub struct DS<F, T>
 where
@@ -26,7 +26,7 @@ where
         let table = &self.table;
         let fields = &self.fields;
         let query = format!("SELECT pkey, {fields} FROM {table} WHERE pkey = {pkey}");
-        info!(target : "get", "QUERY: {query}");
+        debug!(target : "get", "QUERY: {query}");
         let res = conn.query_map(query, self.cons);
         match res {
             Ok(vec) => match vec.len() {
@@ -45,7 +45,7 @@ where
         let table = self.table.clone();
         let fields = &self.fields;
         let query = format!("SELECT pkey, {fields} FROM {table} WHERE {fkey} = {pkey}");
-        info!(target : "join", "QUERY: {query}");
+        debug!(target : "join", "QUERY: {query}");
         let res = conn.query_map(query, self.cons);
         match res {
             Ok(product_vers) => Ok(product_vers),

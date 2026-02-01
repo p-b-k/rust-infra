@@ -99,6 +99,37 @@ impl FieldDef {
             FieldDef::Field(field_spec) => field_spec.type_def.as_data_type(),
         }
     }
+
+    pub fn type_string(&self) -> String {
+        match self {
+            FieldDef::PKey => String::from("PRIMARY KEY"),
+            FieldDef::Field(field_spec) => format!("{}", field_spec.type_def),
+        }
+    }
+
+    pub fn print(&self) {
+        let mut unique = " ";
+        let mut nullable = " ";
+        let name = self.name();
+        let data_type = self.type_string();
+
+        match self {
+            FieldDef::PKey => {
+                unique = "*";
+            }
+            FieldDef::Field(field_spec) => {
+                if field_spec.nullable {
+                    nullable = "?";
+                }
+
+                if field_spec.unique {
+                    unique = "*";
+                }
+            }
+        }
+
+        println!(" {unique} {nullable} {name:<16} : {data_type}");
+    }
 }
 
 impl Display for FieldDef {
@@ -120,11 +151,17 @@ pub struct TableDef {
 
 impl Display for TableDef {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
-        write!(f, "TABLE:{}", self.name).unwrap();
+        write!(f, "TABLE:{}({})", self.name, self.fields.len())
+    }
+}
+
+impl TableDef {
+    pub fn print(&self) {
+        println!("TABLE:{}", self.name);
         for field in self.fields.clone().into_iter() {
-            write!(f, "\n - {}", field).unwrap();
+            field.print();
         }
-        write!(f, "")
+        println!();
     }
 }
 

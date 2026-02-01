@@ -12,7 +12,7 @@ use ui::table::{ColumnDef, TableDef};
 
 use crate::data::{Product, Service};
 
-use log::info;
+use log::debug;
 
 // use log::{info, warn};
 
@@ -32,7 +32,7 @@ where
     T: FromRow,
     S: Clone,
 {
-    info!(target: "get_table_body", "calling: {query}");
+    debug!(target: "get_table_body", "calling: {query}");
     let mut pool = state.pool.lock().unwrap();
 
     let mut_pool = pool.as_mut();
