@@ -15,11 +15,12 @@ use serde::{Deserialize, Serialize};
 // Define the tables
 // ---------------------------------------------------------------------------------------------------------------------
 
-trait DataSource<T>
+trait DataSource<F, T>
 where
-    T: FromRow,
+    F: FromRow,
+    T: Clone,
 {
-    fn as_ds() -> DS<T>;
+    fn as_ds() -> DS<F, T>;
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
