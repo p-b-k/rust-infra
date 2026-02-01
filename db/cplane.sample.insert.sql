@@ -14,7 +14,7 @@ INSERT INTO account (pkey, acct_id, acct_name)
 VALUES (2, 'BFBG', 'Big Frankie''s Bar and Grill');
 
 INSERT INTO account (pkey, acct_id, acct_name)
-VALUES (3, 'MROTH', 'Le Maison Richeliu');
+VALUES (3, 'MRICH', 'Le Maison Richeliu');
 
 -- Some Products
 
