@@ -15,12 +15,9 @@ use serde::{Deserialize, Serialize};
 // Define the tables
 // ---------------------------------------------------------------------------------------------------------------------
 
-trait DataSource<F, T>
-where
-    F: FromRow,
-    T: Clone,
+trait DataSource
 {
-    fn as_ds() -> DS<F, T>;
+    fn as_ds() -> DS;
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
@@ -188,7 +185,7 @@ pub struct ServiceVerDO {
     pub rel_ver: Option<u32>,
     pub bld_rel: Option<u32>,
     pub bld_tag: Option<String>,
-    pub schema: Option<String>,
+    pub schema_def: Option<String>,
 }
 
 fn mk_svc_ver() -> TableDef {
@@ -235,14 +232,14 @@ fn mk_svc_ver() -> TableDef {
                 default: None,
                 type_def: TypeDef::Data(DataType::String(128)),
                 nullable: true,
-                unique: true,
+                unique: false,
             }),
             FieldDef::Field(FieldSpec {
-                name: String::from("schema"),
+                name: String::from("schema_def"),
                 default: None,
                 type_def: TypeDef::Data(DataType::Clob),
                 nullable: true,
-                unique: true,
+                unique: false,
             }),
         ])),
     }

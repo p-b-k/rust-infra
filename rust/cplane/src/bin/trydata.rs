@@ -2,7 +2,7 @@
 // Generic Datasource trait, and StdDS basic implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::data::{product, product_ver};
+use cplane::data::{ProductVer, Product, product, product_ver};
 
 use mysql::Pool;
 
@@ -32,7 +32,7 @@ fn main() {
 
     {
         info!("Getting single product result");
-        let res = prod_ds.get(&mut conn, PROD_PKEY);
+        let res = prod_ds.get::<Product>(&mut conn, PROD_PKEY);
 
         info!("Got result");
 
@@ -49,7 +49,7 @@ fn main() {
     {
         info!("Getting joined results");
         let fk_field = String::from("fkey_prod");
-        let res = prod_ver_ds.join(&mut conn, PROD_PKEY, &fk_field);
+        let res = prod_ver_ds.join::<ProductVer>(&mut conn, PROD_PKEY, &fk_field);
 
         info!("Got result");
 

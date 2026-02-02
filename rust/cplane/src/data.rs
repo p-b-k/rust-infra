@@ -4,27 +4,23 @@
 
 use infra::datasource::DS;
 use serde::{Deserialize, Serialize};
+use mysql::prelude::{FromRow, Queryable};
 
 //
 // Service -------------------------------------------------
 //
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Service {
     pub pkey: u64,
     pub svc_id: String,
     pub svc_name: String,
 }
 
-pub fn service() -> DS<(u64, String, String), Service> {
+pub fn service() -> DS {
     DS {
         table: String::from("service"),
         fields: String::from("svc_id, svc_name"),
-        cons: |(pkey, svc_id, svc_name)| Service {
-            pkey,
-            svc_id,
-            svc_name,
-        },
     }
 }
 
@@ -32,17 +28,16 @@ pub fn service() -> DS<(u64, String, String), Service> {
 // Service Ver ---------------------------------------------
 //
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ServiceVer {
     pub pkey: u64,
     pub fkey_svc: u64,
 }
 
-pub fn service_ver() -> DS<(u64, u64), ServiceVer> {
+pub fn service_ver() -> DS {
     DS {
         table: String::from("service_ver"),
         fields: String::from("fkey_svc"),
-        cons: |(pkey, fkey_svc)| ServiceVer { pkey, fkey_svc },
     }
 }
 
@@ -50,22 +45,17 @@ pub fn service_ver() -> DS<(u64, u64), ServiceVer> {
 // Product -------------------------------------------------
 //
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
     pub pkey: u64,
     pub prod_id: String,
     pub prod_name: String,
 }
 
-pub fn product() -> DS<(u64, String, String), Product> {
+pub fn product() -> DS {
     DS {
         table: String::from("product"),
         fields: String::from("prod_id, prod_name"),
-        cons: |(pkey, prod_id, prod_name)| Product {
-            pkey,
-            prod_id,
-            prod_name,
-        },
     }
 }
 
@@ -73,16 +63,15 @@ pub fn product() -> DS<(u64, String, String), Product> {
 // Product Ver ---------------------------------------------
 //
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductVer {
     pub pkey: u64,
     pub fkey_prod: u64,
 }
 
-pub fn product_ver() -> DS<(u64, u64), ProductVer> {
+pub fn product_ver() -> DS {
     DS {
         table: String::from("product_ver"),
         fields: String::from("fkey_prod"),
-        cons: |(pkey, fkey_prod)| ProductVer { pkey, fkey_prod },
     }
 }

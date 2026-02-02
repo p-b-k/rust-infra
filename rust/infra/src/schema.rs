@@ -40,7 +40,7 @@ impl TypeDef {
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
                 DataType::Integer => out.push_str("INTEGER"),
                 DataType::Timestamp => out.push_str("DATE"),
-                DataType::Clob => out.push_str("TEXT"), // Using MySQL Syntax for now, TODO add RDBMS layer
+                DataType::Clob => out.push_str("LONGTEXT"), // Using MySQL Syntax for now, TODO add RDBMS layer
                 DataType::Blob => out.push_str("BLOB"),
             },
         }
