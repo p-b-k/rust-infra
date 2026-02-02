@@ -8,7 +8,6 @@ use mysql::prelude::{FromRow, Queryable};
 use log::debug;
 
 pub struct DS
-where
 {
     pub table: String,
     pub fields: String,

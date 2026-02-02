@@ -4,7 +4,7 @@
 
 use infra::datasource::DS;
 use serde::{Deserialize, Serialize};
-use mysql::prelude::{FromRow, Queryable};
+use mysql::prelude::FromRow;
 
 //
 // Service -------------------------------------------------
