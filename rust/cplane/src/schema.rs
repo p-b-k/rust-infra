@@ -2,26 +2,78 @@
 // Define the Control Plane schema
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use std::marker::PhantomData;
+
+use log::warn;
+
 use infra::schema::{
     DBUser, DataType, FieldDef, FieldSpec, GrantInfo, SchemaDef, TableDef, TypeDef,
 };
 
 use infra::datasource::DS;
 
+use mysql::PooledConn;
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create a datasource object
+// ---------------------------------------------------------------------------------------------------------------------
+
+fn fields_from_table(def: &TableDef) -> String {
+    let mut fields = String::from("pkey");
+    for field in def.fields() {
+        fields.push_str(", ");
+        fields.push_str(field.name());
+    }
+
+    fields
+}
+
+struct DO<'a, T>
+where
+    T: FromRow,
+    T: Clone,
+{
+    def: &'a TableDef,
+    phantom: PhantomData<T>,
+    ds: DS,
+}
+
+impl<'a, T> DO<'a, T>
+where
+    T: FromRow,
+    T: Clone,
+{
+    // I guess this needs the lifetime parameter because it is "static" (i.e. it does not refernce self) ...
+    pub fn from_table(def: &'a TableDef) -> DO<'a, T> {
+        let table = def.name.clone();
+        let fields = fields_from_table(&def);
+        DO {
+            def,
+            phantom: PhantomData,
+            ds: DS { table, fields },
+        }
+    }
+
+    // ... whereas this does not require one because it pickes it up from self
+    pub fn get(&self, conn: &mut PooledConn, pkey: u64) -> Option<T> {
+        match self.ds.get(conn, pkey) {
+            Ok(row) => Some(row),
+            Err(msg) => {
+                warn!(target:"DS.get", "No object returned: {msg}");
+                None
+            }
+        }
+    }
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Define the tables
 // ---------------------------------------------------------------------------------------------------------------------
 
-trait DataSource
-{
-    fn as_ds() -> DS;
-}
-
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct AccountDO {
+pub struct Account {
     pub pkey: u64,
     pub acct_id: String,
     pub acct_name: String,
@@ -50,7 +102,7 @@ fn mk_acct() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct ProductDO {
+pub struct Product {
     pub pkey: u64,
     pub prod_id: String,
     pub prod_name: String,
@@ -79,7 +131,7 @@ fn mk_prod() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct ProductVerDO {
+pub struct ProductVer {
     pub pkey: u64,
     pub fkey_prod: String,
     pub maj_ver: u32,
@@ -140,7 +192,7 @@ fn mk_prod_ver() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct ServiceDO {
+pub struct Service {
     pub pkey: u64,
     pub svc_id: String,
     pub svc_name: String,
@@ -177,7 +229,7 @@ fn mk_svc() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct ServiceVerDO {
+pub struct ServiceVer {
     pub pkey: u64,
     pub fkey_svc: String,
     pub maj_ver: u32,
@@ -246,7 +298,7 @@ fn mk_svc_ver() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct ProductServiceDO {
+pub struct ProductService {
     pub pkey: u64,
     pub fkey_prod: u64,
     pub fkey_svc: u64,
@@ -275,7 +327,7 @@ fn mk_prod_svc() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct RequestDO {
+pub struct Request {
     pub pkey: u64,
     pub req_type: String,
     pub req_start: u64,
@@ -312,7 +364,7 @@ fn mk_req() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct TenantDO {
+pub struct Tenant {
     pub pkey: u64,
     pub fkey_acct: u64,
 }
@@ -331,7 +383,7 @@ fn mk_tent() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct TaskDO {
+pub struct Task {
     pub pkey: u64,
     pub fkey_req: u64,
     pub status: String,
@@ -360,7 +412,7 @@ fn mk_task() -> TableDef {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct ProductTenantDO {
+pub struct ProductTenant {
     pub pkey: u64,
     pub fkey_tnet: u64,
     pub fkey_prod_ver: u64,
@@ -404,7 +456,7 @@ pub fn build_schema_def() -> SchemaDef {
     let tenant = mk_tent();
     let product_tenant = mk_prod_tent();
 
-    SchemaDef {
+    let def = SchemaDef {
         users: Box::new(Vec::from([DBUser {
             role_id: String::from("app"),
             grants: Box::new(Vec::from([GrantInfo::All])),
@@ -421,5 +473,7 @@ pub fn build_schema_def() -> SchemaDef {
             tenant,
             product_tenant,
         ])),
-    }
+    };
+
+    def
 }
