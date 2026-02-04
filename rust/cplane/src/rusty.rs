@@ -14,7 +14,7 @@ use log::error;
 use infra::error::{ErrorResponse, make_error};
 
 use infra::filecache::create_file_response;
-use infra::state::AppState;
+use cargo::state::AppState;
 
 pub fn basic_router(app: Arc<AppState>) -> Router<()> {
     Router::new()
