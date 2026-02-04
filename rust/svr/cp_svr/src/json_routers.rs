@@ -7,10 +7,10 @@ use axum::{Json, Router, extract::State, routing::get};
 use mysql::prelude::{FromRow, Queryable};
 use std::sync::Arc;
 
-use infra::state::AppState;
+use crate::state::AppState;
 use ui::table::{ColumnDef, TableDef};
 
-use crate::data::{Product, Service};
+use cplane::data::{Product, Service};
 
 use log::debug;
 

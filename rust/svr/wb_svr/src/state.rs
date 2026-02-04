@@ -8,8 +8,6 @@ use std::sync::Mutex;
 
 use log::debug;
 
-use crate::filecache::{FileCache, StaticFileCacheLogic};
-
 #[derive(Clone)]
 pub struct DbConfig {
     pub name: String,
@@ -55,12 +53,6 @@ impl AppConfig {
 }
 
 pub struct AppState {
-    pub html_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub json_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub css_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub js_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub svg_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-
     pub pool: Mutex<Option<Pool>>,
     pub config: AppConfig,
 }
@@ -77,45 +69,10 @@ impl AppState {
 }
 
 pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
-    let html_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/html"),
-        mime::TEXT_HTML,
-    );
-
-    let json_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/json"),
-        mime::APPLICATION_JSON,
-    );
-
-    let css_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/css"),
-        mime::TEXT_CSS,
-    );
-
-    let js_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/js"),
-        mime::APPLICATION_JAVASCRIPT,
-    );
-
-    let svg_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/svg"),
-        mime::IMAGE_SVG,
-    );
-
     let opts = Opts::from_url(db_url).unwrap();
     let conn_pool = Pool::new(opts).unwrap();
 
     AppState {
-        html_cache: Mutex::new(html_cache),
-        json_cache: Mutex::new(json_cache),
-        css_cache: Mutex::new(css_cache),
-        js_cache: Mutex::new(js_cache),
-        svg_cache: Mutex::new(svg_cache),
         pool: Mutex::new(Some(conn_pool)),
         config,
     }
