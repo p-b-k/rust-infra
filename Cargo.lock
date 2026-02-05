@@ -1529,6 +1529,9 @@ dependencies = [
 name = "ui_svr"
 version = "0.1.0"
 dependencies = [
+ "axum",
+ "http",
+ "infra",
  "log",
  "mime",
  "mysql 27.0.0",

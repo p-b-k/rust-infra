@@ -13,7 +13,7 @@ use log::{error, warn};
 
 use infra::error::{ErrorResponse, make_error};
 
-use state::AppState;
+use crate::state::AppState;
 use ui::filecache::{FileCache, StaticFileCacheLogic};
 
 pub fn static_router(app: Arc<AppState>) -> Router<()> {

@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+axum = "0.8.8"
+http = "1.4.0"
+infra = { version = "0.1.0", path = "../../infra" }
 log = "0.4.29"
 mime = "0.3.17"
 mysql = "27.0.0"
