@@ -10,6 +10,7 @@
 pub mod state;
 pub mod cache_routers;
 pub mod ui_routers;
+pub mod passthrough_router;
 
 fn main() {
     println!("Hello, world!");
