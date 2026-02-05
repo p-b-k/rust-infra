@@ -253,10 +253,12 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "cplane",
+ "env_logger",
  "infra",
  "log",
  "mime",
  "mysql 27.0.0",
+ "tokio",
  "ui",
 ]
 
