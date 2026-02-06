@@ -1532,6 +1532,7 @@ name = "ui_svr"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "cplane",
  "http",
  "infra",
  "log",

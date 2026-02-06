@@ -5,6 +5,7 @@
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
+use cplane::network::PtConfig;
 
 use log::debug;
 
@@ -36,6 +37,7 @@ pub struct AppConfig {
     pub port: u32,
     pub login_page: String,
     pub db: DbConfig,
+    pub pt : PtConfig
 }
 
 impl AppConfig {
@@ -50,6 +52,11 @@ impl AppConfig {
                 host: String::from("localhost"),
                 port: 3306,
             },
+            pt: PtConfig {
+                port: 7202,
+                host: String::from("localhost"),
+                token: String::from("this is a secret token")
+            }
         }
     }
 }
