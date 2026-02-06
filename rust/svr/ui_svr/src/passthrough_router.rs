@@ -22,12 +22,14 @@ pub fn pass_through_router (app : Arc<AppState>) -> Router<()> {
             .with_state(app))
 }
 
-fn get_pass_through () -> Result<Response<String>, ErrorResponse>{
+async fn get_pass_through () -> Result<Response<String>, ErrorResponse>{
     Err(make_error(SC::NOT_IMPLEMENTED, String::from("GET Pass Through not implimented")))
 }
-fn post_pass_through ()-> Result<Response<String>, ErrorResponse>{
+
+async fn post_pass_through ()-> Result<Response<String>, ErrorResponse>{
     Err(make_error(SC::NOT_IMPLEMENTED, String::from("POST Pass Through not implimented")))
 }
-fn put_pass_through ()-> Result<Response<String>, ErrorResponse>{
+
+async fn put_pass_through ()-> Result<Response<String>, ErrorResponse>{
     Err(make_error(SC::NOT_IMPLEMENTED, String::from("PUT Pass Through not implimented")))
 }
