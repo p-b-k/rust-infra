@@ -66,6 +66,7 @@ function start-dev () {
 function start-cplane () {
   case ${deployment_style} in
     DEV)
+      stop-dev
       start-dev
     ;;
   
