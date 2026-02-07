@@ -1,0 +1,17 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Handle for dynamic worker status and statistics requests
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+use axum::{Router, routing::get};
+
+use std::sync::Arc;
+
+use crate::state::AppState;
+
+pub fn status_router(app: Arc<AppState>) -> Router<()> {
+    Router::new()
+        .route(format!("/health").as_str(), get(get_health))
+        .with_state(app)
+}
+
+pub async fn get_health() {}
