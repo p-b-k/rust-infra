@@ -13,8 +13,8 @@ use log::{error, warn};
 
 use infra::error::{ErrorResponse, make_error};
 
-use infra::filecache::{FileCache, StaticFileCacheLogic};
-use infra::state::AppState;
+use crate::state::AppState;
+use ui::filecache::{FileCache, StaticFileCacheLogic};
 
 pub fn static_router(app: Arc<AppState>) -> Router<()> {
     Router::new()
@@ -25,6 +25,7 @@ pub fn static_router(app: Arc<AppState>) -> Router<()> {
         .route("/static/svg/{*path}", get(static_svg_get))
         .with_state(app)
 }
+
 async fn static_html_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,

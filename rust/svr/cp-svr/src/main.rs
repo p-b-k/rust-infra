@@ -1,23 +1,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Test executable for lib
+// Main Server for the Control Plane.
+//
+// This is the main manager and controller, accessable through the ui-svr and interacting with wb_svrs
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pub mod json_routers;
+pub mod state;
 
 use std::env;
 
 use log::{debug, info};
 
-// use infra::router::create_router;
-use infra::state::{AppConfig, create_app_state};
+use crate::state::{AppConfig, create_app_state};
 
 use std::sync::Arc;
 
-use cplane::cache_routers::static_router;
-use cplane::json_routers::json_router;
-use cplane::rusty::basic_router;
-
-use axum::Router;
-
-// use sqlx::MySqlPool;
+use crate::json_routers::json_router;
 
 #[tokio::main]
 async fn main() {
@@ -32,8 +30,7 @@ async fn main() {
     debug!("Creating application state");
     let app = Arc::new(create_app_state(&db_url, cfg));
 
-    let router = Router::merge(static_router(app.clone()), basic_router(app.clone()))
-        .merge(json_router(app.clone()));
+    let router = json_router(app.clone());
     debug!("Created router");
 
     debug!("About to start the server on port {port}");
