@@ -4,5 +4,4 @@
 
 pub mod app;
 pub mod data;
-pub mod objects;
 pub mod schema;
