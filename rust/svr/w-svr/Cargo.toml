@@ -1,5 +1,5 @@
 [package]
-name = "wb_svr"
+name = "w-svr"
 version = "0.1.0"
 edition = "2024"
 

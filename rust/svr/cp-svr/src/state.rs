@@ -2,6 +2,7 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use cplane::network::DEFAULT_CP_PORT;
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
@@ -41,7 +42,7 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn new() -> AppConfig {
         AppConfig {
-            port: 7021,
+            port: DEFAULT_CP_PORT,
             login_page: String::from("res/html/login.html"),
             db: DbConfig {
                 name: String::from("cplane"),

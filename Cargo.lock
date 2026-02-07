@@ -248,7 +248,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
-name = "cp_svr"
+name = "cp-svr"
 version = "0.1.0"
 dependencies = [
  "axum",
@@ -1528,16 +1528,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "ui_svr"
+name = "ui-svr"
 version = "0.1.0"
 dependencies = [
  "axum",
  "cplane",
+ "env_logger",
  "http",
  "infra",
  "log",
  "mime",
  "mysql 27.0.0",
+ "tokio",
  "ui",
 ]
 
@@ -1592,6 +1594,14 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "w-svr"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "mysql 27.0.0",
+]
 
 [[package]]
 name = "wasi"
@@ -1651,14 +1661,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f01b580c9ac74c8d8f0c0e4afb04eeef2acf145458e52c03845ee9cd23e3d12"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "wb_svr"
-version = "0.1.0"
-dependencies = [
- "log",
- "mysql 27.0.0",
 ]
 
 [[package]]
