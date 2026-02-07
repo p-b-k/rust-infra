@@ -2,7 +2,7 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::network::DEFAULT_CP_PORT;
+use cplane::app::DEFAULT_CP_PORT;
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
