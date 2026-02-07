@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 // Create a datasource object
 // ---------------------------------------------------------------------------------------------------------------------
 
-fn fields_from_table(def: &TableDef) -> String {
+pub fn fields_from_table(def: &TableDef) -> String {
     let mut fields = String::from("pkey");
     for field in def.fields() {
         fields.push_str(", ");

@@ -2,7 +2,7 @@
 // Passthrough router - passes calls to cp-svr and returns the result
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use axum::{Json, Router, extract::Path, extract::State, http::StatusCode as SC, routing::get};
+use axum::{Router, extract::Path, extract::State, http::StatusCode as SC, routing::get};
 
 use http::Response;
 // use http::response::Response;

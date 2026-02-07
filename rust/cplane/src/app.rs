@@ -5,7 +5,7 @@
 pub const DEFAULT_CP_PORT: u32 = 7020;
 const DEFAULT_CP_TOKEN: &str = "this is the default token";
 
-#[derive(Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PtConfig {
     pub host: String,
     pub port: u32,
@@ -32,5 +32,28 @@ impl PtConfig {
         let root = &self.root;
 
         format!("{proto}://{host}:{port}/{root}/{from_path}")
+    }
+}
+
+// DB Config
+
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct DbConfig {
+    pub name: String,
+    pub user: String,
+    pub pass: String,
+    pub host: String,
+    pub port: u32,
+}
+
+impl DbConfig {
+    pub fn to_url(&self) -> String {
+        let name = &self.name;
+        let user = &self.user;
+        let pass = &self.pass;
+        let host = &self.host;
+        let port = self.port;
+
+        format!("mysql://{user}:{pass}@{host}:{port}/{name}")
     }
 }

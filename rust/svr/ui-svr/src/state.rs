@@ -2,7 +2,7 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::app::PtConfig;
+use cplane::app::{DbConfig, PtConfig};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
@@ -10,27 +10,6 @@ use std::sync::Mutex;
 use log::debug;
 
 use ui::filecache::{FileCache, StaticFileCacheLogic};
-
-#[derive(Clone)]
-pub struct DbConfig {
-    pub name: String,
-    pub user: String,
-    pub pass: String,
-    pub host: String,
-    pub port: u32,
-}
-
-impl DbConfig {
-    pub fn to_url(&self) -> String {
-        let name = &self.name;
-        let user = &self.user;
-        let pass = &self.pass;
-        let host = &self.host;
-        let port = self.port;
-
-        format!("mysql://{user}:{pass}@{host}:{port}/{name}")
-    }
-}
 
 #[derive(Clone)]
 pub struct AppConfig {
