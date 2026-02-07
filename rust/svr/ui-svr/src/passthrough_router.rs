@@ -2,14 +2,18 @@
 // Passthrough router - passes calls to cp-svr and returns the result
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use axum::{Router, extract::Path, extract::State, http::StatusCode as SC, routing::get};
+use axum::{Json, Router, extract::Path, extract::State, http::StatusCode as SC, routing::get};
 
-use http::{Request, Response};
+use http::Response;
+// use http::response::Response;
+
 use infra::error::{ErrorResponse, make_error};
 use log::info;
 use std::sync::Arc;
 
 use crate::state::AppState;
+
+use log::warn;
 
 // use log::debug;
 
@@ -31,12 +35,34 @@ async fn get_pass_through(
     let pt_url = pt.get_passthrough_url(path.as_str());
     info!("Request URL = {pt_url}");
 
-    let mut _request = Request::builder().uri(pt_url);
+    // let mut request = Request::builder().uri(pt_url);
+    let resp = reqwest::get(pt_url).await;
+    match resp {
+        Ok(r) => match r.text().await {
+            Ok(body) => {
+                info!("Got Body: {body}");
+                let builder = Response::builder()
+                    .header("Content-Type", format!("{}", mime::APPLICATION_JSON));
 
-    Err(make_error(
-        SC::NOT_IMPLEMENTED,
-        String::from("GET Pass Through not implimented"),
-    ))
+                let response = builder.body(body.clone()).unwrap();
+                Ok(response)
+            }
+            Err(err) => {
+                warn!("{err}");
+                Err(make_error(
+                    SC::INTERNAL_SERVER_ERROR,
+                    format!("Error: {}", err.to_string()),
+                ))
+            }
+        },
+        Err(err) => {
+            warn!("{err}");
+            Err(make_error(
+                SC::INTERNAL_SERVER_ERROR,
+                format!("Error: {}", err.to_string()),
+            ))
+        }
+    }
 }
 
 async fn post_pass_through() -> Result<Response<String>, ErrorResponse> {
