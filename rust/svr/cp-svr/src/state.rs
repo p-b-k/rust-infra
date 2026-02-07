@@ -2,7 +2,7 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::app::DEFAULT_CP_PORT;
+use cplane::app::{DEFAULT_CP_PORT, PtConfig};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
@@ -37,6 +37,7 @@ pub struct AppConfig {
     pub port: u32,
     pub login_page: String,
     pub db: DbConfig,
+    pub pt: PtConfig,
 }
 
 impl AppConfig {
@@ -51,6 +52,7 @@ impl AppConfig {
                 host: String::from("localhost"),
                 port: 3306,
             },
+            pt: PtConfig::default(),
         }
     }
 }

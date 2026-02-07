@@ -52,11 +52,7 @@ impl AppConfig {
                 host: String::from("localhost"),
                 port: 3306,
             },
-            pt: PtConfig {
-                port: 7202,
-                host: String::from("localhost"),
-                token: String::from("this is a secret token"),
-            },
+            pt: PtConfig::default(),
         }
     }
 }

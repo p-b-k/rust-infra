@@ -17,13 +17,32 @@ use log::debug;
 // use log::{info, warn};
 
 pub fn json_router(app: Arc<AppState>) -> Router<()> {
+    let json_root = &app.config.pt.root;
     Router::new()
-        .route("/test/prod/table/head", get(get_prod_test_head))
-        .route("/test/prod/table/body", get(get_prod_test_body))
-        .route("/test/prod/table/refresh", get(get_prod_test_refresh))
-        .route("/test/svc/table/head", get(get_svc_test_head))
-        .route("/test/svc/table/body", get(get_svc_test_body))
-        .route("/test/svc/table/search", get(get_svc_test_search))
+        .route(
+            format!("/{json_root}/test/prod/table/head").as_str(),
+            get(get_prod_test_head),
+        )
+        .route(
+            format!("/{json_root}/test/prod/table/body").as_str(),
+            get(get_prod_test_body),
+        )
+        .route(
+            format!("/{json_root}/test/prod/table/refresh").as_str(),
+            get(get_prod_test_refresh),
+        )
+        .route(
+            format!("/{json_root}/test/svc/table/head").as_str(),
+            get(get_svc_test_head),
+        )
+        .route(
+            format!("/{json_root}/test/svc/table/body").as_str(),
+            get(get_svc_test_body),
+        )
+        .route(
+            format!("/{json_root}/test/svc/table/search").as_str(),
+            get(get_svc_test_search),
+        )
         .with_state(app)
 }
 

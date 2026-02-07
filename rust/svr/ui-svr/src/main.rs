@@ -18,6 +18,7 @@ use log::{debug, info};
 
 use crate::state::{AppConfig, create_app_state};
 use cache_routers::static_router;
+use passthrough_router::pt_router;
 use ui_routers::basic_router;
 
 use std::sync::Arc;
@@ -35,7 +36,9 @@ async fn main() {
     debug!("Creating application state");
     let app = Arc::new(create_app_state(&db_url, cfg));
 
-    let router = basic_router(app.clone()).merge(static_router(app));
+    let router = basic_router(app.clone())
+        .merge(static_router(app.clone()))
+        .merge(pt_router(app));
     debug!("Created router");
 
     debug!("About to start the server on port {port}");

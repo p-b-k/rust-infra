@@ -10,6 +10,8 @@ pub struct PtConfig {
     pub host: String,
     pub port: u32,
     pub token: String,
+    pub proto: String,
+    pub root: String,
 }
 
 impl PtConfig {
@@ -18,6 +20,17 @@ impl PtConfig {
             host: String::from("localhost"),
             port: DEFAULT_CP_PORT,
             token: String::from(DEFAULT_CP_TOKEN),
+            proto: String::from("http"),
+            root: String::from("json"),
         }
+    }
+
+    pub fn get_passthrough_url(&self, from_path: &str) -> String {
+        let proto = &self.proto;
+        let host = &self.host;
+        let port = self.port;
+        let root = &self.root;
+
+        format!("{proto}://{host}:{port}/{root}/{from_path}")
     }
 }
