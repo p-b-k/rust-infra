@@ -2,13 +2,14 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use cplane::app::{DEFAULT_CP_PORT, PtConfig};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
 
 use log::debug;
 
-use crate::filecache::{FileCache, StaticFileCacheLogic};
+use ui::filecache::{FileCache, StaticFileCacheLogic};
 
 #[derive(Clone)]
 pub struct DbConfig {
@@ -36,12 +37,13 @@ pub struct AppConfig {
     pub port: u32,
     pub login_page: String,
     pub db: DbConfig,
+    pub pt: PtConfig,
 }
 
 impl AppConfig {
     pub fn new() -> AppConfig {
         AppConfig {
-            port: 7021,
+            port: DEFAULT_CP_PORT,
             login_page: String::from("res/html/login.html"),
             db: DbConfig {
                 name: String::from("cplane"),
@@ -50,6 +52,7 @@ impl AppConfig {
                 host: String::from("localhost"),
                 port: 3306,
             },
+            pt: PtConfig::default(),
         }
     }
 }
