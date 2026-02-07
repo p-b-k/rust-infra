@@ -1,0 +1,3 @@
+FROM docker.io/amd64/debian
+
+CMD apt-get install rust
