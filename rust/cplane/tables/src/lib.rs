@@ -2,4 +2,14 @@
 // Include the files that make up the http_svr library
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+pub mod account;
+pub mod product_def;
+pub mod product_service;
+pub mod product_tenant;
+pub mod product_ver_def;
+pub mod request;
+pub mod service_def;
+pub mod service_ver_def;
+pub mod task;
+pub mod tenant;
 pub mod worker;

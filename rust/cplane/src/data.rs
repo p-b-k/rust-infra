@@ -3,8 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use infra::datasource::DS;
-use serde::{Deserialize, Serialize};
 use mysql::prelude::FromRow;
+use serde::{Deserialize, Serialize};
 
 //
 // Service -------------------------------------------------
@@ -17,11 +17,8 @@ pub struct Service {
     pub svc_name: String,
 }
 
-pub fn service() -> DS {
-    DS {
-        table: String::from("service"),
-        fields: String::from("svc_id, svc_name"),
-    }
+pub fn service() -> DS<Service> {
+    DS::new("service", "svc_id, svc_name")
 }
 
 //
@@ -34,11 +31,8 @@ pub struct ServiceVer {
     pub fkey_svc: u64,
 }
 
-pub fn service_ver() -> DS {
-    DS {
-        table: String::from("service_ver"),
-        fields: String::from("fkey_svc"),
-    }
+pub fn service_ver() -> DS<ServiceVer> {
+    DS::new("service_ver", "fkey_svc")
 }
 
 //
@@ -52,11 +46,8 @@ pub struct Product {
     pub prod_name: String,
 }
 
-pub fn product() -> DS {
-    DS {
-        table: String::from("product"),
-        fields: String::from("prod_id, prod_name"),
-    }
+pub fn product() -> DS<Product> {
+    DS::new("product", "prod_id, prod_name")
 }
 
 //
@@ -69,9 +60,6 @@ pub struct ProductVer {
     pub fkey_prod: u64,
 }
 
-pub fn product_ver() -> DS {
-    DS {
-        table: String::from("product_ver"),
-        fields: String::from("fkey_prod"),
-    }
+pub fn product_ver() -> DS<ProductVer> {
+    DS::new("product_ver", "fkey_prod")
 }

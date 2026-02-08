@@ -2,21 +2,15 @@
 // Define the Control Plane schema
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use std::marker::PhantomData;
-
-use log::warn;
-
 use std::collections::HashMap;
 
 use infra::schema::{
     DBUser, DataType, FieldDef, FieldSpec, GrantInfo, SchemaDef, TableDef, TypeDef,
 };
 
-use infra::datasource::DS;
-
-use mysql::PooledConn;
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
+use tables::account::{Account, init as mk_acct};
 // use time::Time;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -33,76 +27,9 @@ pub fn fields_from_table(def: &TableDef) -> String {
     fields
 }
 
-struct DO<'a, T>
-where
-    T: FromRow,
-    T: Clone,
-{
-    phantom: PhantomData<T>,
-    def: &'a TableDef,
-    ds: DS,
-}
-
-impl<'a, T> DO<'a, T>
-where
-    T: FromRow,
-    T: Clone,
-{
-    // I guess this needs the lifetime parameter because it is "static" (i.e. it does not refernce self) ...
-    pub fn from_table(def: &'a TableDef) -> DO<'a, T> {
-        let table = def.name.clone();
-        let fields = fields_from_table(&def);
-        DO {
-            def,
-            phantom: PhantomData,
-            ds: DS { table, fields },
-        }
-    }
-
-    // ... whereas this does not require one because it pickes it up from self
-    pub fn get(&self, conn: &mut PooledConn, pkey: u64) -> Option<T> {
-        match self.ds.get(conn, pkey) {
-            Ok(row) => Some(row),
-            Err(msg) => {
-                warn!(target:"DS.get", "No object returned: {msg}");
-                None
-            }
-        }
-    }
-}
-
 // ---------------------------------------------------------------------------------------------------------------------
 // Define the tables
 // ---------------------------------------------------------------------------------------------------------------------
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct Account {
-    pub pkey: u64,
-    pub acct_id: String,
-    pub acct_name: String,
-}
-
-fn mk_acct() -> TableDef {
-    TableDef {
-        name: String::from("account"),
-        fields: Box::new(Vec::from([
-            FieldDef::Field(FieldSpec {
-                name: String::from("acct_id"),
-                default: None,
-                type_def: TypeDef::Data(DataType::String(64)),
-                nullable: false,
-                unique: true,
-            }),
-            FieldDef::Field(FieldSpec {
-                name: String::from("acct_name"),
-                default: None,
-                type_def: TypeDef::Data(DataType::String(256)),
-                nullable: false,
-                unique: true,
-            }),
-        ])),
-    }
-}
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
