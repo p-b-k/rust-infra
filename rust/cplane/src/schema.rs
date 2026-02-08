@@ -38,9 +38,9 @@ where
     T: FromRow,
     T: Clone,
 {
+    phantom: PhantomData<T>,
     def: &'a TableDef,
     ds: DS,
-    phantom: PhantomData<T>,
 }
 
 impl<'a, T> DO<'a, T>
@@ -514,10 +514,14 @@ pub fn build_schema_def() -> SchemaDef {
     let worker = mk_worker();
 
     let def = SchemaDef {
-        users: Box::new(Vec::from([DBUser {
-            role_id: String::from("app"),
-            grants: Box::new(Vec::from([GrantInfo::All])),
-        }])),
+        users: Box::new(HashMap::from([(
+            String::from("app"),
+            DBUser {
+                role_id: String::from("app"),
+                grants: Box::new(Vec::from([GrantInfo::All])),
+            },
+        )])),
+
         tables: Box::new(HashMap::from([
             (String::from("account"), account),
             (String::from("service_def"), service_def),

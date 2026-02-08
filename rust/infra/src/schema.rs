@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use std::fmt::{Display, Formatter};
+use std::marker::PhantomData;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -243,7 +244,7 @@ pub struct DBUser {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SchemaDef {
     pub tables: Box<HashMap<String, TableDef>>,
-    pub users: Box<Vec<DBUser>>,
+    pub users: Box<HashMap<String, DBUser>>,
 }
 
 impl SchemaDef {

@@ -344,6 +344,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "cp_tables"
+version = "0.1.0"
+
+[[package]]
 name = "cplane"
 version = "0.1.0"
 dependencies = [
