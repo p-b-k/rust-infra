@@ -4,10 +4,8 @@
 
 use std::fmt::{Display, Formatter};
 
-use mysql::prelude::FromValue;
 use serde::{Deserialize, Serialize};
-
-use time::Time;
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum DataType {
@@ -244,42 +242,15 @@ pub struct DBUser {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SchemaDef {
-    pub tables: Box<Vec<TableDef>>,
+    pub tables: Box<HashMap<String, TableDef>>,
     pub users: Box<Vec<DBUser>>,
-}
-
-pub struct TableIter<'a> {
-    schema: &'a SchemaDef,
-    index: usize,
 }
 
 impl SchemaDef {
     pub fn display(&self) {
-        for table in self.tables.clone().into_iter() {
+        for (_, table) in self.tables.clone().iter() {
             println!("TABLE: {table}");
             println!("{}", table.create_sql())
-        }
-    }
-
-    pub fn tables(&self) -> TableIter<'_> {
-        TableIter {
-            schema: self,
-            index: 0,
-        }
-    }
-}
-
-impl<'a> Iterator for TableIter<'a> {
-    type Item = &'a TableDef;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        let index = self.index;
-        let tab_cnt = self.schema.tables.len();
-        if index < tab_cnt {
-            self.index = index + 1;
-            Some(&self.schema.tables[index])
-        } else {
-            None
         }
     }
 }

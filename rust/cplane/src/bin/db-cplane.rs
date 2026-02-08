@@ -96,7 +96,7 @@ fn create_conn() -> DbConn {
 }
 
 fn create_db(conn: &mut Conn, schema: &SchemaDef) {
-    for table in schema.tables() {
+    for (_, table) in schema.tables.iter() {
         let sql = table.create_sql();
         println!("sql = {sql}");
         conn.exec_drop(sql, ()).unwrap();

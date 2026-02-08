@@ -6,6 +6,8 @@ use std::marker::PhantomData;
 
 use log::warn;
 
+use std::collections::HashMap;
+
 use infra::schema::{
     DBUser, DataType, FieldDef, FieldSpec, GrantInfo, SchemaDef, TableDef, TypeDef,
 };
@@ -37,8 +39,8 @@ where
     T: Clone,
 {
     def: &'a TableDef,
-    phantom: PhantomData<T>,
     ds: DS,
+    phantom: PhantomData<T>,
 }
 
 impl<'a, T> DO<'a, T>
@@ -516,18 +518,18 @@ pub fn build_schema_def() -> SchemaDef {
             role_id: String::from("app"),
             grants: Box::new(Vec::from([GrantInfo::All])),
         }])),
-        tables: Box::new(Vec::from([
-            account,
-            service_def,
-            service_ver_def,
-            product_def,
-            product_ver_def,
-            product_service,
-            request,
-            task,
-            tenant,
-            product_tenant,
-            worker,
+        tables: Box::new(HashMap::from([
+            (String::from("account"), account),
+            (String::from("service_def"), service_def),
+            (String::from("service_ver_def"), service_ver_def),
+            (String::from("product_def"), product_def),
+            (String::from("product_ver_def"), product_ver_def),
+            (String::from("product_service"), product_service),
+            (String::from("request"), request),
+            (String::from("task"), task),
+            (String::from("tenant"), tenant),
+            (String::from("product_tenant"), product_tenant),
+            (String::from("worker"), worker),
         ])),
     };
 

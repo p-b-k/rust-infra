@@ -35,20 +35,7 @@ fn string_to_table_format(fmt: &str) -> Result<TableFormat, String> {
 }
 
 fn table_exists_in_schema<'a>(schema: &'a SchemaDef, table: &str) -> Option<&'a TableDef> {
-    let mut result = None;
-
-    let mut i = 0;
-    while i < schema.tables.len() {
-        let table_def = &schema.tables[i];
-        if table == table_def.name {
-            result = Some(table_def);
-            break;
-        }
-
-        i += 1;
-    }
-
-    result
+    schema.tables.get(table)
 }
 
 fn create_config(schema_def: &SchemaDef) -> AppConfig<'_> {
@@ -109,7 +96,7 @@ fn main() {
 
     match cfg.tables {
         None => {
-            for table in schema_def.tables() {
+            for (_, table) in schema_def.tables.iter() {
                 write_table(table, &cfg.format);
             }
         }
