@@ -12,7 +12,10 @@ infra = { path = "../infra" }
 log = "0.4.29"
 mime = "0.3.17"
 mysql = "26.0.1"
+mysql_common = "0.36.2"
+rand = "0.9.2"
 serde = "1.0.228"
 serde_json = "1.0.149"
+time = "0.3.47"
 tokio = "1.49.0"
 ui = { path = "../ui" }

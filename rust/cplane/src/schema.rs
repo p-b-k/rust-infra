@@ -13,8 +13,9 @@ use infra::schema::{
 use infra::datasource::DS;
 
 use mysql::PooledConn;
-use mysql::prelude::FromRow;
+use mysql_common::prelude::FromRow;
 use serde::{Deserialize, Serialize};
+use time::Time;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create a datasource object
@@ -435,6 +436,59 @@ fn mk_prod_tent() -> TableDef {
                 type_def: TypeDef::FKey(String::from("product_ver")),
                 nullable: false,
                 unique: true,
+            }),
+        ])),
+    }
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
+pub struct Worker {
+    pub pkey: u64,
+    pub name: String,
+    pub host: String,
+    pub port: u32,
+    pub status: u32,
+    pub last_check: Time,
+}
+
+fn mk_worker() -> TableDef {
+    TableDef {
+        name: String::from("worker"),
+        fields: Box::new(Vec::from([
+            FieldDef::Field(FieldSpec {
+                name: String::from("name"),
+                default: None,
+                type_def: TypeDef::Data(DataType::String(32)),
+                nullable: false,
+                unique: true,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("host"),
+                default: None,
+                type_def: TypeDef::Data(DataType::String(128)),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("port"),
+                default: None,
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("status"),
+                default: None,
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: true,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("host"),
+                default: None,
+                type_def: TypeDef::Data(DataType::Timestamp),
+                nullable: true,
+                unique: false,
             }),
         ])),
     }

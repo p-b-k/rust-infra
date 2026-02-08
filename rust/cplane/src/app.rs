@@ -33,6 +33,14 @@ impl PtConfig {
 
         format!("{proto}://{host}:{port}/{root}/{from_path}")
     }
+
+    pub fn get_register_url(&self) -> String {
+        let proto = &self.proto;
+        let host = &self.host;
+        let port = self.port;
+
+        format!("{proto}://{host}:{port}/workers/register")
+    }
 }
 
 // DB Config

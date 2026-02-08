@@ -12,7 +12,7 @@ use threadpool::ThreadPool;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct AppConfig {
-    pub port: u32,
+    pub port: Option<u32>,
     pub th_pool_size: usize,
     pub db_pool_size: usize,
     pub pt: PtConfig,
@@ -22,7 +22,7 @@ pub struct AppConfig {
 impl AppConfig {
     pub fn new() -> AppConfig {
         AppConfig {
-            port: 7021,
+            port: None,
             db: DbConfig {
                 name: String::from("cplane"),
                 user: String::from("cplane_app"),

@@ -28,8 +28,8 @@ async fn main() {
 
     let cfg = create_app_config();
 
-    debug!("Server Config: set to run on port {}", cfg.port);
-    let port = cfg.port;
+    let port = cfg.port.expect("need to specify a port");
+    debug!("Server Config: set to run on port {}", port);
 
     let db_url = cfg.db.to_url();
 
@@ -44,6 +44,7 @@ async fn main() {
         .await
         .unwrap();
 
+    //     register_with_cp(&app.config);
     info!("Now serving requests on port {port}");
     axum::serve(listener, router).await.unwrap();
 
@@ -64,7 +65,7 @@ fn create_app_config() -> AppConfig {
             i = i + 1;
             let port_str = &args[i];
             debug!(target: "read_parameters", "port_str = {port_str:?}");
-            cfg.port = port_str.parse().unwrap();
+            cfg.port = Some(port_str.parse().unwrap());
         } else {
             panic!("Unknown paramater: {next}");
         }
@@ -74,3 +75,10 @@ fn create_app_config() -> AppConfig {
 
     cfg
 }
+
+// // fn register_with_cp(cfg: &AppConfig) {
+//     let pt = &cfg.pt;
+//     let pt_url = pt.get_register_url();
+
+//     let resp = reqwest::get(pt_url);
+// }
