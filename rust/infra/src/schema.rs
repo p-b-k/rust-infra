@@ -4,7 +4,10 @@
 
 use std::fmt::{Display, Formatter};
 
+use mysql::prelude::FromValue;
 use serde::{Deserialize, Serialize};
+
+use time::Time;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum DataType {

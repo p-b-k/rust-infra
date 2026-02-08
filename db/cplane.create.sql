@@ -93,5 +93,5 @@ CREATE TABLE worker
 , host VARCHAR(128) NOT NULL
 , port INTEGER NOT NULL
 , status INTEGER
-, last_check TIMESTAMP
+-- , last_check TIMESTAMP
 );

@@ -13,9 +13,9 @@ use infra::schema::{
 use infra::datasource::DS;
 
 use mysql::PooledConn;
-use mysql_common::prelude::FromRow;
+use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
-use time::Time;
+// use time::Time;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Create a datasource object
@@ -448,7 +448,7 @@ pub struct Worker {
     pub host: String,
     pub port: u32,
     pub status: u32,
-    pub last_check: Time,
+    // pub last_check: Time,
 }
 
 fn mk_worker() -> TableDef {
@@ -483,13 +483,13 @@ fn mk_worker() -> TableDef {
                 nullable: true,
                 unique: false,
             }),
-            FieldDef::Field(FieldSpec {
-                name: String::from("host"),
-                default: None,
-                type_def: TypeDef::Data(DataType::Timestamp),
-                nullable: true,
-                unique: false,
-            }),
+            // FieldDef::Field(FieldSpec {
+            //     name: String::from("last_check"),
+            //     default: None,
+            //     type_def: TypeDef::Data(DataType::Timestamp),
+            //     nullable: true,
+            //     unique: false,
+            // }),
         ])),
     }
 }
@@ -509,6 +509,7 @@ pub fn build_schema_def() -> SchemaDef {
     let task = mk_task();
     let tenant = mk_tent();
     let product_tenant = mk_prod_tent();
+    let worker = mk_worker();
 
     let def = SchemaDef {
         users: Box::new(Vec::from([DBUser {
@@ -526,6 +527,7 @@ pub fn build_schema_def() -> SchemaDef {
             task,
             tenant,
             product_tenant,
+            worker,
         ])),
     };
 
