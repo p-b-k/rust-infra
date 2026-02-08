@@ -5,7 +5,7 @@
 use infra::schema::{SchemaDef, TableDef};
 use std::env;
 
-use cplane::schema::build_schema_def;
+use cplane::schema::build_datasource;
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Now create the main function
@@ -91,12 +91,12 @@ fn write_table(table: &TableDef, fmt: &TableFormat) {
 fn main() {
     env_logger::init();
 
-    let schema_def = build_schema_def();
-    let cfg = create_config(&schema_def);
+    let ds = build_datasource();
+    let cfg = create_config(&ds.schema_def);
 
     match cfg.tables {
         None => {
-            for (_, table) in schema_def.tables.iter() {
+            for (_, table) in ds.schema_def.tables.iter() {
                 write_table(table, &cfg.format);
             }
         }

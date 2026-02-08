@@ -3,8 +3,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use crate::schema::TableDef;
+
 use mysql::PooledConn;
+
 use mysql::prelude::{FromRow, Queryable};
+
 use std::marker::PhantomData;
 
 use log::debug;
@@ -25,7 +28,7 @@ where
     T: Clone,
 {
     pub fn new(name: &str, fields: &str) -> DS<T> {
-        let phantom = PhantomData {};
+        let phantom: PhantomData<T> = PhantomData {};
         DS {
             phantom,
             table: String::from(name),

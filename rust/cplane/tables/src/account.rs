@@ -2,17 +2,7 @@
 // Mange the account table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use infra::datasource::DS;
 use infra::schema::{DataType, FieldDef, FieldSpec, TableDef, TypeDef};
-use mysql::prelude::FromRow;
-use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct Account {
-    pub pkey: u64,
-    pub acct_id: String,
-    pub acct_name: String,
-}
 
 pub fn init() -> TableDef {
     TableDef {

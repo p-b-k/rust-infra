@@ -6,43 +6,50 @@ use infra::schema::{DataType, FieldDef, FieldSpec, TableDef, TypeDef};
 
 pub fn init() -> TableDef {
     TableDef {
-        name: String::from("worker"),
+        name: String::from("product_ver"),
         fields: Box::new(Vec::from([
             FieldDef::Field(FieldSpec {
-                name: String::from("name"),
-                default: None,
-                type_def: TypeDef::Data(DataType::String(32)),
-                nullable: false,
-                unique: true,
-            }),
-            FieldDef::Field(FieldSpec {
-                name: String::from("host"),
-                default: None,
-                type_def: TypeDef::Data(DataType::String(128)),
-                nullable: false,
-                unique: false,
-            }),
-            FieldDef::Field(FieldSpec {
-                name: String::from("port"),
+                name: String::from("fkey_prod"),
                 default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: false,
                 unique: false,
             }),
             FieldDef::Field(FieldSpec {
-                name: String::from("status"),
+                name: String::from("maj_ver"),
+                default: None,
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("min_ver"),
+                default: None,
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: false,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("rel_ver"),
                 default: None,
                 type_def: TypeDef::Data(DataType::Integer),
                 nullable: true,
                 unique: false,
             }),
-            // FieldDef::Field(FieldSpec {
-            //     name: String::from("last_check"),
-            //     default: None,
-            //     type_def: TypeDef::Data(DataType::Timestamp),
-            //     nullable: true,
-            //     unique: false,
-            // }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("bld_ver"),
+                default: None,
+                type_def: TypeDef::Data(DataType::Integer),
+                nullable: true,
+                unique: false,
+            }),
+            FieldDef::Field(FieldSpec {
+                name: String::from("bld_tag"),
+                default: None,
+                type_def: TypeDef::Data(DataType::String(128)),
+                nullable: true,
+                unique: true,
+            }),
         ])),
     }
 }
