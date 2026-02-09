@@ -23,7 +23,7 @@ const ADJ_LIST: [&str; 114] = [
     "boring",
     "ballsy",
     "brassy",
-    "breezy",
+    "bad",
     "bogus",
     "browsing",
     "bonus",
@@ -92,7 +92,7 @@ const ADJ_LIST: [&str; 114] = [
     "messy",
     "maudlin",
     "mad",
-    "minute",
+    "minty",
     // N
     "negative",
     "nasty",
@@ -131,9 +131,9 @@ const ADJ_LIST: [&str; 114] = [
     "tough",
     "tawdry",
     // U
-    "unwell",
     "unlikely",
-    "unusual",
+    "ugly",
+    "unwelcome",
     // V
     "vigorous",
     "virtuous",
@@ -154,7 +154,7 @@ const ADJ_LIST: [&str; 114] = [
     "zippy",
 ];
 
-const NOUN_LIST: [&str; 120] = [
+const NOUN_LIST: [&str; 123] = [
     // A
     "aardvark",
     "apple",
@@ -169,8 +169,10 @@ const NOUN_LIST: [&str; 120] = [
     "baboon",
     "beach",
     "baseball",
+    "bar",
     // C
     "cat",
+    "cafe",
     "camel",
     "chicken",
     "cabin",
@@ -226,6 +228,7 @@ const NOUN_LIST: [&str; 120] = [
     "kettle",
     "knee",
     "knife",
+    "kumquat",
     // L
     "lemming",
     "loser",
@@ -257,8 +260,7 @@ const NOUN_LIST: [&str; 120] = [
     "potato",
     "proof",
     // Q
-    "quishe",
-    "quest",
+    "quiche",
     "quarter",
     // R
     "russian",
@@ -301,6 +303,7 @@ const NOUN_LIST: [&str; 120] = [
     "zone",
     "zebra",
     "zipper",
+    "zeppelin",
 ];
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
