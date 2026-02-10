@@ -254,3 +254,10 @@ impl SchemaDef {
         }
     }
 }
+
+pub enum SqlFilter {
+    True,
+    False,
+    And(Box<SqlFilter>, Box<SqlFilter>),
+    Or(Box<SqlFilter>, Box<SqlFilter>),
+}
