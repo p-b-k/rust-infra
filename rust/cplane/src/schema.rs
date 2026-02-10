@@ -59,7 +59,7 @@ pub struct Product {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductVer {
     pub pkey: u64,
-    pub fkey_prod: String,
+    pub fkey_prod: u64,
     pub maj_ver: u32,
     pub min_ver: u32,
     pub rel_ver: Option<u32>,

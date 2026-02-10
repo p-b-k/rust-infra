@@ -74,5 +74,3 @@ VALUES ( 3, 4 /* AION 0.1 */,  1 /* SHIFTS 0.0 */);
 INSERT INTO product_service (pkey, fkey_prod_ver, fkey_svc_ver)
 VALUES ( 4, 0 /* CPLANE 0.0 */,  1 /* CPUI 0.0 */);
 
-
-

@@ -2,7 +2,7 @@
 // Generic Datasource trait, and StdDS basic implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use crate::schema::TableDef;
+use crate::schema::{FieldDef, TableDef};
 
 use mysql::PooledConn;
 
@@ -10,7 +10,7 @@ use mysql::prelude::{FromRow, Queryable};
 
 use std::marker::PhantomData;
 
-use log::debug;
+use log::{debug, info};
 
 pub struct DS<T>
 where
@@ -39,14 +39,21 @@ where
     pub fn from(table_def: &TableDef) -> DS<T> {
         let phantom = PhantomData {};
         let table = table_def.name.clone();
-        let mut pfx = "";
         let mut fields = String::new();
 
         for field in table_def.fields() {
-            fields.push_str(pfx);
-            fields.push_str(field.name());
-            pfx = ", ";
+            match field {
+                FieldDef::PKey => {
+                    // Do Nothing
+                }
+                field => {
+                    fields.push_str(", ");
+                    fields.push_str(field.name());
+                }
+            }
         }
+
+        info!(target: "DS::from", "fields for table {table} = {fields}");
 
         DS {
             phantom,
@@ -62,8 +69,8 @@ where
     {
         let table = &self.table;
         let fields = &self.fields;
-        let query = format!("SELECT pkey, {fields} FROM {table} WHERE pkey = {pkey}");
-        debug!(target : "get", "QUERY: {query}");
+        let query = format!("SELECT pkey{fields} FROM {table} WHERE pkey = {pkey}");
+        info!(target : "get", "QUERY: {query}");
         let res = conn.query_map(query, |x: T| x);
         match res {
             Ok(vec) => match vec.len() {
@@ -85,8 +92,8 @@ where
     {
         let table = self.table.clone();
         let fields = &self.fields;
-        let query = format!("SELECT pkey, {fields} FROM {table} WHERE {fkey} = {pkey}");
-        debug!(target : "join", "QUERY: {query}");
+        let query = format!("SELECT pkey{fields} FROM {table} WHERE {fkey} = {pkey}");
+        info!(target : "join", "QUERY: {query}");
         let res = conn.query_map(query, |x: T| x);
         match res {
             Ok(product_vers) => Ok(product_vers),
