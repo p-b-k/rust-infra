@@ -255,9 +255,17 @@ impl SchemaDef {
     }
 }
 
+pub enum SqlValue {
+    Field(String),
+}
+
 pub enum SqlFilter {
     True,
     False,
     And(Box<SqlFilter>, Box<SqlFilter>),
     Or(Box<SqlFilter>, Box<SqlFilter>),
+    Eq(Box<SqlValue>, Box<SqlValue>),
+    Gt(Box<SqlValue>, Box<SqlValue>),
+    Lt(Box<SqlValue>, Box<SqlValue>),
 }
+
