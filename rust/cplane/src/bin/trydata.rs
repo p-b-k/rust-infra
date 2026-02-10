@@ -73,50 +73,50 @@ fn main() {
         }
     }
 
-    // {
-    //     debug!("Getting single service result");
-    //     let res = ds.service.get(&mut conn, 0);
+    {
+        debug!("Getting single service result");
+        let res = ds.service.get(&mut conn, 0);
 
-    //     debug!("Got result");
+        debug!("Got result");
 
-    //     match res {
-    //         Ok(obj) => {
-    //             println!("Got service {obj:?})")
-    //         }
-    //         Err(msg) => println!("FAILED! {msg}"),
-    //     }
-    // }
+        match res {
+            Ok(obj) => {
+                println!("Got service {obj:?})")
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
 
-    // {
-    //     debug!("Getting single service version result");
-    //     let res = ds.service_ver.get(&mut conn, 0);
+    {
+        debug!("Getting single service version result");
+        let res = ds.service_ver.get(&mut conn, 0);
 
-    //     debug!("Got result");
+        debug!("Got result");
 
-    //     match res {
-    //         Ok(obj) => {
-    //             println!("Got service version {obj:?})")
-    //         }
-    //         Err(msg) => println!("FAILED! {msg}"),
-    //     }
-    // }
+        match res {
+            Ok(obj) => {
+                println!("Got service version {obj:?})")
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
 
-    // {
-    //     debug!("Getting joined results");
-    //     let fk_field = String::from("fkey_prod");
-    //     let res = prod_ver_ds.join(&mut conn, PROD_PKEY, &fk_field);
+    {
+        info!("Getting joined results");
+        let fk_field = String::from("fkey_prod");
+        let res = prod_ver_ds.join(&mut conn, 1, &fk_field);
 
-    //     debug!("Got result");
+        debug!("Got result");
 
-    //     match res {
-    //         Ok(product_vers) => {
-    //             for product_ver in product_vers {
-    //                 let pkey = product_ver.pkey;
-    //                 let fkey_prod = product_ver.fkey_prod;
-    //                 println!("Got product version {pkey} -> {fkey_prod}")
-    //             }
-    //         }
-    //         Err(msg) => println!("FAILED! {msg}"),
-    //     }
-    // }
+        match res {
+            Ok(product_vers) => {
+                for product_ver in product_vers {
+                    let pkey = product_ver.pkey;
+                    let fkey_prod = product_ver.fkey_prod;
+                    println!("Got product version {pkey} -> {fkey_prod}")
+                }
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
 }

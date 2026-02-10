@@ -72,7 +72,7 @@ pub struct Service {
     pub pkey: u64,
     pub svc_id: String,
     pub svc_name: String,
-    pub is_global: bool,
+    // pub is_global: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
@@ -82,7 +82,7 @@ pub struct ServiceVer {
     pub maj_ver: u32,
     pub min_ver: u32,
     pub rel_ver: Option<u32>,
-    pub bld_rel: Option<u32>,
+    pub bld_ver: Option<u32>,
     pub bld_tag: Option<String>,
     pub schema_def: Option<String>,
 }
