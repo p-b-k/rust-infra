@@ -63,7 +63,7 @@ pub struct ProductVer {
     pub maj_ver: u32,
     pub min_ver: u32,
     pub rel_ver: Option<u32>,
-    pub bld_rel: Option<u32>,
+    pub bld_ver: Option<u32>,
     pub bld_tag: Option<String>,
 }
 
