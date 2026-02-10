@@ -72,7 +72,7 @@ pub struct Service {
     pub pkey: u64,
     pub svc_id: String,
     pub svc_name: String,
-    // pub is_global: bool,
+    pub is_global: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
