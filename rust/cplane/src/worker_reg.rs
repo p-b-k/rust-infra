@@ -43,6 +43,7 @@ const ADJ_LIST: [&str; 114] = [
     // E
     "excited",
     "evocative",
+    "egregious",
     "emotional",
     "extreme",
     "elongated",
