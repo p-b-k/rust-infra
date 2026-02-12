@@ -11,7 +11,7 @@
 
 use serde::{Deserialize, Serialize};
 
-const ADJ_LIST: [&str; 114] = [
+const ADJ_LIST: [&str; 121] = [
     // A
     "artsy",
     "avid",
@@ -40,6 +40,7 @@ const ADJ_LIST: [&str; 114] = [
     "daring",
     "dashing",
     "dirty",
+    "degenerate",
     // E
     "excited",
     "evocative",
@@ -98,20 +99,22 @@ const ADJ_LIST: [&str; 114] = [
     "nasty",
     "nosey",
     "nerdy",
+    "nice",
+    "neat",
     // O
     "outsized",
     "official",
     "odious",
     "offensive",
+    "ostentatius",
     // P
-    "peppy",
+    "preppy",
     "putrid",
     "plastic",
     "poofy",
     "panting",
     // Q
     "quiet",
-    "queenly",
     "quaint",
     // R
     "rusty",
@@ -130,6 +133,8 @@ const ADJ_LIST: [&str; 114] = [
     "tight",
     "tough",
     "tawdry",
+    "tempting",
+    "torrid",
     // U
     "unlikely",
     "ugly",
@@ -139,6 +144,8 @@ const ADJ_LIST: [&str; 114] = [
     "virtuous",
     "vicious",
     "vital",
+    "vulger",
+    "vacuous",
     // W
     "witty",
     "worried",
@@ -154,7 +161,7 @@ const ADJ_LIST: [&str; 114] = [
     "zippy",
 ];
 
-const NOUN_LIST: [&str; 123] = [
+const NOUN_LIST: [&str; 130] = [
     // A
     "aardvark",
     "apple",
@@ -162,14 +169,16 @@ const NOUN_LIST: [&str; 123] = [
     "asset",
     "alaskan",
     "aztec",
+    "american",
     // B
     "bordello",
     "basket",
     "balloon",
     "baboon",
-    "beach",
+    "barroom",
     "baseball",
-    "bar",
+    "basoon",
+    "buffalo",
     // C
     "cat",
     "cafe",
@@ -185,12 +194,14 @@ const NOUN_LIST: [&str; 123] = [
     "deer",
     "dane",
     "ditch",
+    "dance",
     "dungeon",
     // E
     "event",
     "elephant",
     "elevator",
     "element",
+    "egret",
     "election",
     // F
     "fever",
@@ -211,6 +222,7 @@ const NOUN_LIST: [&str; 123] = [
     "hippo",
     "hand",
     "hearse",
+    "hound",
     // I
     "insect",
     "italian",
@@ -223,6 +235,7 @@ const NOUN_LIST: [&str; 123] = [
     "jungle",
     "jaguar",
     "jackel",
+    "jackalope",
     // K
     "kangaroo",
     "kettle",
@@ -247,6 +260,7 @@ const NOUN_LIST: [&str; 123] = [
     "night",
     "number",
     "nudist",
+    "napkin",
     // O
     "orangutang",
     "organization",
