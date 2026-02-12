@@ -243,7 +243,7 @@ pub struct DBUser {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct SchemaDef {
     pub tables: Box<HashMap<String, TableDef>>,
-    pub users: Box<Vec<DBUser>>,
+    pub users: Box<HashMap<String, DBUser>>,
 }
 
 impl SchemaDef {
@@ -255,9 +255,44 @@ impl SchemaDef {
     }
 }
 
+pub trait AsSql {
+    fn as_sql(&self) -> String;
+}
+
+pub enum SqlValue {
+    Field(String),
+}
+
+impl AsSql for SqlValue {
+    fn as_sql(&self) -> String {
+        match self {
+            SqlValue::Field(s) => s.clone(),
+        }
+    }
+}
+
 pub enum SqlFilter {
     True,
     False,
+    Not(Box<SqlFilter>),
     And(Box<SqlFilter>, Box<SqlFilter>),
     Or(Box<SqlFilter>, Box<SqlFilter>),
+    Eq(Box<SqlValue>, Box<SqlValue>),
+    Gt(Box<SqlValue>, Box<SqlValue>),
+    Lt(Box<SqlValue>, Box<SqlValue>),
+}
+
+impl AsSql for SqlFilter {
+    fn as_sql(&self) -> String {
+        match self {
+            SqlFilter::True => String::from("1 = 1"),
+            SqlFilter::False => String::from("1 <> 1"),
+            SqlFilter::Not(f) => format!("(NOT {})", f.as_sql()),
+            SqlFilter::And(f1, f2) => format!("({} AND {})", f1.as_sql(), f2.as_sql()),
+            SqlFilter::Or(f1, f2) => format!("({} OR {})", f1.as_sql(), f2.as_sql()),
+            SqlFilter::Eq(v1, v2) => format!("(({}) = ({}))", v1.as_sql(), v2.as_sql()),
+            SqlFilter::Gt(v1, v2) => format!("(({}) > ({}))", v1.as_sql(), v2.as_sql()),
+            SqlFilter::Lt(v1, v2) => format!("(({}) < ({}))", v1.as_sql(), v2.as_sql()),
+        }
+    }
 }

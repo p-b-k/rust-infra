@@ -2,13 +2,11 @@
 // Generic Datasource trait, and StdDS basic implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::data::{ProductVer, Product, product, product_ver};
-
 use mysql::Pool;
 
-use log::info;
+use cplane::schema::build_datasource;
 
-const PROD_PKEY: u64 = 1;
+use log::{debug, info};
 
 fn main() {
     env_logger::init();
@@ -25,16 +23,31 @@ fn main() {
 
     info!("Got connection, about to try and get data source");
 
-    let prod_ds = product();
-    let prod_ver_ds = product_ver();
+    let ds = build_datasource();
+    let prod_ds = ds.product;
+    let prod_ver_ds = ds.product_ver;
 
     info!("Created product datasource, about to try and retrieve product");
 
     {
-        info!("Getting single product result");
-        let res = prod_ds.get::<Product>(&mut conn, PROD_PKEY);
+        debug!("Getting single account result");
+        let res = ds.account.get(&mut conn, 0);
 
-        info!("Got result");
+        debug!("Got result");
+
+        match res {
+            Ok(obj) => {
+                println!("Got account {obj:?})")
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
+
+    {
+        debug!("Getting single product result");
+        let res = prod_ds.get(&mut conn, 0);
+
+        debug!("Got result");
 
         match res {
             Ok(product) => {
@@ -47,11 +60,53 @@ fn main() {
     }
 
     {
+        debug!("Getting single product version result");
+        let res = prod_ver_ds.get(&mut conn, 4);
+
+        debug!("Got result");
+
+        match res {
+            Ok(product) => {
+                println!("Got product {product:?})")
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
+
+    {
+        debug!("Getting single service result");
+        let res = ds.service.get(&mut conn, 0);
+
+        debug!("Got result");
+
+        match res {
+            Ok(obj) => {
+                println!("Got service {obj:?})")
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
+
+    {
+        debug!("Getting single service version result");
+        let res = ds.service_ver.get(&mut conn, 0);
+
+        debug!("Got result");
+
+        match res {
+            Ok(obj) => {
+                println!("Got service version {obj:?})")
+            }
+            Err(msg) => println!("FAILED! {msg}"),
+        }
+    }
+
+    {
         info!("Getting joined results");
         let fk_field = String::from("fkey_prod");
-        let res = prod_ver_ds.join::<ProductVer>(&mut conn, PROD_PKEY, &fk_field);
+        let res = prod_ver_ds.join(&mut conn, 1, &fk_field);
 
-        info!("Got result");
+        debug!("Got result");
 
         match res {
             Ok(product_vers) => {

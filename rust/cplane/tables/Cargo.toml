@@ -1,0 +1,9 @@
+[package]
+name = "tables"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+infra = { version = "0.1.0", path = "../../infra" }
+mysql = "27.0.0"
+serde = "1.0.228"
