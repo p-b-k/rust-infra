@@ -11,7 +11,7 @@
 
 use serde::{Deserialize, Serialize};
 
-const ADJ_LIST: [&str; 114] = [
+const ADJ_LIST: [&str; 115] = [
     // A
     "artsy",
     "avid",
