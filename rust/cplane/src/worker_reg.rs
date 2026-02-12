@@ -72,7 +72,7 @@ const ADJ_LIST: [&str; 115] = [
     "heated",
     "happy",
     "harsh",
-    "heady",
+    "hairy",
     "horrid",
     // I
     "indigent",
@@ -268,7 +268,7 @@ const NOUN_LIST: [&str; 123] = [
     "roast",
     "referee",
     "rumble",
-    "reflex",
+    "romanian",
     "robin",
     "range",
     // S
