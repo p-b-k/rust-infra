@@ -11,7 +11,7 @@
 
 use serde::{Deserialize, Serialize};
 
-const ADJ_LIST: [&str; 121] = [
+const ADJ_LIST: [&str; 122] = [
     // A
     "artsy",
     "avid",
@@ -73,7 +73,7 @@ const ADJ_LIST: [&str; 121] = [
     "heated",
     "happy",
     "harsh",
-    "heady",
+    "hairy",
     "horrid",
     // I
     "indigent",
@@ -282,7 +282,7 @@ const NOUN_LIST: [&str; 130] = [
     "roast",
     "referee",
     "rumble",
-    "reflex",
+    "romanian",
     "robin",
     "range",
     // S

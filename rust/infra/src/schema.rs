@@ -259,40 +259,76 @@ pub trait AsSql {
     fn as_sql(&self) -> String;
 }
 
-pub enum SqlValue {
-    Field(String),
+#[derive(Debug)]
+pub struct FieldId<'a> {
+    pub field: String,
+    pub table: &'a TableDef,
 }
 
-impl AsSql for SqlValue {
+#[derive(Debug)]
+pub enum SqlValue<'a> {
+    Field(FieldId<'a>),
+}
+
+impl<'a> AsSql for SqlValue<'a> {
     fn as_sql(&self) -> String {
         match self {
-            SqlValue::Field(s) => s.clone(),
+            SqlValue::Field(fid) => {
+                let table_name = &fid.table.name;
+                let field_name = &fid.field;
+                format!("{table_name}.{field_name}")
+            }
         }
     }
 }
 
-pub enum SqlFilter {
+#[derive(Debug)]
+pub enum SqlFilter<'a> {
     True,
     False,
-    Not(Box<SqlFilter>),
-    And(Box<SqlFilter>, Box<SqlFilter>),
-    Or(Box<SqlFilter>, Box<SqlFilter>),
-    Eq(Box<SqlValue>, Box<SqlValue>),
-    Gt(Box<SqlValue>, Box<SqlValue>),
-    Lt(Box<SqlValue>, Box<SqlValue>),
+    Not(Box<SqlFilter<'a>>),
+    And(Box<SqlFilter<'a>>, Box<SqlFilter<'a>>),
+    Or(Box<SqlFilter<'a>>, Box<SqlFilter<'a>>),
+    Eq(Box<SqlValue<'a>>, Box<SqlValue<'a>>),
+    Gt(Box<SqlValue<'a>>, Box<SqlValue<'a>>),
+    Lt(Box<SqlValue<'a>>, Box<SqlValue<'a>>),
 }
 
-impl AsSql for SqlFilter {
+impl<'a> AsSql for SqlFilter<'a> {
     fn as_sql(&self) -> String {
         match self {
             SqlFilter::True => String::from("1 = 1"),
             SqlFilter::False => String::from("1 <> 1"),
-            SqlFilter::Not(f) => format!("(NOT {})", f.as_sql()),
-            SqlFilter::And(f1, f2) => format!("({} AND {})", f1.as_sql(), f2.as_sql()),
-            SqlFilter::Or(f1, f2) => format!("({} OR {})", f1.as_sql(), f2.as_sql()),
+            SqlFilter::Not(f) => format!("NOT ({})", f.as_sql()),
+            SqlFilter::And(f1, f2) => format!("(({}) AND ({}))", f1.as_sql(), f2.as_sql()),
+            SqlFilter::Or(f1, f2) => format!("(({}) OR ({}))", f1.as_sql(), f2.as_sql()),
             SqlFilter::Eq(v1, v2) => format!("(({}) = ({}))", v1.as_sql(), v2.as_sql()),
             SqlFilter::Gt(v1, v2) => format!("(({}) > ({}))", v1.as_sql(), v2.as_sql()),
             SqlFilter::Lt(v1, v2) => format!("(({}) < ({}))", v1.as_sql(), v2.as_sql()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_filter() {
+        // Basics
+        assert_eq!(SqlFilter::True.as_sql(), String::from("1 = 1"));
+        assert_eq!(SqlFilter::False.as_sql(), String::from("1 <> 1"));
+        assert_eq!(
+            SqlFilter::Not(Box::new(SqlFilter::True)).as_sql(),
+            String::from("NOT (1 = 1)")
+        );
+        assert_eq!(
+            SqlFilter::And(Box::new(SqlFilter::True), Box::new(SqlFilter::False)).as_sql(),
+            "((1 = 1) AND (1 <> 1))"
+        );
+        assert_eq!(
+            SqlFilter::Or(Box::new(SqlFilter::True), Box::new(SqlFilter::False)).as_sql(),
+            "((1 = 1) OR (1 <> 1))"
+        );
     }
 }
