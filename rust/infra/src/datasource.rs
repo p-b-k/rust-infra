@@ -10,7 +10,7 @@ use mysql::prelude::{FromRow, Queryable};
 
 use std::marker::PhantomData;
 
-use log::{debug, info};
+use log::info;
 
 pub struct DS<T>
 where
@@ -103,4 +103,12 @@ where
             )),
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+
+    #[test]
+    fn test_get() {}
 }
