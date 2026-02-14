@@ -147,7 +147,7 @@ impl Display for FieldDef {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct TableDef {
     pub name: String,
-    pub fields: Box<Vec<FieldDef>>,
+    pub fields: Vec<FieldDef>,
 }
 
 impl Display for TableDef {

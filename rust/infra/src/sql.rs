@@ -92,7 +92,7 @@ mod tests {
     fn test_value() {
         let tdef = TableDef {
             name: String::from("test"),
-            fields: Box::new(Vec::from([])),
+            fields: Vec::from([]),
         };
         assert_eq!(
             SqlValue::Field(FieldId {
@@ -117,7 +117,7 @@ mod tests {
     fn test_filter() {
         let tdef = TableDef {
             name: String::from("test"),
-            fields: Box::new(Vec::from([])),
+            fields: Vec::from([]),
         };
 
         // Basics
@@ -192,7 +192,7 @@ pub mod select {
         fn test_select() {
             let tdef = TableDef {
                 name: String::from("test"),
-                fields: Box::new(Vec::from([])),
+                fields: Vec::from([]),
             };
 
             let sel1 = SqlSelect { table: &tdef };

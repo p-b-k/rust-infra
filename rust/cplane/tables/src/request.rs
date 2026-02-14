@@ -7,7 +7,7 @@ use infra::schema::{DataType, FieldDef, FieldSpec, TableDef, TypeDef};
 pub fn init() -> TableDef {
     TableDef {
         name: String::from("request"),
-        fields: Box::new(Vec::from([
+        fields: Vec::from([
             FieldDef::Field(FieldSpec {
                 name: String::from("req_type"),
                 default: None,
@@ -29,6 +29,6 @@ pub fn init() -> TableDef {
                 nullable: false,
                 unique: true,
             }),
-        ])),
+        ]),
     }
 }
