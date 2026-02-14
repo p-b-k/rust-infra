@@ -119,4 +119,15 @@ fn main() {
             Err(msg) => println!("FAILED! {msg}"),
         }
     }
+
+    {
+        info!("Getting all products");
+        let res = prod_ds.all(&mut conn);
+
+        debug!("Got result");
+
+        for prod in res {
+            println!("Got product {prod:?}");
+        }
+    }
 }

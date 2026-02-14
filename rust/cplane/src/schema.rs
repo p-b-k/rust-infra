@@ -6,7 +6,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
-use infra::datasource::DS;
+use infra::datasource::{DO, DS};
 
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
@@ -43,22 +43,23 @@ pub fn fields_from_table(def: &TableDef) -> String {
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct AccountDO {
-    pub pkey: u64,
+pub struct Account {
     pub acct_id: String,
     pub acct_name: String,
 }
 
+type AccountDO = DO<Account>;
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub prod_id: String,
     pub prod_name: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductVer {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub fkey_prod: u64,
     pub maj_ver: u32,
     pub min_ver: u32,
@@ -69,7 +70,7 @@ pub struct ProductVer {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Service {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub svc_id: String,
     pub svc_name: String,
     pub is_global: String,
@@ -77,7 +78,7 @@ pub struct Service {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ServiceVer {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub fkey_svc: String,
     pub maj_ver: u32,
     pub min_ver: u32,
@@ -89,14 +90,14 @@ pub struct ServiceVer {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductService {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub fkey_prod: u64,
     pub fkey_svc: u64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Request {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub req_type: String,
     pub req_start: u64,
     pub req_status: String,
@@ -104,27 +105,27 @@ pub struct Request {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Tenant {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub fkey_acct: u64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Task {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub fkey_req: u64,
     pub status: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductTenant {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub fkey_tnet: u64,
     pub fkey_prod_ver: u64,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Worker {
-    pub pkey: u64,
+    pub pkey: Option<u64>,
     pub name: String,
     pub host: String,
     pub port: u32,

@@ -4,13 +4,33 @@
 
 use crate::schema::{FieldDef, TableDef};
 
-use mysql::PooledConn;
+use mysql::{FromRowError, PooledConn, Row};
 
 use mysql::prelude::{FromRow, Queryable};
 
 use std::marker::PhantomData;
 
-use log::info;
+use log::{error, info};
+
+#[derive(Clone, PartialEq, Eq)]
+pub struct DO<T>
+where
+    T: FromRow,
+    T: Clone,
+{
+    pub pkey: Option<u64>,
+    pub data: T,
+}
+
+impl<T> FromRow for DO<T>
+where
+    T: FromRow,
+    T: Clone,
+{
+    fn from_row_opt(row : Row) -> Result<Self, FromRowError> {
+        Error(FromRowError::)
+    }
+}
 
 pub struct DS<T>
 where
@@ -27,6 +47,7 @@ where
     T: FromRow,
     T: Clone,
 {
+    // Construct a new DS
     pub fn new(name: &str, fields: &str) -> DS<T> {
         let phantom: PhantomData<T> = PhantomData {};
         DS {
@@ -36,6 +57,7 @@ where
         }
     }
 
+    // Construct a new DS from a table
     pub fn from(table_def: &TableDef) -> DS<T> {
         let phantom = PhantomData {};
         let table = table_def.name.clone();
@@ -62,6 +84,7 @@ where
         }
     }
 
+    // Get a single object, by it's pkey
     pub fn get(&self, conn: &mut PooledConn, pkey: u64) -> Result<T, String>
     where
         T: FromRow,
@@ -85,6 +108,7 @@ where
         }
     }
 
+    // Get a collection of objects that have the same fkey value
     pub fn join(&self, conn: &mut PooledConn, pkey: u64, fkey: &String) -> Result<Vec<T>, String>
     where
         T: FromRow,
@@ -103,6 +127,28 @@ where
             )),
         }
     }
+
+    pub fn all(&self, conn: &mut PooledConn) -> Vec<T> {
+        let mut results_vec = Vec::new();
+
+        let table = self.table.clone();
+        let fields = &self.fields;
+        let query = format!("SELECT pkey{fields} FROM {table}");
+        info!(target : "join", "QUERY: {query}");
+        let res = conn.query_map(query, |x: T| x);
+        match res {
+            Ok(res) => {
+                for r in res {
+                    results_vec.push(r.clone());
+                }
+            }
+            Err(err) => error!("Error retrieving data from {table}: {}", err.to_string()),
+        }
+
+        results_vec
+    }
+
+    // pub fn sync(&self, conn: &mut PooledConn, obj: &T) -> T {}
 }
 
 #[cfg(test)]
