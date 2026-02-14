@@ -8,10 +8,28 @@ pub trait AsSql {
     fn as_sql(&self) -> String;
 }
 
+#[derive(Debug, Eq, PartialEq, Clone)]
+pub struct TableRef<'a> {
+    pub table: &'a TableDef,
+    pub id: Option<String>,
+}
+
+impl<'a> TableRef<'a> {
+    pub fn as_ref(&self) -> String {
+        match &self.id {
+            None => {
+                let t1 = &self.table;
+                t1.name.clone()
+            }
+            Some(s) => s.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Eq, PartialEq)]
 pub struct FieldId<'a> {
     pub field: String,
-    pub table: &'a TableDef,
+    pub table: TableRef<'a>,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -40,7 +58,7 @@ impl<'a> AsSql for SqlValue<'a> {
     fn as_sql(&self) -> String {
         match self {
             SqlValue::Field(fid) => {
-                let table_name = &fid.table.name;
+                let table_name = &fid.table.as_ref();
                 let field_name = &fid.field;
                 format!("{table_name}.{field_name}")
             }
@@ -97,7 +115,10 @@ mod tests {
         assert_eq!(
             SqlValue::Field(FieldId {
                 field: String::from("fld"),
-                table: &tdef,
+                table: TableRef {
+                    table: &tdef,
+                    id: None
+                }
             })
             .as_sql(),
             String::from("test.fld"),
@@ -139,7 +160,10 @@ mod tests {
             SqlFilter::Eq(
                 Box::new(SqlValue::Field(FieldId {
                     field: String::from("fld"),
-                    table: &tdef
+                    table: TableRef {
+                        table: &tdef,
+                        id: None
+                    }
                 })),
                 Box::new(SqlValue::Int(48))
             )
@@ -150,7 +174,10 @@ mod tests {
             SqlFilter::Eq(
                 Box::new(SqlValue::Field(FieldId {
                     field: String::from("fld"),
-                    table: &tdef
+                    table: TableRef {
+                        table: &tdef,
+                        id: None
+                    }
                 })),
                 Box::new(SqlValue::String(String::from("who'se buddy's buddy?")))
             )
@@ -174,13 +201,39 @@ pub mod select {
     use crate::schema::TableDef;
 
     pub struct SqlSelect<'a> {
-        pub table: &'a TableDef,
+        pub tref: TableRef<'a>,
+        pub fields: Option<Vec<SqlValue<'a>>>,
     }
 
     impl<'a> AsSql for SqlSelect<'a> {
         fn as_sql(&self) -> String {
-            let table_id_spec = &self.table.name;
-            format!("SELECT * FROM {table_id_spec}")
+            let table_id_spec = match &self.tref.id {
+                None => {
+                    let tref: &TableDef = self.tref.table;
+                    tref.name.clone()
+                }
+                Some(id) => {
+                    let table_name = &self.tref.table.name;
+                    format!("{table_name} {id}")
+                }
+            };
+
+            let fields = match &self.fields {
+                None => String::from("*"),
+                Some(vec) => {
+                    let mut fields = String::new();
+                    let mut sep = "";
+
+                    for f in vec {
+                        fields.push_str(sep);
+                        fields.push_str(f.as_sql().as_str());
+                        sep = ", ";
+                    }
+
+                    fields
+                }
+            };
+            format!("SELECT {fields} FROM {table_id_spec}")
         }
     }
 
@@ -195,8 +248,45 @@ pub mod select {
                 fields: Vec::from([]),
             };
 
-            let sel1 = SqlSelect { table: &tdef };
+            let sel1 = SqlSelect {
+                tref: TableRef {
+                    table: &tdef,
+                    id: None,
+                },
+                fields: None,
+            };
             assert_eq!(sel1.as_sql(), String::from("SELECT * FROM test"));
+
+            let tref = TableRef {
+                table: &tdef,
+                id: Some(String::from("t1")),
+            };
+
+            let sel2 = SqlSelect {
+                fields: Some(Vec::from([
+                    SqlValue::Field(FieldId {
+                        table: tref.clone(),
+                        field: String::from("fld1"),
+                    }),
+                    SqlValue::Field(FieldId {
+                        table: tref.clone(),
+                        field: String::from("fld2"),
+                    }),
+                    SqlValue::Field(FieldId {
+                        table: tref.clone(),
+                        field: String::from("fld3"),
+                    }),
+                    SqlValue::Field(FieldId {
+                        table: tref.clone(),
+                        field: String::from("fld4"),
+                    }),
+                ])),
+                tref,
+            };
+            assert_eq!(
+                sel2.as_sql(),
+                String::from("SELECT t1.fld1, t1.fld2, t1.fld3, t1.fld4 FROM test t1")
+            );
         }
     }
 }
