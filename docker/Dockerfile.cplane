@@ -1,0 +1,5 @@
+FROM rusty-base
+
+ADD target/release cplane
+
+CMD bash
