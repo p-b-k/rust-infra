@@ -3,7 +3,7 @@
 # Start a pod, I guess? Should be more specific
 ########################################################################################################################
 
-chdir $(dirname $0)
+cd $(dirname $0)
 
 cargo build -r || exit -1
 
