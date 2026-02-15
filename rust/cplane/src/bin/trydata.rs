@@ -111,7 +111,7 @@ fn main() {
         match res {
             Ok(product_vers) => {
                 for product_ver in product_vers {
-                    let pkey = product_ver.pkey;
+                    let pkey = product_ver.pkey.unwrap();
                     let fkey_prod = product_ver.fkey_prod;
                     println!("Got product version {pkey} -> {fkey_prod}")
                 }

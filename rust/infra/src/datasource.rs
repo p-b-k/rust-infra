@@ -4,7 +4,7 @@
 
 use crate::schema::{FieldDef, TableDef};
 
-use mysql::{FromRowError, PooledConn, Row};
+use mysql::PooledConn;
 
 use mysql::prelude::{FromRow, Queryable};
 
@@ -12,25 +12,23 @@ use std::marker::PhantomData;
 
 use log::{error, info};
 
-#[derive(Clone, PartialEq, Eq)]
-pub struct DO<T>
-where
-    T: FromRow,
-    T: Clone,
-{
-    pub pkey: Option<u64>,
-    pub data: T,
-}
+// #[derive(Clone, PartialEq, Eq)]
+// pub struct DO<T>
+// where
+//     T: FromRow,
+//     T: Clone,
+// {
+//     pub pkey: Option<u64>,
+//     pub data: T,
+// }
 
-impl<T> FromRow for DO<T>
-where
-    T: FromRow,
-    T: Clone,
-{
-    fn from_row_opt(row : Row) -> Result<Self, FromRowError> {
-        Error(FromRowError::)
-    }
-}
+// impl<T> FromRow for DO<T>
+// where
+//     T: FromRow,
+//     T: Clone,
+// {
+//     fn from_row_opt(row: Row) -> Result<Self, FromRowError> {}
+// }
 
 pub struct DS<T>
 where

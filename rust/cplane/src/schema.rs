@@ -6,7 +6,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
-use infra::datasource::{DO, DS};
+use infra::datasource::DS;
 
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
@@ -43,12 +43,13 @@ pub fn fields_from_table(def: &TableDef) -> String {
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct Account {
+pub struct AccountDO {
+    pub pkey: Option<u64>,
     pub acct_id: String,
     pub acct_name: String,
 }
 
-type AccountDO = DO<Account>;
+// type AccountDO = DO<Account>;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
