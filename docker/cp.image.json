@@ -1,0 +1,19 @@
+[
+  {
+    "name": "core",
+    "type": "cp",
+    "ports": [
+      {
+        "external": 7021,
+        "internal": 8000
+      }
+    ],
+    "mounts": [
+      {
+        "external": "target/debug"
+        "internal": "/cplane"
+      }
+    ],
+    "env": []
+  }
+]

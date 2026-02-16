@@ -9,8 +9,14 @@ export deployment_style=${deployment_style:-DEV}
 ########################################################################################################################
 # Define some functions to be used later
 
+UI_POD_NAME=ui
+CP_POD_NAME=cp
 W1_PORT=7031
 W2_PORT=7032
+
+function worker-pod-name () {
+  echo "w${1}"
+}
 
 function log () {
 	if [ -n "$CP_LOG" ]; then
@@ -63,11 +69,27 @@ function start-dev () {
 	echo $! > ~/.w2.pid
 }
 
+function stop-pods () {
+  stop-pod $UI_POD_NAME
+  stop-pod $(worker-pod-name 1)
+  stop-pod $(worker-pod-name 2)
+  stop-pod $CP_POD_NAME
+}
+
+function stop-pod () {
+  echo "Stopping pod $1"
+}
+
 function start-cplane () {
   case ${deployment_style} in
     DEV)
-      stop-dev
+      stop-cplane
       start-dev
+    ;;
+  
+    POD)
+      stop-cplane
+      start-pod
     ;;
   
     *)
@@ -78,16 +100,8 @@ function start-cplane () {
 }
 
 function stop-cplane () {
-  case ${deployment_style} in
-    DEV)
-      stop-dev
-    ;;
-  
-    *)
-      echo "Error [$(basename $0) stop]: unknown deployment style: ${deployment_style}" >&2
-      exit 1
-    ;;
-  esac
+  stop-dev
+  stop-pods
 }
 
 ########################################################################################################################
@@ -118,5 +132,4 @@ case $OPERATION in
     exit 1
   ;;
 esac
-
 

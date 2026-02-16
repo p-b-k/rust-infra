@@ -1,0 +1,14 @@
+[
+  {
+    "type": "worker",
+    "ports": [
+    ],
+    "mounts": [
+      {
+        "external": "target/debug"
+        "internal": "/cplane"
+      }
+    ],
+    "env": []
+  }
+]

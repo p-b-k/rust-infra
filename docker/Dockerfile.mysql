@@ -1,3 +1,5 @@
 FROM rusty-base
 
 RUN apt-get -y install mariadb-server mariadb-client
+
+CMD bash
