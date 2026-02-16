@@ -57,12 +57,33 @@ fn create_app_config() -> AppConfig {
         if next == "--port" {
             i = i + 1;
             let port_str = &args[i];
-            debug!(target: "read_parameters", "port_str = {port_str:?}");
+            debug!(target: "read_parameters", "port str = {port_str:?}");
             cfg.port = port_str.parse().unwrap();
         } else if next == "--login-page" {
             i = i + 1;
             cfg.login_page = args[i].clone();
-            debug!(target: "read_parameters", "login_page = {}", cfg.login_page);
+            debug!(target: "read_parameters", "login page = {}", cfg.login_page);
+        } else if next == "--db-name" {
+            i = i + 1;
+            cfg.db.name = args[i].clone();
+            debug!(target: "read_parameters", "db name = {}", cfg.db.name);
+        } else if next == "--db-host" {
+            i = i + 1;
+            cfg.db.host = args[i].clone();
+            debug!(target: "read_parameters", "db host = {}", cfg.db.host);
+        } else if next == "--db-user" {
+            i = i + 1;
+            cfg.db.user = args[i].clone();
+            debug!(target: "read_parameters", "db user = {}", cfg.db.user);
+        } else if next == "--db-pass" {
+            i = i + 1;
+            cfg.db.pass = args[i].clone();
+            debug!(target: "read-parameters", "db-pass = {}", cfg.db.pass);
+        } else if next == "--db-port" {
+            i = i + 1;
+            let port_str = &args[i];
+            debug!(target: "read_parameters", "db port str = {port_str:?}");
+            cfg.db.port = port_str.parse().unwrap();
         } else {
             panic!("Unknown paramater: {next}");
         }

@@ -1,5 +1,8 @@
-FROM rusty-base
+FROM docker.io/library/mysql
 
-RUN apt-get -y install mariadb-server mariadb-client
+RUN mkdir /cplane
+ADD db/cplane.create.sql /cplane/create.sql
+ADD db/cplane.sample.insert.sql /cplane/sample.insert.sql
 
-CMD bash
+# RUN /usr/sbin/mysqld
+# RUN echo "CREATE DATABASE sample;" | mysql --password=foobar

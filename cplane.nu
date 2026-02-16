@@ -41,8 +41,20 @@ def "build cplane" [ ] {
   cargo build -r
 
   cd $"($root)/docker"
-  podman build -f Dockerfile.base   ..
-  podman build -f Dockerfile.mysql  ..
-  podman build -f Dockerfile.cplane ..
+  podman build -t rusty-base  -f Dockerfile.base   ..
+  podman build -t db-base     -f Dockerfile.mysql  ..
+  podman build -t cplane-base -f Dockerfile.cplane ..
 }
 
+def "list images" [] {
+  podman image ls --noheading | lines
+}
+
+def "start sample db" [name] {
+  ( podman run --rm -d --name $name 
+    -e MYSQL_ROOT_PASSWORD=foobar
+    -p 3300:3306
+    -v ./datadir:/var/lib/mysql:Z
+    db-base
+  )
+}

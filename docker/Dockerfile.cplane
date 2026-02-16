@@ -1,5 +1,6 @@
 FROM rusty-base
 
-ADD target/release cplane
+ADD docker/start.cp /start
+RUN chmod +x /start
 
-CMD bash
+CMD /start
