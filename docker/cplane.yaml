@@ -17,3 +17,10 @@ services:
     environment:
       - SLEEP_SECS:"600"
       - RUST_LOG:"debug"
+  interface:
+    name: ui-svr
+    image: cplane-ui
+    ports:
+      - "7200:8000"
+    environment:
+      - RUST_LOG:"debug"
