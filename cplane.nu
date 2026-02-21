@@ -67,3 +67,8 @@ def "exec container" [name] {
   podman exec -it $name bash
 }
 
+def "pod ps" [...fields : string] {
+  let f = if $fields == [] { [Names, Image] } else { $fields }
+
+  podman ps --format json | from json
+}
