@@ -1,0 +1,19 @@
+version: "3"
+
+volumes:
+  cp_sample_data:
+    name: sample
+    driver: local
+
+services:
+  server:
+    name: cp-svr
+    image: cplane-base
+    ports:
+      - "7201:8000"
+      - "3300:3306"
+    volumes:
+      - cp_sample_data:/var/lib/mysql:Z
+    environment:
+      - SLEEP_SECS:"600"
+      - RUST_LOG:"debug"

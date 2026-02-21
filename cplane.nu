@@ -4,10 +4,6 @@
 
 $env.PATH = $env.PATH | append ([(pwd) target/debug] | str join /)
 
-let root = $env.CURRENT_FILE | split row / | drop 1 | str join / 
-print $"root is ($root)"
-cd $root
-
 const cp_json_file = "cp.image.json"
 const ui_json_file = "ui.image.json"
 const w_json_file  = "w.image.json"
@@ -36,11 +32,9 @@ def "stop cplane" [ ] {
 }
 
 def "build cplane" [ ] {
-  cd $root
   cargo test
   cargo build -r
 
-  cd $"($root)/docker"
   podman build -t rusty-base  -f Dockerfile.base   ..
   podman build -t db-base     -f Dockerfile.mysql  ..
   podman build -t cplane-base -f Dockerfile.cplane ..
@@ -50,11 +44,26 @@ def "list images" [] {
   podman image ls --noheading | lines
 }
 
-def "start sample db" [name] {
-  ( podman run --rm -d --name $name 
-    -e MYSQL_ROOT_PASSWORD=foobar
-    -p 3300:3306
-    -v ./datadir:/var/lib/mysql:Z
-    db-base
-  )
+# def "start sample db" [name] {
+#   mkdir $"($env.HOME)/.db/($name)"
+
+#   if true {
+#     podman-compose -f docker/sampledb.yaml up -d
+#   } else {
+#     ( podman run --rm -d --name $name 
+#       -e MYSQL_ROOT_PASSWORD=foobar
+#       -p 3300:3306
+#       -v $"($env.HOME)/.db/($name):/var/lib/mysql:Z"
+#       db-base
+#     )
+#   }
+# }
+
+def "exec image" [name] {
+  podman run -it $name bash -i
 }
+
+def "exec container" [name] {
+  podman exec -it $name bash
+}
+

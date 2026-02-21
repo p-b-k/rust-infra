@@ -4,9 +4,8 @@ FROM docker.io/amd64/debian
 RUN apt-get -y update
 RUN apt-get -y upgrade
 
-# RUN apt-get -y install mariadb-client
+RUN apt-get -y install mariadb-client mariadb-server
 
 ADD target/release cplane
 RUN PATH=$PATH:/cplane
-
 
