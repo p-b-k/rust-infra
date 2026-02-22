@@ -9,6 +9,7 @@ pub mod state;
 
 use std::env;
 
+use infra::status_router::status_router;
 use log::{debug, info};
 
 use crate::state::{AppConfig, create_app_state};
@@ -30,7 +31,7 @@ async fn main() {
     debug!("Creating application state");
     let app = Arc::new(create_app_state(&db_url, cfg));
 
-    let router = json_router(app.clone());
+    let router = status_router().merge(json_router(app.clone()));
     debug!("Created router");
 
     debug!("About to start the server on port {port}");

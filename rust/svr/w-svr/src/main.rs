@@ -10,7 +10,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 pub mod state;
-pub mod worker_routers;
 
 use std::env;
 
@@ -20,7 +19,7 @@ use crate::state::{AppConfig, create_app_state};
 
 use std::sync::Arc;
 
-use crate::worker_routers::status_router;
+use infra::status_router::status_router;
 
 #[tokio::main]
 async fn main() {
@@ -34,9 +33,9 @@ async fn main() {
     let db_url = cfg.db.to_url();
 
     debug!("Creating application state");
-    let app = Arc::new(create_app_state(&db_url, cfg));
+    let _app = Arc::new(create_app_state(&db_url, cfg));
 
-    let router = status_router(app.clone());
+    let router = status_router();
     debug!("Created router");
 
     debug!("About to start the server on port {port}");

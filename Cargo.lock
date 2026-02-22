@@ -2305,6 +2305,7 @@ dependencies = [
  "axum",
  "cplane",
  "env_logger",
+ "infra",
  "log",
  "mysql 27.0.0",
  "reqwest",

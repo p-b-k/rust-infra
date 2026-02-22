@@ -4,14 +4,10 @@
 
 use axum::{Router, routing::get};
 
-use std::sync::Arc;
-
-use crate::state::AppState;
-
-pub fn status_router(app: Arc<AppState>) -> Router<()> {
-    Router::new()
-        .route(format!("/health").as_str(), get(get_health))
-        .with_state(app)
+pub fn status_router() -> Router<()>
+where
+{
+    Router::new().route(format!("/health").as_str(), get(get_health))
 }
 
 pub async fn get_health() {}
