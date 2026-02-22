@@ -41,23 +41,9 @@ def "build cplane" [ ] {
 }
 
 def "list images" [] {
-  podman image ls --noheading | lines
+  # podman image ls --noheading | lines
+  podman image ls --format json | from json
 }
-
-# def "start sample db" [name] {
-#   mkdir $"($env.HOME)/.db/($name)"
-
-#   if true {
-#     podman-compose -f docker/sampledb.yaml up -d
-#   } else {
-#     ( podman run --rm -d --name $name 
-#       -e MYSQL_ROOT_PASSWORD=foobar
-#       -p 3300:3306
-#       -v $"($env.HOME)/.db/($name):/var/lib/mysql:Z"
-#       db-base
-#     )
-#   }
-# }
 
 def "exec image" [name] {
   podman run -it $name bash -i
@@ -72,3 +58,20 @@ def "pod ps" [...fields : string] {
 
   podman ps --format json | from json
 }
+
+def "pod start" [ service = "all"; --config = "docker/cplane.yaml" ] {
+  if $service == "all" {
+    podman-compose -f $config up -d
+  } else {
+    podman-compose -f $config start $service
+  }
+}
+
+def "pod stop" [ service = "all"; --config = "docker/cplane.yaml" ] {
+  if $service == "all" {
+    podman-compose -f $config down
+  } else {
+    podman-compose -f $config stop $service
+  }
+}
+

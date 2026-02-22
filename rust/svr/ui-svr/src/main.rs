@@ -69,7 +69,7 @@ fn create_app_config() -> AppConfig {
             i = i + 1;
             cfg.login_page = args[i].clone();
             debug!(target: "read_parameters", "login_page = {}", cfg.login_page);
-        } else if next == "--tp-port" {
+        } else if next == "--pt-port" {
             i = i + 1;
             let port_str = &args[i];
             debug!(target: "read_parameters", "port_str = {port_str:?}");

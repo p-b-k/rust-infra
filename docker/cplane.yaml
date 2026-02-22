@@ -9,6 +9,7 @@ services:
   server:
     name: cp-svr
     image: cplane-base
+    network: cplane
     ports:
       - "7201:8000"
       - "3300:3306"
@@ -20,6 +21,7 @@ services:
   interface:
     name: ui-svr
     image: cplane-ui
+    network: cplane
     ports:
       - "7200:8000"
     environment:

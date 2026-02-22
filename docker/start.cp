@@ -6,6 +6,9 @@
 export PATH=$PATH:/cplane
 export SLEEP_SECS=${SLEEP_SECS:-15}
 
+# For Testing
+export RUST_LOG=debug
+
 echo "Starting Database ..."
 service mariadb start || exit -1
 echo "... Database started"

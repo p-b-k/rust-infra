@@ -18,10 +18,14 @@ use ui::filecache::create_file_response;
 
 pub fn basic_router(app: Arc<AppState>) -> Router<()> {
     Router::new()
+        .route(format!("/health").as_str(), get(get_health))
         .route("/login", get(login_page).post(login_action))
         .route("/favicon.ico", get(favicon))
         .with_state(app)
 }
+
+// Just return a status 200
+pub async fn get_health() {}
 
 // Basic Handlers
 async fn login_page(State(state): State<Arc<AppState>>) -> Result<Response<String>, ErrorResponse> {
@@ -54,10 +58,10 @@ async fn favicon() -> Result<Response<String>, ErrorResponse> {
     match read_to_string(&favicon) {
         Ok(contents) => Ok(create_file_response(&contents, &mimetype)),
         Err(err) => {
-            error!(target: "favicon", "error getting favicon: {}", err.kind());
+            error!(target: "favicon", "error getting favicon ({favicon}): {}", err.kind());
             Err(make_error(
                 SC::INTERNAL_SERVER_ERROR,
-                format!("error getting login page: {}", err.kind()),
+                format!("error getting favicon from {favicon}: {}", err.kind()),
             ))
         }
     }
