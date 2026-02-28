@@ -4,22 +4,6 @@
 
 $env.PATH = $env.PATH | append ([(pwd) target/debug] | str join /)
 
-const cp_json_file = "cp.image.json"
-const ui_json_file = "ui.image.json"
-const w_json_file  = "w.image.json"
-
-let servers = ( cat $"docker/($cp_json_file)" | from json
-              | append ( cat $"docker/($ui_json_file)" | from json )
-              | append ( cat $"docker/($w_json_file)"  | from json
-                       | insert name w0
-                       | update ports [ { "external" : 7300, "internal" : 8000 } ]
-                       )
-              | append ( cat $"docker/($w_json_file)"  | from json
-                       | insert name w1
-                       | update ports [ { "external" : 7301, "internal" : 8000 } ]
-                       )
-              )
-
 # const core_server = cat 
 # 
 def "start cplane" [ ] {
@@ -38,11 +22,25 @@ def "build cplane" [ ] {
   podman build -t rusty-base  -f Dockerfile.base   ..
   podman build -t db-base     -f Dockerfile.mysql  ..
   podman build -t cplane-base -f Dockerfile.cplane ..
+  podman build -t ui-base     -f Dockerfile.ui ..
 }
 
-def "list images" [] {
+def "list images" [--all] {
   # podman image ls --noheading | lines
-  podman image ls --format json | from json
+  if $all {
+    podman image ls -a --format json | from json
+  } else {
+    podman image ls --format json | from json
+  }
+}
+
+def "list containers" [--all] {
+  # podman image ls --noheading | lines
+  if $all {
+    podman container ls -a --format json | from json
+  } else {
+    podman container ls --format json | from json
+  }
 }
 
 def "exec image" [name] {
@@ -53,13 +51,15 @@ def "exec container" [name] {
   podman exec -it $name bash
 }
 
-def "pod ps" [...fields : string] {
-  let f = if $fields == [] { [Names, Image] } else { $fields }
+def "pod ps" [--fields = [ "Names", "Image" ]] {
 
   podman ps --format json | from json
 }
 
-def "pod start" [ service = "all"; --config = "docker/cplane.yaml" ] {
+const docker_config_file = "play/play.yaml"
+
+def "pod start" [ service = "all"; --config = $docker_config_file ] {
+  print $"starting pods, using config ($config)"
   if $service == "all" {
     podman-compose -f $config up -d
   } else {
@@ -67,7 +67,8 @@ def "pod start" [ service = "all"; --config = "docker/cplane.yaml" ] {
   }
 }
 
-def "pod stop" [ service = "all"; --config = "docker/cplane.yaml" ] {
+def "pod stop" [ service = "all"; --config = $docker_config_file ] {
+  print $"stopping pods, using config ($config)"
   if $service == "all" {
     podman-compose -f $config down
   } else {

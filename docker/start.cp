@@ -4,7 +4,9 @@
 ########################################################################################################################
 
 export PATH=$PATH:/cplane
-export SLEEP_SECS=${SLEEP_SECS:-15}
+if [ -z "$SLEEP_SECS" ]; then
+  SLEEP_SECS=15
+fi
 
 # For Testing
 export RUST_LOG=debug
