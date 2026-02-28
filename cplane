@@ -69,39 +69,9 @@ function start-dev () {
 	echo $! > ~/.w2.pid
 }
 
-function stop-pods () {
-  stop-pod $UI_POD_NAME
-  stop-pod $(worker-pod-name 1)
-  stop-pod $(worker-pod-name 2)
-  stop-pod $CP_POD_NAME
-}
-
-function stop-pod () {
-  echo "Stopping pod $1"
-}
-
 function start-cplane () {
-  case ${deployment_style} in
-    DEV)
-      stop-cplane
-      start-dev
-    ;;
-  
-    POD)
-      stop-cplane
-      start-pod
-    ;;
-  
-    *)
-      echo "Error [$(basename $0) start]: unknown deployment style: ${deployment_style}" >&2
-      exit 1
-    ;;
-  esac
-}
-
-function stop-cplane () {
   stop-dev
-  stop-pods
+  start-dev
 }
 
 ########################################################################################################################
@@ -120,11 +90,11 @@ fi
 
 case $OPERATION in
   start)
-    start-cplane  
+    start-dev  
   ;;
   
   stop)
-    stop-cplane  
+    stop-dev  
   ;;
   
   *)
