@@ -4,5 +4,10 @@ FROM docker.io/amd64/debian
 RUN apt-get -y update
 RUN apt-get -y upgrade
 
-RUN mkdir -p /rusty
-# COPY ../target/release ./bin
+RUN apt-get -y install mariadb-client mariadb-server
+
+# Need curl
+RUN apt-get -y install curl
+
+ADD target/release cplane
+RUN PATH=$PATH:/cplane

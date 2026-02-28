@@ -1,0 +1,8 @@
+FROM docker.io/library/mysql
+
+RUN mkdir /cplane
+ADD db/cplane.create.sql /cplane/create.sql
+ADD db/cplane.sample.insert.sql /cplane/sample.insert.sql
+
+# RUN /usr/sbin/mysqld
+# RUN echo "CREATE DATABASE sample;" | mysql --password=foobar

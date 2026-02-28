@@ -2,12 +2,9 @@
 // Application state
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::app::{DbConfig, PtConfig};
-use mysql::{Opts, Pool};
+use cplane::app::PtConfig;
 use std::clone::Clone;
 use std::sync::Mutex;
-
-use log::debug;
 
 use ui::filecache::{FileCache, StaticFileCacheLogic};
 
@@ -15,7 +12,6 @@ use ui::filecache::{FileCache, StaticFileCacheLogic};
 pub struct AppConfig {
     pub port: u32,
     pub login_page: String,
-    pub db: DbConfig,
     pub pt: PtConfig,
 }
 
@@ -24,13 +20,6 @@ impl AppConfig {
         AppConfig {
             port: 7021,
             login_page: String::from("res/html/login.html"),
-            db: DbConfig {
-                name: String::from("cplane"),
-                user: String::from("cplane_app"),
-                pass: String::from("secret"),
-                host: String::from("localhost"),
-                port: 3306,
-            },
             pt: PtConfig::default(),
         }
     }
@@ -43,22 +32,10 @@ pub struct AppState {
     pub js_cache: Mutex<FileCache<StaticFileCacheLogic>>,
     pub svg_cache: Mutex<FileCache<StaticFileCacheLogic>>,
 
-    pub pool: Mutex<Option<Pool>>,
     pub config: AppConfig,
 }
 
-impl AppState {
-    pub async fn set_connection_pool(&mut self, url: &String) {
-        debug!("set_connection_pool called");
-        let opts = Opts::from_url(url).unwrap();
-        let new_pool = Pool::new(opts).unwrap();
-        let mut pool = self.pool.lock().unwrap();
-        let _old_val = pool.insert(new_pool);
-        // TODO? Release _old_val?
-    }
-}
-
-pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
+pub fn create_app_state(config: AppConfig) -> AppState {
     let html_cache = FileCache::new(
         StaticFileCacheLogic {},
         String::from("res/html"),
@@ -89,16 +66,12 @@ pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
         mime::IMAGE_SVG,
     );
 
-    let opts = Opts::from_url(db_url).unwrap();
-    let conn_pool = Pool::new(opts).unwrap();
-
     AppState {
         html_cache: Mutex::new(html_cache),
         json_cache: Mutex::new(json_cache),
         css_cache: Mutex::new(css_cache),
         js_cache: Mutex::new(js_cache),
         svg_cache: Mutex::new(svg_cache),
-        pool: Mutex::new(Some(conn_pool)),
         config,
     }
 }

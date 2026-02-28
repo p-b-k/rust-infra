@@ -13,7 +13,7 @@ use std::sync::Arc;
 
 use crate::state::AppState;
 
-use log::warn;
+use log::error;
 
 // use log::debug;
 
@@ -48,7 +48,7 @@ async fn get_pass_through(
                 Ok(response)
             }
             Err(err) => {
-                warn!("{err}");
+                error!("{err}");
                 Err(make_error(
                     SC::INTERNAL_SERVER_ERROR,
                     format!("Error: {}", err.to_string()),
@@ -56,7 +56,7 @@ async fn get_pass_through(
             }
         },
         Err(err) => {
-            warn!("{err}");
+            error!("{err}");
             Err(make_error(
                 SC::INTERNAL_SERVER_ERROR,
                 format!("Error: {}", err.to_string()),

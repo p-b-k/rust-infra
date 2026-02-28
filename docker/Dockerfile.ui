@@ -1,0 +1,10 @@
+FROM rusty-base
+
+# Add the static files
+ADD res res
+
+ADD docker/start.ui /start
+RUN chmod +x /start
+
+CMD /start
+

@@ -1,0 +1,14 @@
+#!/bin/bash
+########################################################################################################################
+# Start a pod, I guess? Should be more specific
+########################################################################################################################
+
+cd $(dirname $0)
+
+cargo build -r || exit -1
+
+podman build -f Dockerfile.base   -t rusty-base  .. || exit -1
+podman build -f Dockerfile.mysql  -t db-base     .. || exit -1
+podman build -f Dockerfile.cplane -t cplane-base .. || exit -1
+podman build -f Dockerfile.ui     -t cplane-ui   .. || exit -1
+

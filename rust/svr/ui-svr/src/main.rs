@@ -31,10 +31,8 @@ async fn main() {
     debug!("Server Config: set to run on port {}", cfg.port);
     let port = cfg.port;
 
-    let db_url = cfg.db.to_url();
-
     debug!("Creating application state");
-    let app = Arc::new(create_app_state(&db_url, cfg));
+    let app = Arc::new(create_app_state(cfg));
 
     let router = basic_router(app.clone())
         .merge(static_router(app.clone()))
@@ -71,6 +69,11 @@ fn create_app_config() -> AppConfig {
             i = i + 1;
             cfg.login_page = args[i].clone();
             debug!(target: "read_parameters", "login_page = {}", cfg.login_page);
+        } else if next == "--pt-port" {
+            i = i + 1;
+            let port_str = &args[i];
+            debug!(target: "read_parameters", "port_str = {port_str:?}");
+            cfg.pt.port = port_str.parse().unwrap();
         } else {
             panic!("Unknown paramater: {next}");
         }

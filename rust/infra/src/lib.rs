@@ -7,3 +7,4 @@ pub mod datasource;
 pub mod error;
 pub mod schema;
 pub mod sql;
+pub mod status_router;
