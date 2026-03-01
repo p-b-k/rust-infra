@@ -69,11 +69,6 @@ function start-dev () {
 	echo $! > ~/.w2.pid
 }
 
-function start-cplane () {
-  stop-dev
-  start-dev
-}
-
 ########################################################################################################################
 # Process command line parameters
 
@@ -90,6 +85,7 @@ fi
 
 case $OPERATION in
   start)
+    stop-dev  
     start-dev  
   ;;
   
