@@ -45,7 +45,10 @@ INSERT INTO service (pkey, svc_id, svc_name)
 VALUES (1, 'SHIFTS', 'Shift Management Service (the main AION service)');
 
 INSERT INTO service (pkey, svc_id, svc_name)
-VALUES (2, 'CPUI', 'Control Plane UI');
+VALUES (2, 'CP', 'Controll Plane');
+
+INSERT INTO service (pkey, svc_id, svc_name)
+VALUES (3, 'CPUI', 'Control Plane UI');
 
 -- Some Services Version
 
@@ -57,6 +60,9 @@ VALUES (1, (SELECT pkey FROM service WHERE svc_id = 'SHIFTS'), 0, 0);
 
 INSERT INTO service_ver (pkey, fkey_svc, maj_ver, min_ver)
 VALUES (2, (SELECT pkey FROM service WHERE svc_id = 'CPUI'), 0, 0);
+
+INSERT INTO service_ver (pkey, fkey_svc, maj_ver, min_ver)
+VALUES (3, (SELECT pkey FROM service WHERE svc_id = 'CP'), 0, 0);
 
 -- 
 -- Bind some services to some versions
