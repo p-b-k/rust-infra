@@ -4,16 +4,16 @@
 
 -- A Couple of accounts
 
-INSERT INTO account (pkey, acct_id, acct_name)
+INSERT INTO customer (pkey, cust_id, cust_name)
 VALUES (0, 'SCARPERCO', 'Scarperco Premium Software Services');
 
-INSERT INTO account (pkey, acct_id, acct_name)
+INSERT INTO customer (pkey, cust_id, cust_name)
 VALUES (1, 'WBULL', 'The Weeping Bull, Public House');
 
-INSERT INTO account (pkey, acct_id, acct_name)
+INSERT INTO customer (pkey, cust_id, cust_name)
 VALUES (2, 'BFBG', 'Big Frankie''s Bar and Grill');
 
-INSERT INTO account (pkey, acct_id, acct_name)
+INSERT INTO customer (pkey, cust_id, cust_name)
 VALUES (3, 'MRICH', 'Le Maison Richeliu');
 
 -- Some Products

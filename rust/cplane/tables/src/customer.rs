@@ -6,14 +6,14 @@ use infra::schema::{DataType, FieldDef, FieldSpec, TableDef, TypeDef};
 
 const FIELDS: [FieldDef; 2] = [
     FieldDef::Field(FieldSpec {
-        name: "acct_id",
+        name: "cust_id",
         default: None,
         type_def: TypeDef::Data(DataType::String(64)),
         nullable: false,
         unique: true,
     }),
     FieldDef::Field(FieldSpec {
-        name: "acct_name",
+        name: "cust_name",
         default: None,
         type_def: TypeDef::Data(DataType::String(256)),
         nullable: false,
@@ -21,7 +21,7 @@ const FIELDS: [FieldDef; 2] = [
     }),
 ];
 
-pub const ACCOUNT: TableDef = TableDef {
-    name: "account",
+pub const CUSTOMER: TableDef = TableDef {
+    name: "customer",
     fields: &FIELDS,
 };

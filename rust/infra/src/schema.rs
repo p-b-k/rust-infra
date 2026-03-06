@@ -80,7 +80,7 @@ impl Display for FieldSpec {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub enum FieldDef {
     PKey,
     Field(FieldSpec),
@@ -144,7 +144,7 @@ impl Display for FieldDef {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub struct TableDef {
     pub name: &'static str,
     pub fields: &'static [FieldDef],

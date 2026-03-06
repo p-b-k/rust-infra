@@ -6,10 +6,10 @@
 -- Customer Information
 -- 
 
-CREATE TABLE account
+CREATE TABLE customer
 ( pkey INTEGER PRIMARY KEY
-, acct_id VARCHAR (64) UNIQUE NOT NULL
-, acct_name VARCHAR (256) UNIQUE NOT NULL
+, cust_id VARCHAR (64) UNIQUE NOT NULL
+, cust_name VARCHAR (256) UNIQUE NOT NULL
 );
 
 --
@@ -62,7 +62,7 @@ CREATE TABLE product_service
 
 CREATE TABLE tenant
 ( pkey INTEGER PRIMARY KEY
-, fkey_acct INTEGER NOT NULL
+, fkey_cust INTEGER NOT NULL
 );
 
 CREATE TABLE product_tenant

@@ -5,9 +5,9 @@
 use infra::schema::{FieldDef, FieldSpec, TableDef, TypeDef};
 
 const FIELDS: [FieldDef; 1] = [FieldDef::Field(FieldSpec {
-    name: "fkey_acct",
+    name: "fkey_cust",
     default: None,
-    type_def: TypeDef::FKey("tenant"),
+    type_def: TypeDef::FKey("customer"),
     nullable: false,
     unique: false,
 })];

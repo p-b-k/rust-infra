@@ -10,7 +10,7 @@ use infra::datasource::DS;
 
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
-use tables::account::ACCOUNT;
+use tables::customer::CUSTOMER;
 use tables::product::PRODUCT;
 use tables::product_service::PRODUCT_SERVICE;
 use tables::product_tenant::PRODUCT_TENANT;
@@ -43,10 +43,10 @@ pub fn fields_from_table(def: &TableDef) -> String {
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct AccountDO {
+pub struct CustomerDO {
     pub pkey: u64,
-    pub acct_id: String,
-    pub acct_name: String,
+    pub cust_id: String,
+    pub cust_name: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
@@ -137,7 +137,7 @@ pub struct Worker {
 // ---------------------------------------------------------------------------------------------------------------------
 
 pub fn build_datasource() -> DataSources {
-    let account_ds: DS<AccountDO> = DS::from(&ACCOUNT);
+    let customer_ds: DS<CustomerDO> = DS::from(&CUSTOMER);
     let service_ds: DS<Service> = DS::from(&SERVICE);
     let service_ver_ds: DS<ServiceVer> = DS::from(&SERVICE_VERSION);
     let product_ds: DS<Product> = DS::from(&PRODUCT);
@@ -159,7 +159,7 @@ pub fn build_datasource() -> DataSources {
         )])),
 
         tables: Box::new(HashMap::from([
-            (String::from("account"), &ACCOUNT),
+            (String::from("customer"), &CUSTOMER),
             (String::from("service"), &SERVICE),
             (String::from("service_ver"), &SERVICE_VERSION),
             (String::from("product"), &PRODUCT),
@@ -175,7 +175,7 @@ pub fn build_datasource() -> DataSources {
 
     DataSources {
         schema_def: def,
-        account: account_ds,
+        account: customer_ds,
         service: service_ds,
         service_ver: service_ver_ds,
         product: product_ds,
@@ -193,7 +193,7 @@ pub struct DataSources {
     pub schema_def: Arc<SchemaDef>,
 
     // Data Sources
-    pub account: DS<AccountDO>,
+    pub account: DS<CustomerDO>,
     pub service: DS<Service>,
     pub service_ver: DS<ServiceVer>,
     pub product: DS<Product>,
