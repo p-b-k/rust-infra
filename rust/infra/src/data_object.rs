@@ -5,11 +5,10 @@
 // use log::debug;
 
 use mysql::prelude::FromRow;
-use serde::Serialize;
 
 use crate::schema::TableDef;
 
-#[derive(Serialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DObj<'a, T>
 where
     T: FromRow,

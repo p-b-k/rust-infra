@@ -14,7 +14,6 @@ use cplane::schema::build_datasource;
 enum TableFormat {
     Display,
     SQL,
-    Json,
 }
 
 struct AppConfig<'a> {
@@ -23,9 +22,7 @@ struct AppConfig<'a> {
 }
 
 fn string_to_table_format(fmt: &str) -> Result<TableFormat, String> {
-    if fmt == "json" {
-        Ok(TableFormat::Json)
-    } else if fmt == "sql" {
+    if fmt == "sql" {
         Ok(TableFormat::SQL)
     } else if fmt == "display" {
         Ok(TableFormat::Display)
@@ -34,8 +31,11 @@ fn string_to_table_format(fmt: &str) -> Result<TableFormat, String> {
     }
 }
 
-fn table_exists_in_schema<'a>(schema: &'a SchemaDef, table: &str) -> Option<&'a TableDef> {
-    schema.tables.get(table)
+fn table_exists_in_schema<'a>(schema: &'a SchemaDef, table: &str) -> Option<&'static TableDef> {
+    match schema.tables.get(table) {
+        None => None,
+        Some(v) => Some(&v),
+    }
 }
 
 fn create_config(schema_def: &SchemaDef) -> AppConfig<'_> {
@@ -77,10 +77,6 @@ fn write_table(table: &TableDef, fmt: &TableFormat) {
         TableFormat::Display => {
             table.print();
         }
-        TableFormat::Json => match serde_json::to_string(&table) {
-            Ok(json_str) => println!("{}", json_str),
-            Err(e) => println!("Error: {}", e),
-        },
         TableFormat::SQL => {
             println!("{};", table.create_sql())
         }

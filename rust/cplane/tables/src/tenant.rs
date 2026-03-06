@@ -4,15 +4,15 @@
 
 use infra::schema::{FieldDef, FieldSpec, TableDef, TypeDef};
 
-pub fn init() -> TableDef {
-    TableDef {
-        name: String::from("tenant"),
-        fields: Vec::from([FieldDef::Field(FieldSpec {
-            name: String::from("fkey_acct"),
-            default: None,
-            type_def: TypeDef::FKey(String::from("tenant")),
-            nullable: false,
-            unique: false,
-        })]),
-    }
-}
+const FIELDS: [FieldDef; 1] = [FieldDef::Field(FieldSpec {
+    name: "fkey_acct",
+    default: None,
+    type_def: TypeDef::FKey("tenant"),
+    nullable: false,
+    unique: false,
+})];
+
+pub const TENANT: TableDef = TableDef {
+    name: "tenant",
+    fields: &FIELDS,
+};
