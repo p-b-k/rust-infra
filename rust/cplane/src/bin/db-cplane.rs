@@ -6,9 +6,9 @@
 use std::env;
 use std::str::FromStr;
 
+use cplane::schema::build_schema_def;
 use mysql::{Conn, OptsBuilder, prelude::Queryable};
 
-use cplane::schema::build_datasource;
 use infra::schema::SchemaDef;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ fn create_db(conn: &mut Conn, schema: &SchemaDef) {
 
 fn main() {
     env_logger::init();
-    let ds = build_datasource();
+    let schema_def = build_schema_def();
 
     let db_conn = create_conn();
 
@@ -113,5 +113,5 @@ fn main() {
     println!("url = {url}");
 
     let mut conn = db_conn.connect();
-    create_db(&mut conn, &ds.schema_def);
+    create_db(&mut conn, &schema_def);
 }

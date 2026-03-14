@@ -4,6 +4,7 @@
 
 use std::fmt::{Display, Formatter};
 
+use log::debug;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -81,73 +82,9 @@ impl Display for FieldSpec {
 }
 
 #[derive(Clone, Serialize, Debug, PartialEq, Eq)]
-pub enum FieldDef {
-    PKey,
-    Field(FieldSpec),
-}
-
-impl FieldDef {
-    pub fn name(&self) -> &str {
-        match self {
-            FieldDef::PKey => "pkey",
-            FieldDef::Field(field_spec) => field_spec.name,
-        }
-    }
-
-    pub fn type_def(&self) -> DataType {
-        match self {
-            FieldDef::PKey => DataType::Integer,
-            FieldDef::Field(field_spec) => field_spec.type_def.as_data_type(),
-        }
-    }
-
-    pub fn type_string(&self) -> String {
-        match self {
-            FieldDef::PKey => String::from("PRIMARY KEY"),
-            FieldDef::Field(field_spec) => format!("{}", field_spec.type_def),
-        }
-    }
-
-    pub fn print(&self) {
-        let mut unique = " ";
-        let mut nullable = " ";
-        let name = self.name();
-        let data_type = self.type_string();
-
-        match self {
-            FieldDef::PKey => {
-                unique = "*";
-            }
-            FieldDef::Field(field_spec) => {
-                if field_spec.nullable {
-                    nullable = "?";
-                }
-
-                if field_spec.unique {
-                    unique = "*";
-                }
-            }
-        }
-
-        println!(" {unique} {nullable} {name:<16} : {data_type}");
-    }
-}
-
-impl Display for FieldDef {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
-        match self {
-            FieldDef::PKey => write!(f, "pkey"),
-            FieldDef::Field(field_spec) => {
-                write!(f, "{} : {}", field_spec.name, field_spec.type_def)
-            }
-        }
-    }
-}
-
-#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub struct TableDef {
     pub name: &'static str,
-    pub fields: &'static [FieldDef],
+    pub fields: &'static [FieldSpec],
 }
 
 impl Display for TableDef {
@@ -160,7 +97,7 @@ impl TableDef {
     pub fn print(&self) {
         println!("TABLE:{}", self.name);
         for field in self.fields {
-            field.print();
+            println!("{field}");
         }
         println!();
     }
@@ -172,18 +109,17 @@ pub struct FieldIter<'a> {
 }
 
 impl Iterator for FieldIter<'_> {
-    type Item = FieldDef;
+    type Item = FieldSpec;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.index == 0 {
-            self.index = self.index + 1;
-            Some(FieldDef::PKey)
-        } else if self.index > self.table.fields.len() {
-            None
-        } else {
-            let field_index = self.index - 1;
+        debug!(target: "field iterator", "self.index = {}", self.index);
+
+        if self.index < self.table.fields.len() {
+            let field_index = self.index;
             self.index = self.index + 1;
             Some(self.table.fields[field_index].clone())
+        } else {
+            None
         }
     }
 }
@@ -191,31 +127,25 @@ impl Iterator for FieldIter<'_> {
 impl TableDef {
     pub fn create_sql(&self) -> String {
         let mut buff = String::new();
-        let mut sep = " (";
         buff.push_str(format!("CREATE TABLE {}", self.name).as_str());
+        buff.push_str("(pkey INTEGER PRIMARY KEY");
         for field in self.fields() {
-            buff.push_str(sep);
-            match &field {
-                FieldDef::PKey => buff.push_str("pkey INTEGER PRIMARY KEY"),
-                FieldDef::Field(field_spec) => {
-                    buff.push_str(&field_spec.name);
-                    buff.push(' ');
-                    field_spec.type_def.push_to_string(&mut buff);
-                    if field_spec.unique {
-                        buff.push_str(" UNIQUE");
-                    }
-                    if !field_spec.nullable {
-                        buff.push_str(" NOT NULL");
-                    }
-                    match &field_spec.default {
-                        Some(val) => {
-                            buff.push_str(format!(" DEFAULT {val}").as_str());
-                        }
-                        None => {}
-                    }
-                }
+            buff.push_str(", ");
+            buff.push_str(&field.name);
+            buff.push(' ');
+            field.type_def.push_to_string(&mut buff);
+            if field.unique {
+                buff.push_str(" UNIQUE");
             }
-            sep = ", ";
+            if !field.nullable {
+                buff.push_str(" NOT NULL");
+            }
+            match &field.default {
+                Some(val) => {
+                    buff.push_str(format!(" DEFAULT {val}").as_str());
+                }
+                None => {}
+            }
         }
         buff.push_str(")");
         buff

@@ -4,14 +4,14 @@
 
 use mysql::Pool;
 
-use cplane::schema::build_datasource;
+use cplane::schema::{
+    CUSTOMER_FACTORY, PRODUCT_FACTORY, PRODUCT_VER_FACTORY, SERVICE_FACTORY, SERVICE_VER_FACTORY,
+};
 
 use log::{debug, info};
 
 fn main() {
     env_logger::init();
-
-    println!("Hello World!");
 
     let url = "mysql://cplane_app:secret@localhost:3306/cplane";
 
@@ -23,88 +23,93 @@ fn main() {
 
     info!("Got connection, about to try and get data source");
 
-    let ds = build_datasource();
-    let prod_ds = ds.product;
-    let prod_ver_ds = ds.product_ver;
-
     info!("Created product datasource, about to try and retrieve product");
 
-    {
-        debug!("Getting single account result");
-        let res = ds.account.get(&mut conn, 0);
+    let get_cust_0 = true;
+    let get_prod_0 = true;
+    let get_prod_ver_0 = true;
+    let get_svc_0 = true;
+    let get_svc_ver_0 = true;
+    let get_prod_ver_join = false;
+    let get_prod_all = true;
+
+    if get_cust_0 {
+        debug!("Getting single customer result");
+        // let res = ds.customer.get(&mut conn, 0);
+        let res = CUSTOMER_FACTORY.fetch(&mut conn, 0);
 
         debug!("Got result");
 
         match res {
-            Ok(obj) => {
-                println!("Got account {obj:?})")
+            Ok(d_o) => {
+                println!("Got customer {:?})", d_o.obj)
             }
             Err(msg) => println!("FAILED! {msg}"),
         }
     }
 
-    {
+    if get_prod_0 {
         debug!("Getting single product result");
-        let res = prod_ds.get(&mut conn, 0);
+        let res = PRODUCT_FACTORY.fetch(&mut conn, 0);
 
         debug!("Got result");
 
         match res {
             Ok(product) => {
-                let id = product.prod_id;
-                let name = product.prod_name;
+                let id = product.obj.prod_id;
+                let name = product.obj.prod_name;
                 println!("Got product {id} ({name})")
             }
             Err(msg) => println!("FAILED! {msg}"),
         }
     }
 
-    {
+    if get_prod_ver_0 {
         debug!("Getting single product version result");
-        let res = prod_ver_ds.get(&mut conn, 4);
+        let res = PRODUCT_VER_FACTORY.fetch(&mut conn, 4);
 
         debug!("Got result");
 
         match res {
             Ok(product) => {
-                println!("Got product {product:?})")
+                println!("Got product {:?})", product.obj)
             }
             Err(msg) => println!("FAILED! {msg}"),
         }
     }
 
-    {
+    if get_svc_0 {
         debug!("Getting single service result");
-        let res = ds.service.get(&mut conn, 0);
+        let res = SERVICE_FACTORY.fetch(&mut conn, 0);
 
         debug!("Got result");
 
         match res {
-            Ok(obj) => {
-                println!("Got service {obj:?})")
+            Ok(svc) => {
+                println!("Got service {:?})", svc.obj)
             }
             Err(msg) => println!("FAILED! {msg}"),
         }
     }
 
-    {
+    if get_svc_ver_0 {
         debug!("Getting single service version result");
-        let res = ds.service_ver.get(&mut conn, 0);
+        let res = SERVICE_VER_FACTORY.fetch(&mut conn, 0);
 
         debug!("Got result");
 
         match res {
-            Ok(obj) => {
-                println!("Got service version {obj:?})")
+            Ok(sv) => {
+                println!("Got service version {:?})", sv.obj)
             }
             Err(msg) => println!("FAILED! {msg}"),
         }
     }
 
-    {
+    if get_prod_ver_join {
         info!("Getting joined results");
         let fk_field = String::from("fkey_prod");
-        let res = prod_ver_ds.join(&mut conn, 1, &fk_field);
+        let res = PRODUCT_VER_FACTORY.join(&mut conn, 1, &fk_field);
 
         debug!("Got result");
 
@@ -112,7 +117,7 @@ fn main() {
             Ok(product_vers) => {
                 for product_ver in product_vers {
                     let pkey = product_ver.pkey.unwrap();
-                    let fkey_prod = product_ver.fkey_prod;
+                    let fkey_prod = product_ver.obj.fkey_prod;
                     println!("Got product version {pkey} -> {fkey_prod}")
                 }
             }
@@ -120,14 +125,14 @@ fn main() {
         }
     }
 
-    {
+    if get_prod_all {
         info!("Getting all products");
-        let res = prod_ds.all(&mut conn);
+        let res = PRODUCT_FACTORY.all(&mut conn);
 
         debug!("Got result");
 
         for prod in res {
-            println!("Got product {prod:?}");
+            println!("Got product {:?}", prod.obj);
         }
     }
 }

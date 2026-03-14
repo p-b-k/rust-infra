@@ -2,11 +2,10 @@
 // Define the Control Plane schema
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
+use infra::data_object::{DObj, DObjFactory};
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
-
-use infra::datasource::DS;
 
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
@@ -32,7 +31,7 @@ pub fn fields_from_table(def: &TableDef) -> String {
     let mut fields = String::from("pkey");
     for field in def.fields() {
         fields.push_str(", ");
-        fields.push_str(field.name());
+        fields.push_str(field.name);
     }
 
     fields
@@ -43,24 +42,33 @@ pub fn fields_from_table(def: &TableDef) -> String {
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct CustomerDO {
-    pub pkey: u64,
+pub struct Customer {
+    // pub pkey: u64,
     pub cust_id: String,
     pub cust_name: String,
 }
 
-// type AccountDO = DO<Account>;
+pub type CustomerDO<'a> = DObj<'a, Customer>;
+pub static CUSTOMER_FACTORY: DObjFactory<'static, Customer> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &CUSTOMER,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub prod_id: String,
     pub prod_name: String,
 }
+pub type ProductDO<'a> = DObj<'a, Product>;
+pub static PRODUCT_FACTORY: DObjFactory<'static, Product> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &PRODUCT,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductVer {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub fkey_prod: u64,
     pub maj_ver: u32,
     pub min_ver: u32,
@@ -68,18 +76,28 @@ pub struct ProductVer {
     pub bld_ver: Option<u32>,
     pub bld_tag: Option<String>,
 }
+pub type ProductVerDO<'a> = DObj<'a, ProductVer>;
+pub static PRODUCT_VER_FACTORY: DObjFactory<'static, ProductVer> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &PRODUCT_VERSION,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Service {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub svc_id: String,
     pub svc_name: String,
     pub is_global: String,
 }
+pub type ServiceDO<'a> = DObj<'a, Service>;
+pub static SERVICE_FACTORY: DObjFactory<'static, Service> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &SERVICE,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ServiceVer {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub fkey_svc: String,
     pub maj_ver: u32,
     pub min_ver: u32,
@@ -88,70 +106,93 @@ pub struct ServiceVer {
     pub bld_tag: Option<String>,
     pub schema_def: Option<String>,
 }
+pub type ServiceVerDO<'a> = DObj<'a, ServiceVer>;
+pub static SERVICE_VER_FACTORY: DObjFactory<'static, ServiceVer> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &SERVICE_VERSION,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductService {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub fkey_prod: u64,
     pub fkey_svc: u64,
 }
+pub type ProductServiceDO<'a> = DObj<'a, ProductService>;
+pub static PRODUCT_SERVICE_FACTORY: DObjFactory<'static, ProductService> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &PRODUCT_SERVICE,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Request {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub req_type: String,
     pub req_start: u64,
     pub req_status: String,
 }
+pub type RequestDO<'a> = DObj<'a, Request>;
+pub static REQUEST_FACTORY: DObjFactory<'static, Request> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &REQUEST,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Tenant {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub fkey_acct: u64,
 }
+pub type TenantDO<'a> = DObj<'a, Tenant>;
+pub static TENANT_FACTORY: DObjFactory<'static, Tenant> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &TENANT,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Task {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub fkey_req: u64,
     pub status: String,
 }
+pub type TaskDO<'a> = DObj<'a, Task>;
+pub static TASK_FACTORY: DObjFactory<'static, Task> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &TASK,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductTenant {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub fkey_tnet: u64,
     pub fkey_prod_ver: u64,
 }
+pub type ProductTenantDO<'a> = DObj<'a, ProductTenant>;
+pub static PRODUCT_TENANT_FACTORY: DObjFactory<'static, ProductTenant> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &PRODUCT_TENANT,
+};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Worker {
-    pub pkey: Option<u64>,
+    // pub pkey: Option<u64>,
     pub name: String,
     pub host: String,
     pub port: u32,
     pub status: u32,
     // pub last_check: Time,
 }
+pub type WorkerDO<'a> = DObj<'a, Worker>;
+pub static WOKER_FACTORY: DObjFactory<'static, Worker> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &WORKER,
+};
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Now create the main function
 // ---------------------------------------------------------------------------------------------------------------------
 
-pub fn build_datasource() -> DataSources {
-    let customer_ds: DS<CustomerDO> = DS::from(&CUSTOMER);
-    let service_ds: DS<Service> = DS::from(&SERVICE);
-    let service_ver_ds: DS<ServiceVer> = DS::from(&SERVICE_VERSION);
-    let product_ds: DS<Product> = DS::from(&PRODUCT);
-    let product_ver_ds: DS<ProductVer> = DS::from(&PRODUCT_VERSION);
-    let product_service_ds: DS<ProductService> = DS::from(&PRODUCT_SERVICE);
-    let request_ds: DS<Request> = DS::from(&REQUEST);
-    let task_ds: DS<Task> = DS::from(&TASK);
-    let tenant_ds: DS<Tenant> = DS::from(&TENANT);
-    let product_tenant_ds: DS<ProductTenant> = DS::from(&PRODUCT_TENANT);
-    let worker_ds: DS<Worker> = DS::from(&WORKER);
-
-    let def = Arc::new(SchemaDef {
+pub fn build_schema_def() -> SchemaDef {
+    SchemaDef {
         users: Box::new(HashMap::from([(
             String::from("app"),
             DBUser {
@@ -173,37 +214,5 @@ pub fn build_datasource() -> DataSources {
             (String::from("product_tenant"), &PRODUCT_TENANT),
             (String::from("worker"), &WORKER),
         ])),
-    });
-
-    DataSources {
-        schema_def: def,
-        account: customer_ds,
-        service: service_ds,
-        service_ver: service_ver_ds,
-        product: product_ds,
-        product_ver: product_ver_ds,
-        product_service: product_service_ds,
-        request: request_ds,
-        task: task_ds,
-        tenant: tenant_ds,
-        product_tenant: product_tenant_ds,
-        worker: worker_ds,
     }
-}
-
-pub struct DataSources {
-    pub schema_def: Arc<SchemaDef>,
-
-    // Data Sources
-    pub account: DS<CustomerDO>,
-    pub service: DS<Service>,
-    pub service_ver: DS<ServiceVer>,
-    pub product: DS<Product>,
-    pub product_ver: DS<ProductVer>,
-    pub product_service: DS<ProductService>,
-    pub request: DS<Request>,
-    pub task: DS<Task>,
-    pub tenant: DS<Tenant>,
-    pub product_tenant: DS<ProductTenant>,
-    pub worker: DS<Worker>,
 }

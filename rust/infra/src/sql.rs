@@ -104,11 +104,11 @@ impl<'a> AsSql for SqlFilter<'a> {
 
 #[cfg(test)]
 mod tests {
-    use crate::schema::FieldDef;
+    use crate::schema::FieldSpec;
 
     use super::*;
 
-    const FIELDS: [FieldDef; 0] = [];
+    const FIELDS: [FieldSpec; 0] = [];
 
     #[test]
     fn test_value() {
@@ -243,11 +243,11 @@ pub mod select {
 
     #[cfg(test)]
     mod test {
-        use crate::schema::FieldDef;
+        use crate::schema::FieldSpec;
 
         use super::*;
 
-        const FIELDS: [FieldDef; 0] = [];
+        const FIELDS: [FieldSpec; 0] = [];
 
         #[test]
         fn test_select() {

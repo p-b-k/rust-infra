@@ -2,15 +2,15 @@
 // Mange the account table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use infra::schema::{FieldDef, FieldSpec, TableDef, TypeDef};
+use infra::schema::{FieldSpec, TableDef, TypeDef};
 
-const FIELDS: [FieldDef; 1] = [FieldDef::Field(FieldSpec {
+const FIELDS: [FieldSpec; 1] = [FieldSpec {
     name: "fkey_cust",
     default: None,
     type_def: TypeDef::FKey("customer"),
     nullable: false,
     unique: false,
-})];
+}];
 
 pub const TENANT: TableDef = TableDef {
     name: "tenant",

@@ -2,58 +2,58 @@
 // Mange the account table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use infra::schema::{DataType, FieldDef, FieldSpec, TableDef, TypeDef};
+use infra::schema::{DataType, FieldSpec, TableDef, TypeDef};
 
-const FIELDS: [FieldDef; 7] = [
-    FieldDef::Field(FieldSpec {
+const FIELDS: [FieldSpec; 7] = [
+    FieldSpec {
         name: "fkey_svc",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: false,
         unique: false,
-    }),
-    FieldDef::Field(FieldSpec {
+    },
+    FieldSpec {
         name: "maj_ver",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: false,
         unique: false,
-    }),
-    FieldDef::Field(FieldSpec {
+    },
+    FieldSpec {
         name: "min_ver",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: false,
         unique: false,
-    }),
-    FieldDef::Field(FieldSpec {
+    },
+    FieldSpec {
         name: "rel_ver",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: true,
         unique: false,
-    }),
-    FieldDef::Field(FieldSpec {
+    },
+    FieldSpec {
         name: "bld_ver",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: true,
         unique: false,
-    }),
-    FieldDef::Field(FieldSpec {
+    },
+    FieldSpec {
         name: "bld_tag",
         default: None,
         type_def: TypeDef::Data(DataType::String(128)),
         nullable: true,
         unique: false,
-    }),
-    FieldDef::Field(FieldSpec {
+    },
+    FieldSpec {
         name: "schema_def",
         default: None,
         type_def: TypeDef::Data(DataType::Clob),
         nullable: true,
         unique: false,
-    }),
+    },
 ];
 
 pub const SERVICE_VERSION: TableDef = TableDef {

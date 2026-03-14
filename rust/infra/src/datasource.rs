@@ -2,7 +2,7 @@
 // Generic Datasource trait, and StdDS basic implementation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use crate::schema::{FieldDef, TableDef};
+use crate::schema::TableDef;
 
 use mysql::PooledConn;
 
@@ -62,15 +62,8 @@ where
         let mut fields = String::new();
 
         for field in table_def.fields() {
-            match field {
-                FieldDef::PKey => {
-                    // Do Nothing
-                }
-                field => {
-                    fields.push_str(", ");
-                    fields.push_str(field.name());
-                }
-            }
+            fields.push_str(", ");
+            fields.push_str(field.name);
         }
 
         info!(target: "DS::from", "fields for table {table} = {fields}");
@@ -129,7 +122,7 @@ where
     pub fn all(&self, conn: &mut PooledConn) -> Vec<T> {
         let mut results_vec = Vec::new();
 
-        let table = self.table.clone();
+        let table = self.table;
         let fields = &self.fields;
         let query = format!("SELECT pkey{fields} FROM {table}");
         info!(target : "join", "QUERY: {query}");
