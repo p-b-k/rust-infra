@@ -19,7 +19,7 @@ impl<'a> TableRef<'a> {
         match &self.id {
             None => {
                 let t1 = &self.table;
-                t1.name.clone()
+                String::from(t1.name)
             }
             Some(s) => s.clone(),
         }
@@ -104,13 +104,17 @@ impl<'a> AsSql for SqlFilter<'a> {
 
 #[cfg(test)]
 mod tests {
+    use crate::schema::FieldDef;
+
     use super::*;
+
+    const FIELDS: [FieldDef; 0] = [];
 
     #[test]
     fn test_value() {
         let tdef = TableDef {
-            name: String::from("test"),
-            fields: Vec::from([]),
+            name: "test",
+            fields: &FIELDS,
         };
         assert_eq!(
             SqlValue::Field(FieldId {
@@ -137,8 +141,8 @@ mod tests {
     #[test]
     fn test_filter() {
         let tdef = TableDef {
-            name: String::from("test"),
-            fields: Vec::from([]),
+            name: "test",
+            fields: &FIELDS,
         };
 
         // Basics
@@ -210,7 +214,7 @@ pub mod select {
             let table_id_spec = match &self.tref.id {
                 None => {
                     let tref: &TableDef = self.tref.table;
-                    tref.name.clone()
+                    String::from(tref.name)
                 }
                 Some(id) => {
                     let table_name = &self.tref.table.name;
@@ -239,13 +243,17 @@ pub mod select {
 
     #[cfg(test)]
     mod test {
+        use crate::schema::FieldDef;
+
         use super::*;
+
+        const FIELDS: [FieldDef; 0] = [];
 
         #[test]
         fn test_select() {
             let tdef = TableDef {
-                name: String::from("test"),
-                fields: Vec::from([]),
+                name: "test",
+                fields: &FIELDS,
             };
 
             let sel1 = SqlSelect {

@@ -34,8 +34,11 @@ fn string_to_table_format(fmt: &str) -> Result<TableFormat, String> {
     }
 }
 
-fn table_exists_in_schema<'a>(schema: &'a SchemaDef, table: &str) -> Option<&'a TableDef> {
-    schema.tables.get(table)
+fn table_exists_in_schema<'a>(schema: &'a SchemaDef, table: &str) -> Option<&'static TableDef> {
+    match schema.tables.get(table) {
+        None => None,
+        Some(v) => Some(v),
+    }
 }
 
 fn create_config(schema_def: &SchemaDef) -> AppConfig<'_> {
@@ -85,7 +88,35 @@ fn write_table(table: &TableDef, fmt: &TableFormat) {
             println!("{};", table.create_sql())
         }
     }
-    println!();
+}
+
+fn write_head(fmt: &TableFormat) {
+    match fmt {
+        TableFormat::Json => {
+            println!("[");
+        }
+        _ => {}
+    }
+}
+
+fn write_sep(fmt: &TableFormat) {
+    match fmt {
+        TableFormat::Json => {
+            println!(",");
+        }
+        _ => {
+            println!();
+        }
+    }
+}
+
+fn write_tail(fmt: &TableFormat) {
+    match fmt {
+        TableFormat::Json => {
+            println!("]");
+        }
+        _ => {}
+    }
 }
 
 fn main() {
@@ -94,9 +125,17 @@ fn main() {
     let ds = build_datasource();
     let cfg = create_config(&ds.schema_def);
 
+    write_head(&cfg.format);
+    let mut first = true;
+
     match cfg.tables {
         None => {
             for (_, table) in ds.schema_def.tables.iter() {
+                if first {
+                    first = false;
+                } else {
+                    write_sep(&cfg.format);
+                }
                 write_table(table, &cfg.format);
             }
         }
@@ -106,4 +145,5 @@ fn main() {
             }
         }
     }
+    write_tail(&cfg.format);
 }

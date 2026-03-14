@@ -20,7 +20,7 @@ pub enum DataType {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum TypeDef {
     PKey,
-    FKey(String),
+    FKey(&'static str),
     Data(DataType),
 }
 
@@ -67,11 +67,11 @@ impl Display for TypeDef {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct FieldSpec {
-    pub name: String,
+    pub name: &'static str,
     pub type_def: TypeDef,
     pub nullable: bool,
     pub unique: bool,
-    pub default: Option<String>,
+    pub default: Option<&'static str>,
 }
 
 impl Display for FieldSpec {
@@ -80,7 +80,7 @@ impl Display for FieldSpec {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub enum FieldDef {
     PKey,
     Field(FieldSpec),
@@ -90,7 +90,7 @@ impl FieldDef {
     pub fn name(&self) -> &str {
         match self {
             FieldDef::PKey => "pkey",
-            FieldDef::Field(field_spec) => field_spec.name.as_str(),
+            FieldDef::Field(field_spec) => field_spec.name,
         }
     }
 
@@ -144,10 +144,10 @@ impl Display for FieldDef {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub struct TableDef {
-    pub name: String,
-    pub fields: Vec<FieldDef>,
+    pub name: &'static str,
+    pub fields: &'static [FieldDef],
 }
 
 impl Display for TableDef {
@@ -159,7 +159,7 @@ impl Display for TableDef {
 impl TableDef {
     pub fn print(&self) {
         println!("TABLE:{}", self.name);
-        for field in self.fields.clone().into_iter() {
+        for field in self.fields {
             field.print();
         }
         println!();
@@ -240,9 +240,9 @@ pub struct DBUser {
     pub grants: Box<Vec<GrantInfo>>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct SchemaDef {
-    pub tables: Box<HashMap<String, TableDef>>,
+    pub tables: Box<HashMap<String, &'static TableDef>>,
     pub users: Box<HashMap<String, DBUser>>,
 }
 

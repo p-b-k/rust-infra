@@ -4,24 +4,24 @@
 
 use infra::schema::{DataType, FieldDef, FieldSpec, TableDef, TypeDef};
 
-pub fn init() -> TableDef {
-    TableDef {
-        name: String::from("task"),
-        fields: Vec::from([
-            FieldDef::Field(FieldSpec {
-                name: String::from("fkey_req"),
-                default: None,
-                type_def: TypeDef::FKey(String::from("request")),
-                nullable: false,
-                unique: false,
-            }),
-            FieldDef::Field(FieldSpec {
-                name: String::from("status"),
-                default: Some(String::from("'PENDING'")),
-                type_def: TypeDef::Data(DataType::String(32)),
-                nullable: false,
-                unique: false,
-            }),
-        ]),
-    }
-}
+const FIELDS: [FieldDef; 2] = [
+    FieldDef::Field(FieldSpec {
+        name: "fkey_req",
+        default: None,
+        type_def: TypeDef::FKey("request"),
+        nullable: false,
+        unique: false,
+    }),
+    FieldDef::Field(FieldSpec {
+        name: "status",
+        default: Some("'PENDING'"),
+        type_def: TypeDef::Data(DataType::String(32)),
+        nullable: false,
+        unique: false,
+    }),
+];
+
+pub const TASK: TableDef = TableDef {
+    name: "task",
+    fields: &FIELDS,
+};

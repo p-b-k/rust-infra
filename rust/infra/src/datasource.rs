@@ -36,7 +36,7 @@ where
     T: Clone,
 {
     phantom: PhantomData<T>,
-    pub table: String,
+    pub table: &'static str,
     pub fields: String,
 }
 
@@ -46,11 +46,11 @@ where
     T: Clone,
 {
     // Construct a new DS
-    pub fn new(name: &str, fields: &str) -> DS<T> {
+    pub fn new(name: &'static str, fields: &str) -> DS<T> {
         let phantom: PhantomData<T> = PhantomData {};
         DS {
             phantom,
-            table: String::from(name),
+            table: name,
             fields: String::from(fields),
         }
     }
@@ -58,7 +58,7 @@ where
     // Construct a new DS from a table
     pub fn from(table_def: &TableDef) -> DS<T> {
         let phantom = PhantomData {};
-        let table = table_def.name.clone();
+        let table = table_def.name;
         let mut fields = String::new();
 
         for field in table_def.fields() {
@@ -112,7 +112,7 @@ where
         T: FromRow,
         T: Clone,
     {
-        let table = self.table.clone();
+        let table = self.table;
         let fields = &self.fields;
         let query = format!("SELECT pkey{fields} FROM {table} WHERE {fkey} = {pkey}");
         info!(target : "join", "QUERY: {query}");

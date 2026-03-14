@@ -10,17 +10,17 @@ use infra::datasource::DS;
 
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
-use tables::account::init as mk_acct;
-use tables::product::init as mk_prod;
-use tables::product_service::init as mk_prod_svc;
-use tables::product_tenant::init as mk_prod_tent;
-use tables::product_ver::init as mk_prod_ver;
-use tables::request::init as mk_req;
-use tables::service::init as mk_svc;
-use tables::service_ver::init as mk_svc_ver;
-use tables::task::init as mk_task;
-use tables::tenant::init as mk_tent;
-use tables::worker::init as mk_worker;
+use tables::customer::CUSTOMER;
+use tables::product::PRODUCT;
+use tables::product_service::PRODUCT_SERVICE;
+use tables::product_tenant::PRODUCT_TENANT;
+use tables::product_ver::PRODUCT_VERSION;
+use tables::request::REQUEST;
+use tables::service::SERVICE;
+use tables::service_ver::SERVICE_VERSION;
+use tables::task::TASK;
+use tables::tenant::TENANT;
+use tables::worker::WORKER;
 
 // use time::Time;
 
@@ -43,10 +43,10 @@ pub fn fields_from_table(def: &TableDef) -> String {
 // ---------------------------------------------------------------------------------------------------------------------
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct AccountDO {
-    pub pkey: Option<u64>,
-    pub acct_id: String,
-    pub acct_name: String,
+pub struct CustomerDO {
+    pub pkey: u64,
+    pub cust_id: String,
+    pub cust_name: String,
 }
 
 // type AccountDO = DO<Account>;
@@ -139,29 +139,17 @@ pub struct Worker {
 // ---------------------------------------------------------------------------------------------------------------------
 
 pub fn build_datasource() -> DataSources {
-    let account = mk_acct();
-    let product = mk_prod();
-    let product_ver = mk_prod_ver();
-    let service = mk_svc();
-    let service_ver = mk_svc_ver();
-    let product_service = mk_prod_svc();
-    let request = mk_req();
-    let task = mk_task();
-    let tenant = mk_tent();
-    let product_tenant = mk_prod_tent();
-    let worker = mk_worker();
-
-    let account_ds: DS<AccountDO> = DS::from(&account);
-    let service_ds: DS<Service> = DS::from(&service);
-    let service_ver_ds: DS<ServiceVer> = DS::from(&service_ver);
-    let product_ds: DS<Product> = DS::from(&product);
-    let product_ver_ds: DS<ProductVer> = DS::from(&product_ver);
-    let product_service_ds: DS<ProductService> = DS::from(&product_service);
-    let request_ds: DS<Request> = DS::from(&request);
-    let task_ds: DS<Task> = DS::from(&task);
-    let tenant_ds: DS<Tenant> = DS::from(&tenant);
-    let product_tenant_ds: DS<ProductTenant> = DS::from(&product_tenant);
-    let worker_ds: DS<Worker> = DS::from(&worker);
+    let customer_ds: DS<CustomerDO> = DS::from(&CUSTOMER);
+    let service_ds: DS<Service> = DS::from(&SERVICE);
+    let service_ver_ds: DS<ServiceVer> = DS::from(&SERVICE_VERSION);
+    let product_ds: DS<Product> = DS::from(&PRODUCT);
+    let product_ver_ds: DS<ProductVer> = DS::from(&PRODUCT_VERSION);
+    let product_service_ds: DS<ProductService> = DS::from(&PRODUCT_SERVICE);
+    let request_ds: DS<Request> = DS::from(&REQUEST);
+    let task_ds: DS<Task> = DS::from(&TASK);
+    let tenant_ds: DS<Tenant> = DS::from(&TENANT);
+    let product_tenant_ds: DS<ProductTenant> = DS::from(&PRODUCT_TENANT);
+    let worker_ds: DS<Worker> = DS::from(&WORKER);
 
     let def = Arc::new(SchemaDef {
         users: Box::new(HashMap::from([(
@@ -173,23 +161,23 @@ pub fn build_datasource() -> DataSources {
         )])),
 
         tables: Box::new(HashMap::from([
-            (String::from("account"), account),
-            (String::from("service"), service),
-            (String::from("service_ver"), service_ver),
-            (String::from("product"), product),
-            (String::from("product_ver"), product_ver),
-            (String::from("product_service"), product_service),
-            (String::from("request"), request),
-            (String::from("task"), task),
-            (String::from("tenant"), tenant),
-            (String::from("product_tenant"), product_tenant),
-            (String::from("worker"), worker),
+            (String::from("customer"), &CUSTOMER),
+            (String::from("service"), &SERVICE),
+            (String::from("service_ver"), &SERVICE_VERSION),
+            (String::from("product"), &PRODUCT),
+            (String::from("product_ver"), &PRODUCT_VERSION),
+            (String::from("product_service"), &PRODUCT_SERVICE),
+            (String::from("request"), &REQUEST),
+            (String::from("task"), &TASK),
+            (String::from("tenant"), &TENANT),
+            (String::from("product_tenant"), &PRODUCT_TENANT),
+            (String::from("worker"), &WORKER),
         ])),
     });
 
     DataSources {
         schema_def: def,
-        account: account_ds,
+        account: customer_ds,
         service: service_ds,
         service_ver: service_ver_ds,
         product: product_ds,
@@ -207,7 +195,7 @@ pub struct DataSources {
     pub schema_def: Arc<SchemaDef>,
 
     // Data Sources
-    pub account: DS<AccountDO>,
+    pub account: DS<CustomerDO>,
     pub service: DS<Service>,
     pub service_ver: DS<ServiceVer>,
     pub product: DS<Product>,
