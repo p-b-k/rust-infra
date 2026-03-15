@@ -16,15 +16,31 @@ use serde::Serialize;
 
 use crate::schema::TableDef;
 
-#[derive(Clone, Serialize, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DObj<'a, T>
 where
     T: FromRow,
     T: Clone,
+    T: Serialize,
 {
     pub table: &'a TableDef,
     pub pkey: Option<u64>,
     pub obj: T,
+}
+
+impl<'a, T> Serialize for DObj<'a, T>
+where
+    T: FromRow,
+    T: Clone,
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let s = (self.pkey, &self.obj).serialize(serializer).unwrap();
+        Ok(s)
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -41,6 +57,7 @@ impl<'a, T> DObjFactory<'a, T>
 where
     T: Clone,
     T: FromRow,
+    T: Serialize,
 {
     pub fn new(&self, obj: T) -> DObj<'a, T> {
         DObj {

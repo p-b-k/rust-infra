@@ -105,7 +105,7 @@ function rePopulateBody (tbody, tableId) {
           let tr = document.createElement('tr');
           tbody.appendChild(tr);
           headData.columns.forEach (function (col) {
-            appendBodyTd (tr, row, col);
+            appendBodyTd (tr, row[1], col);
           });
         });
       } else {
