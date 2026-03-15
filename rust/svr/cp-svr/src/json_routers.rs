@@ -4,13 +4,15 @@
 
 use axum::{Json, Router, extract::State, routing::get};
 
-use mysql::prelude::{FromRow, Queryable};
+use cplane::schema::{PRODUCT_FACTORY, ProductDO, SERVICE_FACTORY, ServiceDO};
+use mysql::{
+    PooledConn,
+    prelude::{FromRow, Queryable},
+};
 use std::sync::Arc;
 
 use crate::state::AppState;
 use ui::table::{ColumnDef, TableDef};
-
-use cplane::data::{Product, Service};
 
 use log::debug;
 
@@ -82,32 +84,24 @@ async fn get_prod_test_head() -> Json<Box<TableDef>> {
     }))
 }
 
-async fn get_prod_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
-    let products = get_table_body(
-        state,
-        &String::from("SELECT pkey, prod_id, prod_name FROM product"),
-        |(pkey, prod_id, prod_name)| Product {
-            pkey,
-            prod_id,
-            prod_name,
-        },
-    )
-    .await;
+async fn get_prod_test_body<'a>(State(state): State<Arc<AppState>>) -> Json<Vec<ProductDO<'a>>> {
+    let mut pool = state.pool.lock().unwrap();
+    let mut_pool = pool.as_mut();
+    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+
+    let products = PRODUCT_FACTORY.all(&mut conn).unwrap();
+
+    debug!(target: "get_prod_test_body", "products = {products:?}");
 
     Json(products)
 }
 
-async fn get_prod_test_refresh(State(state): State<Arc<AppState>>) -> Json<Vec<Product>> {
-    let products = get_table_body(
-        state,
-        &String::from("SELECT pkey, prod_id, prod_name FROM product"),
-        |(pkey, prod_id, prod_name)| Product {
-            pkey,
-            prod_id,
-            prod_name,
-        },
-    )
-    .await;
+async fn get_prod_test_refresh<'a>(State(state): State<Arc<AppState>>) -> Json<Vec<ProductDO<'a>>> {
+    let mut pool = state.pool.lock().unwrap();
+    let mut_pool = pool.as_mut();
+    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+
+    let products = PRODUCT_FACTORY.all(&mut conn).unwrap();
 
     Json(products)
 }
@@ -132,21 +126,18 @@ async fn get_svc_test_head() -> Json<Box<TableDef>> {
     }))
 }
 
-async fn get_svc_test_search(State(_state): State<Arc<AppState>>) -> Json<Vec<Service>> {
+async fn get_svc_test_search<'a>(State(_state): State<Arc<AppState>>) -> Json<Vec<ServiceDO<'a>>> {
     Json(Vec::from([]))
 }
 
-async fn get_svc_test_body(State(state): State<Arc<AppState>>) -> Json<Vec<Service>> {
-    let services = get_table_body(
-        state,
-        &String::from("SELECT pkey, svc_id, svc_name FROM service"),
-        |(pkey, svc_id, svc_name)| Service {
-            pkey,
-            svc_id,
-            svc_name,
-        },
-    )
-    .await;
+async fn get_svc_test_body<'a>(State(state): State<Arc<AppState>>) -> Json<Vec<ServiceDO<'a>>> {
+    let mut pool = state.pool.lock().unwrap();
+    let mut_pool = pool.as_mut();
+    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+
+    let services = SERVICE_FACTORY.all(&mut conn).unwrap();
+
+    debug!(target: "get_svc_test_body", "services = {services:?}");
 
     Json(services)
 }

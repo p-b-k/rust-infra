@@ -19,6 +19,7 @@ use crate::schema::TableDef;
 #[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub struct DObj<'a, T>
 where
+    T: FromRow,
     T: Clone,
 {
     pub table: &'a TableDef,
@@ -27,7 +28,11 @@ where
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct DObjFactory<'a, T> {
+pub struct DObjFactory<'a, T>
+where
+    T: Clone,
+    T: FromRow,
+{
     pub phantom: PhantomData<T>,
     pub table: &'a TableDef,
 }
