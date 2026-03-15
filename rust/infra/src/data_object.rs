@@ -7,9 +7,9 @@
 
 use std::marker::PhantomData;
 
-use log::{error, info};
+use log::info;
 use mysql::{
-    PooledConn,
+    Error, PooledConn, Row,
     prelude::{FromRow, Queryable},
 };
 use serde::Serialize;
@@ -99,7 +99,7 @@ where
         conn: &mut PooledConn,
         pkey: u64,
         fkey: &String,
-    ) -> Result<Vec<DObj<'a, T>>, String>
+    ) -> Result<Vec<DObj<'a, T>>, Error>
     where
         T: FromRow,
         T: Clone,
@@ -109,36 +109,23 @@ where
         let query = format!("SELECT pkey, {fields} FROM {table} WHERE {fkey} = {pkey}");
         info!(target : "join", "QUERY: {query}");
 
-        let res = conn.query_map(query, |x: T| self.new(x));
-        match res {
-            Ok(product_vers) => Ok(product_vers),
-            Err(err) => Err(format!(
-                "Error retrieving {table} {pkey}: {}",
-                err.to_string()
-            )),
-        }
+        conn.query_map(query, |row: Row| {
+            let pkey = row.get("pkey").unwrap();
+            let obj: T = T::from_row(row);
+            return self.from(obj, pkey);
+        })
     }
 
-    pub fn all(&self, conn: &mut PooledConn) -> Vec<DObj<'a, T>> {
-        let mut results_vec = Vec::new();
-
+    pub fn all(&self, conn: &mut PooledConn) -> Result<Vec<DObj<'a, T>>, Error> {
         let table = self.table.name;
         let fields = &self.fields();
         let query = format!("SELECT pkey, {fields} FROM {table}");
         info!(target : "all", "QUERY: {query}");
 
-        // let res = conn.query_iter(query);
-
-        let res = conn.query_map(query, |x: T| self.new(x));
-        match res {
-            Ok(res) => {
-                for r in res {
-                    results_vec.push(r);
-                }
-            }
-            Err(err) => error!("Error retrieving data from {table}: {}", err.to_string()),
-        }
-
-        results_vec
+        conn.query_map(query, |row: Row| {
+            let pkey = row.get("pkey").unwrap();
+            let obj: T = T::from_row(row);
+            return self.from(obj, pkey);
+        })
     }
 }

@@ -25,12 +25,12 @@ fn main() {
 
     info!("Created product datasource, about to try and retrieve product");
 
-    let get_cust_0 = true;
-    let get_prod_0 = true;
-    let get_prod_ver_0 = true;
-    let get_svc_0 = true;
-    let get_svc_ver_0 = true;
-    let get_prod_ver_join = false;
+    let get_cust_0 = false;
+    let get_prod_0 = false;
+    let get_prod_ver_0 = false;
+    let get_svc_0 = false;
+    let get_svc_ver_0 = false;
+    let get_prod_ver_join = true;
     let get_prod_all = true;
 
     if get_cust_0 {
@@ -127,12 +127,12 @@ fn main() {
 
     if get_prod_all {
         info!("Getting all products");
-        let res = PRODUCT_FACTORY.all(&mut conn);
+        let res = PRODUCT_FACTORY.all(&mut conn).unwrap();
 
         debug!("Got result");
 
         for prod in res {
-            println!("Got product {:?}", prod.obj);
+            println!("Got product {:?}/{:?}", prod.pkey, prod.obj);
         }
     }
 }
