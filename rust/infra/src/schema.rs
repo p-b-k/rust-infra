@@ -162,6 +162,10 @@ impl TableDef {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub enum GrantInfo {
     All,
+    Select,
+    Insert,
+    Update,
+    Delete,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]

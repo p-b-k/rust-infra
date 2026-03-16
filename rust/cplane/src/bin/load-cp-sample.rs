@@ -1,8 +1,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// init-cp-db -- initialize the cplan database
+// load-cp-sample -- load the sample data into an empty database
+// User requires INSERT, SELECT, DELETE, UPDATE rights on the tables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::app::DbConfig;
+use cplane::{app::DbConfig, schema::build_schema_def};
+use infra::schema::TableDef;
+use mysql::{
+    Conn, OptsBuilder, Params, Pool, PooledConn,
+    prelude::{FromRow, Queryable},
+};
 
 use std::env;
 
@@ -10,9 +16,6 @@ use log::debug;
 
 struct AppConfig {
     pub db: DbConfig,
-    pub root_pass: String,
-    pub sample: bool,
-    pub local: bool,
 }
 
 impl AppConfig {
@@ -25,13 +28,10 @@ impl AppConfig {
                 host: String::from("localhost"),
                 port: 1521,
             },
-            root_pass: String::from("secret"),
-            sample: false,
-            local: true,
         }
     }
 
-    pub fn as_user_url(&self) -> String {
+    pub fn as_url(&self) -> String {
         let host = self.db.host.clone();
         let name = self.db.name.clone();
         let port = self.db.port;
@@ -39,15 +39,6 @@ impl AppConfig {
         let pass = self.db.pass.clone();
 
         format!("mysql://{user}:{pass}@{host}:{port}/{name}")
-    }
-
-    pub fn as_root_url(&self) -> String {
-        let host = self.db.host.clone();
-        let name = self.db.name.clone();
-        let port = self.db.port;
-        let pass = self.root_pass.clone();
-
-        format!("mysql://root:{pass}@{host}:{port}/{name}")
     }
 }
 
@@ -59,44 +50,31 @@ fn main() {
 
     process_parameters(&mut cfg);
 
-    let root_url = cfg.as_root_url();
-    println!("database root url = {root_url:?}");
-    println!("* create db = {:?}", stmt_create_db(&cfg));
-    println!("* create user = {:?}", stmt_create_user(&cfg));
-    println!("* grant roles to user = {:?}", stmt_grant_roles(&cfg));
+    let url = cfg.as_url();
+    println!("database url = {url:?}");
 
-    let user_url = cfg.as_user_url();
-    println!("database user url = {user_url:?}");
+    let def = build_schema_def();
+
+    let conn = Pool::new(url.as_str()).unwrap();
+
+    def.tables
+        .iter()
+        .for_each(|(_, tdef)| match create_table(&conn, tdef) {
+            Some(err_msg) => panic!("Failed to create: {err_msg}"),
+            _ => (),
+        });
 }
 
-// fn configure_
+/// Return error message, or none
+fn create_table<T>(conn: &PooledConn, tdef: &TableDef) -> Option<String>
+where
+    T: FromRow,
+{
+    let sql = tdef.create_sql();
+    println!("{sql}");
+    conn.exec_opt(sql, Params::Empty);
 
-fn stmt_create_db(cfg: &AppConfig) -> String {
-    format!("CREATE DATABASE {}", cfg.db.name)
-}
-
-fn stmt_create_user(cfg: &AppConfig) -> String {
-    let user = cfg.db.user.clone();
-    let host = if cfg.local {
-        String::from("localhost")
-    } else {
-        env::var("HOSTNAME").unwrap()
-    };
-    let pass = cfg.db.pass.clone();
-
-    format!("CREATE USER {user}@{host} IDENTIFIED BY '{pass}'")
-}
-
-fn stmt_grant_roles(cfg: &AppConfig) -> String {
-    let user = cfg.db.user.clone();
-    let host = if cfg.local {
-        String::from("localhost")
-    } else {
-        env::var("HOSTNAME").unwrap()
-    };
-    let name = cfg.db.name.clone();
-
-    format!("GRANT ALL ON {name}.* TO {user}@{host}")
+    None
 }
 
 fn process_parameters(cfg: &mut AppConfig) {
@@ -127,13 +105,6 @@ fn process_parameters(cfg: &mut AppConfig) {
             i = i + 1;
             cfg.db.pass = args[i].clone();
             debug!(target: "read_parameters", "pass = {}", cfg.db.pass);
-        } else if next == "--root-pass" {
-            i = i + 1;
-            cfg.root_pass = args[i].clone();
-            debug!(target: "read_parameters", "root_pass = {}", cfg.root_pass);
-        } else if next == "--sample" {
-            cfg.sample = true;
-            debug!(target: "read_parameters", "add sample data");
         } else {
             panic!("Unknown paramater: {next}");
         }
