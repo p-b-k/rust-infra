@@ -7,7 +7,7 @@
 
 use std::marker::PhantomData;
 
-use log::info;
+use log::debug;
 use mysql::{
     Error, PooledConn, Row,
     prelude::{FromRow, Queryable},
@@ -101,7 +101,7 @@ where
         let table = &self.table.name;
         let fields = &self.fields();
         let query = format!("SELECT {fields} FROM {table} WHERE pkey = {pkey}");
-        info!(target : "fetch", "QUERY: {query}");
+        debug!(target : "fetch", "QUERY: {query}");
         let res = conn.query_map(query, |x: T| x);
         match res {
             Ok(vec) => match vec.len() {
@@ -129,7 +129,7 @@ where
         let table = self.table.name;
         let fields = &self.fields();
         let query = format!("SELECT pkey, {fields} FROM {table} WHERE {fkey} = {pkey}");
-        info!(target : "join", "QUERY: {query}");
+        debug!(target : "join", "QUERY: {query}");
 
         conn.query_map(query, |row: Row| {
             let pkey = row.get("pkey").unwrap();
@@ -142,7 +142,7 @@ where
         let table = self.table.name;
         let fields = &self.fields();
         let query = format!("SELECT pkey, {fields} FROM {table}");
-        info!(target : "all", "QUERY: {query}");
+        debug!(target : "all", "QUERY: {query}");
 
         conn.query_map(query, |row: Row| {
             let pkey = row.get("pkey").unwrap();

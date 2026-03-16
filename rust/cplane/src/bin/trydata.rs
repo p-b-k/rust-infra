@@ -25,11 +25,11 @@ fn main() {
 
     info!("Created product datasource, about to try and retrieve product");
 
-    let get_cust_0 = false;
-    let get_prod_0 = false;
-    let get_prod_ver_0 = false;
-    let get_svc_0 = false;
-    let get_svc_ver_0 = false;
+    let get_cust_0 = true;
+    let get_prod_0 = true;
+    let get_prod_ver_0 = true;
+    let get_svc_0 = true;
+    let get_svc_ver_0 = true;
     let get_prod_ver_join = true;
     let get_prod_all = true;
 

@@ -128,7 +128,7 @@ impl TableDef {
     pub fn create_sql(&self) -> String {
         let mut buff = String::new();
         buff.push_str(format!("CREATE TABLE {}", self.name).as_str());
-        buff.push_str("(pkey INTEGER PRIMARY KEY");
+        buff.push_str("(pkey INTEGER PRIMARY KEY AUTO_INCREMENT");
         for field in self.fields() {
             buff.push_str(", ");
             buff.push_str(&field.name);
