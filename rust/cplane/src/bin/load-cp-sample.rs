@@ -6,8 +6,8 @@
 use cplane::{app::DbConfig, schema::build_schema_def};
 use infra::schema::TableDef;
 use mysql::{
-    Conn, OptsBuilder, Params, Pool, PooledConn,
-    prelude::{FromRow, Queryable},
+     Params, Pool, PooledConn,
+    prelude::{ Queryable},
 };
 
 use std::env;
@@ -26,7 +26,7 @@ impl AppConfig {
                 user: String::from("cp_app"),
                 pass: String::from("secret"),
                 host: String::from("localhost"),
-                port: 1521,
+                port: 3306,
             },
         }
     }
@@ -48,33 +48,38 @@ fn main() {
     println!("Initializing ...");
     let mut cfg = AppConfig::new();
 
+    println!("Processing Parameters ...");
     process_parameters(&mut cfg);
 
     let url = cfg.as_url();
-    println!("database url = {url:?}");
+    println!("Database url = {url:?}");
 
     let def = build_schema_def();
 
-    let conn = Pool::new(url.as_str()).unwrap();
+    println!("About to get pool ...");
+    let pool = Pool::new(url.as_str()).unwrap();
 
+    println!("About to get connection ...");
+    let mut conn = pool.get_conn().unwrap();
+
+    println!("About to get iterate over tables ...");
     def.tables
         .iter()
-        .for_each(|(_, tdef)| match create_table(&conn, tdef) {
+        .for_each(|(_, tdef)| match create_table(&mut conn, tdef) {
             Some(err_msg) => panic!("Failed to create: {err_msg}"),
             _ => (),
         });
 }
 
 /// Return error message, or none
-fn create_table<T>(conn: &PooledConn, tdef: &TableDef) -> Option<String>
-where
-    T: FromRow,
+fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String>
 {
     let sql = tdef.create_sql();
     println!("{sql}");
-    conn.exec_opt(sql, Params::Empty);
-
-    None
+    match conn.exec_drop(sql, Params::Empty) {
+        Ok(_) => None,
+        Err(_) => Some(String::from("An Error Happened"))
+    }
 }
 
 fn process_parameters(cfg: &mut AppConfig) {
@@ -96,7 +101,7 @@ fn process_parameters(cfg: &mut AppConfig) {
         } else if next == "--name" {
             i = i + 1;
             cfg.db.name = args[i].clone();
-            debug!(target: "read_parameters", "name{}", cfg.db.name);
+            debug!(target: "read_parameters", "name = {}", cfg.db.name);
         } else if next == "--user" {
             i = i + 1;
             cfg.db.user = args[i].clone();
