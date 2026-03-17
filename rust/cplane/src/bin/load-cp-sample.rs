@@ -5,10 +5,7 @@
 
 use cplane::{app::DbConfig, schema::build_schema_def};
 use infra::schema::TableDef;
-use mysql::{
-     Params, Pool, PooledConn,
-    prelude::{ Queryable},
-};
+use mysql::{Params, Pool, PooledConn, prelude::Queryable};
 
 use std::env;
 
@@ -51,34 +48,36 @@ fn main() {
     println!("Processing Parameters ...");
     process_parameters(&mut cfg);
 
-    let url = cfg.as_url();
-    println!("Database url = {url:?}");
+    let root_url = cfg.as_url();
+    println!("Database root url = {root_url:?}");
 
     let def = build_schema_def();
 
-    println!("About to get pool ...");
-    let pool = Pool::new(url.as_str()).unwrap();
+    println!("About to get user pool ...");
+    let user_url = cfg.as_url();
 
-    println!("About to get connection ...");
-    let mut conn = pool.get_conn().unwrap();
+    println!("Database user url = {user_url:?}");
+    let user_pool = Pool::new(user_url.as_str()).unwrap();
+
+    println!("About to get user connection ...");
+    let mut user_conn = user_pool.get_conn().unwrap();
 
     println!("About to get iterate over tables ...");
     def.tables
         .iter()
-        .for_each(|(_, tdef)| match create_table(&mut conn, tdef) {
+        .for_each(|(_, tdef)| match create_table(&mut user_conn, tdef) {
             Some(err_msg) => panic!("Failed to create: {err_msg}"),
             _ => (),
         });
 }
 
 /// Return error message, or none
-fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String>
-{
+fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
     let sql = tdef.create_sql();
     println!("{sql}");
     match conn.exec_drop(sql, Params::Empty) {
         Ok(_) => None,
-        Err(_) => Some(String::from("An Error Happened"))
+        Err(_) => Some(String::from("An Error Happened")),
     }
 }
 

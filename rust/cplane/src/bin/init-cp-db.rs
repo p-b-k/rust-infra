@@ -2,16 +2,14 @@
 // init-cp-db -- initialize the cplan database
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::app::DbConfig;
-
 use std::env;
 
-use mysql::{
-     Params, Pool,
-    prelude::{ Queryable},
-};
+use infra::schema::{SchemaDef, TableDef};
+use log::{debug, error};
 
-use log::debug;
+use mysql::{Params, Pool, PooledConn, prelude::Queryable};
+
+use cplane::{app::DbConfig, schema::build_schema_def};
 
 struct AppConfig {
     pub db: DbConfig,
@@ -67,37 +65,89 @@ fn main() {
 
     process_parameters(&mut cfg);
 
-    let root_url = cfg.as_root_url();
-    println!("database root url = {root_url:?}");
+    initialize_db(&cfg);
 
-    let pool = Pool::new(root_url.as_str()).unwrap();
-    println!("Got pool ...");
+    let def = build_schema_def();
 
-    let mut conn = pool.get_conn().unwrap();
-    println!("Got connection ...");
-
-    println!("* create db = {:?}", stmt_create_db(&cfg));
-    match conn.exec_drop(stmt_create_db(&cfg), Params::Empty) {
-        Ok(_) => None,
-        Err(_) => Some(String::from("An Error Happened"))
-    };
-    println!("* create user = {:?}", stmt_create_user(&cfg));
-    match conn.exec_drop(stmt_create_user(&cfg), Params::Empty) {
-        Ok(_) => None,
-        Err(_) => Some(String::from("An Error Happened"))
-    };
-    println!("* grant roles to user = {:?}", stmt_grant_roles(&cfg));
-    match conn.exec_drop(stmt_grant_roles(&cfg), Params::Empty) {
-        Ok(_) => None,
-        Err(_) => Some(String::from("An Error Happened"))
-    };
+    println!("* initialize schema ...");
+    initialize_schema(&cfg, &def);
 
     let user_url = cfg.as_user_url();
     println!("database user url = {user_url:?}");
 }
 
-// fn configure_
+fn initialize_schema(cfg: &AppConfig, def: &SchemaDef) {
+    let user_url = cfg.as_user_url();
+    println!("database root url = {user_url:?}");
 
+    let user_pool = Pool::new(user_url.as_str()).unwrap();
+    println!("Got pool ...");
+
+    let mut user_conn = user_pool.get_conn().unwrap();
+    println!("Got connection ...");
+
+    match init_schema(&def, &mut user_conn) {
+        Some(msgs) => {
+            println!("Completed with errors:");
+            msgs.iter().for_each(|msg| println!("{}", msg));
+            false
+        }
+        _ => true,
+    };
+}
+
+fn initialize_db(cfg: &AppConfig) {
+    let root_url = cfg.as_root_url();
+    println!("database root url = {root_url:?}");
+
+    let root_pool = Pool::new(root_url.as_str()).unwrap();
+    println!("Got pool ...");
+
+    let mut root_conn = root_pool.get_conn().unwrap();
+    println!("Got connection ...");
+
+    println!("* create db = {:?}", stmt_create_db(&cfg));
+    match root_conn.exec_drop(stmt_create_db(&cfg), Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
+
+    println!("* create user = {:?}", stmt_create_user(&cfg));
+    match root_conn.exec_drop(stmt_create_user(&cfg), Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
+    println!("* grant roles to user = {:?}", stmt_grant_roles(&cfg));
+    match root_conn.exec_drop(stmt_grant_roles(&cfg), Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
+}
+
+fn init_schema(def: &SchemaDef, conn: &mut PooledConn) -> Option<Vec<String>> {
+    let mut vec: Vec<String> = Vec::from([]);
+
+    def.tables
+        .iter()
+        .for_each(|(_, tdef)| match create_table(conn, tdef) {
+            Some(err_msg) => {
+                error!("Error creating table {}: {err_msg}", tdef.name);
+                vec.push(format!("{}, {err_msg}", tdef.name))
+            }
+            _ => (),
+        });
+
+    None
+}
+
+fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
+    let sql = tdef.create_sql();
+    println!("Running {sql}");
+    match conn.exec_drop(sql, Params::Empty) {
+        Ok(_) => None,
+        Err(_) => Some(String::from("An Error Happened")),
+    }
+}
 fn stmt_create_db(cfg: &AppConfig) -> String {
     format!("CREATE DATABASE {}", cfg.db.name)
 }
