@@ -6,6 +6,11 @@ use cplane::app::DbConfig;
 
 use std::env;
 
+use mysql::{
+     Params, Pool,
+    prelude::{ Queryable},
+};
+
 use log::debug;
 
 struct AppConfig {
@@ -61,9 +66,28 @@ fn main() {
 
     let root_url = cfg.as_root_url();
     println!("database root url = {root_url:?}");
+
+    let pool = Pool::new(root_url.as_str()).unwrap();
+    println!("Got pool ...");
+
+    let mut conn = pool.get_conn().unwrap();
+    println!("Got connection ...");
+
     println!("* create db = {:?}", stmt_create_db(&cfg));
+    match conn.exec_drop(stmt_create_db(&cfg), Params::Empty) {
+        Ok(_) => None,
+        Err(_) => Some(String::from("An Error Happened"))
+    };
     println!("* create user = {:?}", stmt_create_user(&cfg));
+    match conn.exec_drop(stmt_create_user(&cfg), Params::Empty) {
+        Ok(_) => None,
+        Err(_) => Some(String::from("An Error Happened"))
+    };
     println!("* grant roles to user = {:?}", stmt_grant_roles(&cfg));
+    match conn.exec_drop(stmt_grant_roles(&cfg), Params::Empty) {
+        Ok(_) => None,
+        Err(_) => Some(String::from("An Error Happened"))
+    };
 
     let user_url = cfg.as_user_url();
     println!("database user url = {user_url:?}");
