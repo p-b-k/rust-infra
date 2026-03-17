@@ -15,6 +15,7 @@ use log::debug;
 
 struct AppConfig {
     pub db: DbConfig,
+    pub root_user: String,
     pub root_pass: String,
     pub sample: bool,
     pub local: bool,
@@ -28,8 +29,9 @@ impl AppConfig {
                 user: String::from("cp_app"),
                 pass: String::from("secret"),
                 host: String::from("localhost"),
-                port: 1521,
+                port: 3306,
             },
+            root_user: String::from("root"),
             root_pass: String::from("secret"),
             sample: false,
             local: true,
@@ -48,11 +50,12 @@ impl AppConfig {
 
     pub fn as_root_url(&self) -> String {
         let host = self.db.host.clone();
-        let name = self.db.name.clone();
+        // let name = self.db.name.clone();
         let port = self.db.port;
+        let user = self.root_user.clone();
         let pass = self.root_pass.clone();
 
-        format!("mysql://root:{pass}@{host}:{port}/{name}")
+        format!("mysql://{user}:{pass}@{host}:{port}")
     }
 }
 
@@ -151,7 +154,11 @@ fn process_parameters(cfg: &mut AppConfig) {
             i = i + 1;
             cfg.db.pass = args[i].clone();
             debug!(target: "read_parameters", "pass = {}", cfg.db.pass);
-        } else if next == "--root-pass" {
+        } else if next == "--root-user" {
+            i = i + 1;
+            cfg.root_user = args[i].clone();
+            debug!(target: "read_parameters", "root_user = {}", cfg.root_user);
+        } else if next == "--root-user" {
             i = i + 1;
             cfg.root_pass = args[i].clone();
             debug!(target: "read_parameters", "root_pass = {}", cfg.root_pass);
