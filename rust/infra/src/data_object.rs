@@ -21,7 +21,7 @@ use crate::{
 
 pub trait AsRecord<'a> {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)>;
-    fn insert_values(&self) -> String {
+    fn insert_fields(&self) -> String {
         let pairs = self.pairs();
 
         let mut sep = "";
@@ -36,7 +36,7 @@ pub trait AsRecord<'a> {
         result
     }
 
-    fn insert_fields(&self) -> String {
+    fn insert_values(&self) -> String {
         let pairs = self.pairs();
 
         let mut sep = "";
@@ -90,22 +90,34 @@ where
 {
     pub fn sync(&mut self, conn: &mut PooledConn) -> Option<String> {
         let tablename = &self.table.name;
-        let stmt = match self.pkey {
+        match self.pkey {
             None => {
                 let fields = self.obj.insert_fields();
                 let values = self.obj.insert_values();
 
-                format!("INSERT INTO {tablename} ({fields} VALUES ({values}))")
+                let stmt = format!("INSERT INTO {tablename} ({fields}) VALUES ({values})");
+                println!("INSERT: {stmt}");
+
+                match conn.query_drop(stmt) {
+                    Ok(_) => {
+                        self.pkey = Some(conn.last_insert_id());
+                        None
+                    }
+                    Err(_) => Some(String::from("An Error Occured on Insert")),
+                }
             }
             Some(id) => {
                 let fields = self.obj.insert_fields();
 
-                format!("UPDATE {tablename} SET {fields} WHERE pkey = {id}")
-            }
-        };
+                let stmt = format!("UPDATE {tablename} SET {fields} WHERE pkey = {id}");
+                println!("UPDATE: {stmt}");
 
-        println!("STATEMENT: {stmt}");
-        None
+                match conn.query_drop(stmt) {
+                    Ok(_) => None,
+                    Err(_) => Some(String::from("An Error Occured on Update")),
+                }
+            }
+        }
     }
 }
 
