@@ -4,9 +4,10 @@
 
 use std::collections::HashMap;
 
-use infra::data_object::{DObj, DObjFactory};
+use infra::data_object::{AsRecord, DObj, DObjFactory};
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
+use infra::sql::{SqlValue, sql_escape};
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 use tables::customer::CUSTOMER;
@@ -48,6 +49,15 @@ pub struct Customer {
     pub cust_name: String,
 }
 
+impl<'a> AsRecord<'a> for Customer {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([
+            ("cust_id", SqlValue::String(self.cust_id.clone())),
+            ("cust_name", SqlValue::String(self.cust_name.clone())),
+        ])
+    }
+}
+
 pub type CustomerDO<'a> = DObj<'a, Customer>;
 pub static CUSTOMER_FACTORY: DObjFactory<'static, Customer> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -60,6 +70,16 @@ pub struct Product {
     pub prod_id: String,
     pub prod_name: String,
 }
+
+impl<'a> AsRecord<'a> for Product {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([
+            ("prod_id", SqlValue::String(self.prod_id.clone())),
+            ("prod_name", SqlValue::String(self.prod_name.clone())),
+        ])
+    }
+}
+
 pub type ProductDO<'a> = DObj<'a, Product>;
 pub static PRODUCT_FACTORY: DObjFactory<'static, Product> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -70,12 +90,41 @@ pub static PRODUCT_FACTORY: DObjFactory<'static, Product> = DObjFactory {
 pub struct ProductVer {
     // pub pkey: Option<u64>,
     pub fkey_prod: u64,
-    pub maj_ver: u32,
-    pub min_ver: u32,
+    pub maj_ver: u64,
+    pub min_ver: u64,
     pub rel_ver: Option<u32>,
     pub bld_ver: Option<u32>,
     pub bld_tag: Option<String>,
 }
+
+impl<'a> AsRecord<'a> for ProductVer {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        // let rel_ver = match self.rel_ver {
+        //     Some(i) => format!("{i}"),
+        //     None => String::from("NULL"),
+        // };
+
+        // let bld_ver = match self.bld_ver {
+        //     Some(i) => format!("{i}"),
+        //     None => String::from("NULL"),
+        // };
+
+        // let bld_tag = match self.bld_tag {
+        //     Some(s) => format!("'{}''", sql_escape(s.as_str())),
+        //     None => String::from("NULL"),
+        // };
+
+        Vec::from([
+            ("fkey_prod", SqlValue::Id(self.fkey_prod)),
+            ("maj_ver", SqlValue::Id(self.maj_ver)),
+            ("min_ver", SqlValue::Id(self.maj_ver)),
+            // ("rel_ver", SqlValue::Id(rel_ver)),
+            // ("bld_ver", SqlValue::Id(bld_ver)),
+            // ("bld_tag", SqlValue::String(bld_tag.clone())),
+        ])
+    }
+}
+
 pub type ProductVerDO<'a> = DObj<'a, ProductVer>;
 pub static PRODUCT_VER_FACTORY: DObjFactory<'static, ProductVer> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -89,6 +138,13 @@ pub struct Service {
     pub svc_name: String,
     pub is_global: String,
 }
+
+impl<'a> AsRecord<'a> for Service {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type ServiceDO<'a> = DObj<'a, Service>;
 pub static SERVICE_FACTORY: DObjFactory<'static, Service> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -106,6 +162,13 @@ pub struct ServiceVer {
     pub bld_tag: Option<String>,
     pub schema_def: Option<String>,
 }
+
+impl<'a> AsRecord<'a> for ServiceVer {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type ServiceVerDO<'a> = DObj<'a, ServiceVer>;
 pub static SERVICE_VER_FACTORY: DObjFactory<'static, ServiceVer> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -118,6 +181,13 @@ pub struct ProductService {
     pub fkey_prod: u64,
     pub fkey_svc: u64,
 }
+
+impl<'a> AsRecord<'a> for ProductService {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type ProductServiceDO<'a> = DObj<'a, ProductService>;
 pub static PRODUCT_SERVICE_FACTORY: DObjFactory<'static, ProductService> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -131,6 +201,13 @@ pub struct Request {
     pub req_start: u64,
     pub req_status: String,
 }
+
+impl<'a> AsRecord<'a> for Request {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type RequestDO<'a> = DObj<'a, Request>;
 pub static REQUEST_FACTORY: DObjFactory<'static, Request> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -142,6 +219,13 @@ pub struct Tenant {
     // pub pkey: Option<u64>,
     pub fkey_acct: u64,
 }
+
+impl<'a> AsRecord<'a> for Tenant {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type TenantDO<'a> = DObj<'a, Tenant>;
 pub static TENANT_FACTORY: DObjFactory<'static, Tenant> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -154,6 +238,13 @@ pub struct Task {
     pub fkey_req: u64,
     pub status: String,
 }
+
+impl<'a> AsRecord<'a> for Task {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type TaskDO<'a> = DObj<'a, Task>;
 pub static TASK_FACTORY: DObjFactory<'static, Task> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -166,6 +257,13 @@ pub struct ProductTenant {
     pub fkey_tnet: u64,
     pub fkey_prod_ver: u64,
 }
+
+impl<'a> AsRecord<'a> for ProductTenant {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type ProductTenantDO<'a> = DObj<'a, ProductTenant>;
 pub static PRODUCT_TENANT_FACTORY: DObjFactory<'static, ProductTenant> = DObjFactory {
     phantom: std::marker::PhantomData {},
@@ -181,6 +279,13 @@ pub struct Worker {
     pub status: u32,
     // pub last_check: Time,
 }
+
+impl<'a> AsRecord<'a> for Worker {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([])
+    }
+}
+
 pub type WorkerDO<'a> = DObj<'a, Worker>;
 pub static WOKER_FACTORY: DObjFactory<'static, Worker> = DObjFactory {
     phantom: std::marker::PhantomData {},

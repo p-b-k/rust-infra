@@ -36,12 +36,14 @@ pub struct FieldId<'a> {
 pub enum SqlValue<'a> {
     Field(FieldId<'a>),
     Int(i64),
+    Id(u64),
     String(String),
     // Timestamp(Time)
     Boolean(bool),
+    // Nullable(Box<SqlValue<'a>>),
 }
 
-fn sql_escape(s: &str) -> String {
+pub fn sql_escape(s: &str) -> String {
     let mut result = String::new();
 
     for c in s.chars() {
@@ -64,6 +66,7 @@ impl<'a> AsSql for SqlValue<'a> {
             }
             SqlValue::String(s) => format!("'{}'", sql_escape(s)),
             SqlValue::Int(i) => format!("{i}"),
+            SqlValue::Id(i) => format!("{i}"),
             SqlValue::Boolean(b) => {
                 if *b {
                     String::from("'Y'")

@@ -14,7 +14,59 @@ use mysql::{
 };
 use serde::Serialize;
 
-use crate::schema::TableDef;
+use crate::{
+    schema::TableDef,
+    sql::{AsSql, SqlValue},
+};
+
+pub trait AsRecord<'a> {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)>;
+    fn insert_values(&self) -> String {
+        let pairs = self.pairs();
+
+        let mut sep = "";
+        let mut result = String::new();
+
+        pairs.iter().for_each(|(name, _value)| {
+            result.push_str(sep);
+            sep = ", ";
+            result.push_str(name);
+        });
+
+        result
+    }
+
+    fn insert_fields(&self) -> String {
+        let pairs = self.pairs();
+
+        let mut sep = "";
+        let mut result = String::new();
+
+        pairs.iter().for_each(|(_name, value)| {
+            result.push_str(sep);
+            sep = ", ";
+            result.push_str(value.as_sql().as_str());
+        });
+
+        result
+    }
+
+    fn update_fields(&self) -> String {
+        let pairs = self.pairs();
+
+        let mut sep = "";
+        let mut result = String::new();
+
+        pairs.iter().for_each(|(name, value)| {
+            result.push_str(sep);
+            sep = ", ";
+            let value_str = value.as_sql();
+            result.push_str(format!("{name} = {value_str}").as_str());
+        });
+
+        result
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct DObj<'a, T>
@@ -22,21 +74,39 @@ where
     T: FromRow,
     T: Clone,
     T: Serialize,
+    T: AsRecord<'a>,
 {
     pub table: &'a TableDef,
     pub pkey: Option<u64>,
     pub obj: T,
 }
 
-impl<'a, T> DObj<'a, T> 
+impl<'a, T> DObj<'a, T>
 where
     T: FromRow,
     T: Clone,
     T: Serialize,
+    T: AsRecord<'a>,
 {
-    pub fn sync(&mut self, conn : &mut PooledConn) -> Option<String> {
+    pub fn sync(&mut self, conn: &mut PooledConn) -> Option<String> {
+        let tablename = &self.table.name;
+        let stmt = match self.pkey {
+            None => {
+                let fields = self.obj.insert_fields();
+                let values = self.obj.insert_values();
+
+                format!("INSERT INTO {tablename} ({fields} VALUES ({values}))")
+            }
+            Some(id) => {
+                let fields = self.obj.insert_fields();
+
+                format!("UPDATE {tablename} SET {fields} WHERE pkey = {id}")
+            }
+        };
+
+        println!("STATEMENT: {stmt}");
         None
-    }   
+    }
 }
 
 impl<'a, T> Serialize for DObj<'a, T>
@@ -44,6 +114,7 @@ where
     T: FromRow,
     T: Clone,
     T: Serialize,
+    T: AsRecord<'a>,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -59,6 +130,7 @@ pub struct DObjFactory<'a, T>
 where
     T: Clone,
     T: FromRow,
+    T: AsRecord<'a>,
 {
     pub phantom: PhantomData<T>,
     pub table: &'a TableDef,
@@ -69,6 +141,7 @@ where
     T: Clone,
     T: FromRow,
     T: Serialize,
+    T: AsRecord<'a>,
 {
     pub fn new(&self, obj: T) -> DObj<'a, T> {
         DObj {
@@ -108,6 +181,7 @@ where
     where
         T: FromRow,
         T: Clone,
+        T: AsRecord<'a>,
     {
         let table = &self.table.name;
         let fields = &self.fields();
@@ -136,6 +210,7 @@ where
     where
         T: FromRow,
         T: Clone,
+        T: AsRecord<'a>,
     {
         let table = self.table.name;
         let fields = &self.fields();
