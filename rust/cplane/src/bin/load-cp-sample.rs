@@ -3,8 +3,9 @@
 // User requires INSERT, SELECT, DELETE, UPDATE rights on the tables
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use cplane::{app::DbConfig, schema::build_schema_def};
-use infra::schema::TableDef;
+use cplane::app::DbConfig;
+use cplane::schema::{Service, SERVICE_FACTORY, Product, PRODUCT_FACTORY, Customer, CUSTOMER_FACTORY};
+
 use mysql::{Params, Pool, PooledConn, prelude::Queryable};
 
 use std::env;
@@ -48,37 +49,85 @@ fn main() {
     println!("Processing Parameters ...");
     process_parameters(&mut cfg);
 
-    let root_url = cfg.as_url();
-    println!("Database root url = {root_url:?}");
-
-    let def = build_schema_def();
+    let url = cfg.as_url();
+    println!("Database root url = {url:?}");
 
     println!("About to get user pool ...");
-    let user_url = cfg.as_url();
-
-    println!("Database user url = {user_url:?}");
-    let user_pool = Pool::new(user_url.as_str()).unwrap();
+    let pool = Pool::new(url.as_str()).unwrap();
 
     println!("About to get user connection ...");
-    let mut user_conn = user_pool.get_conn().unwrap();
+    let mut conn = pool.get_conn().unwrap();
 
-    println!("About to get iterate over tables ...");
-    def.tables
-        .iter()
-        .for_each(|(_, tdef)| match create_table(&mut user_conn, tdef) {
-            Some(err_msg) => panic!("Failed to create: {err_msg}"),
-            _ => (),
-        });
+    load_sample_data(&mut conn);
 }
 
-/// Return error message, or none
-fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
-    let sql = tdef.create_sql();
-    println!("{sql}");
-    match conn.exec_drop(sql, Params::Empty) {
-        Ok(_) => None,
-        Err(_) => Some(String::from("An Error Happened")),
-    }
+fn load_sample_data(conn : &mut PooledConn) {
+    // Customers
+    let mut c_spss = CUSTOMER_FACTORY.new(Customer {
+        cust_id:String::from("SPSS"),
+        cust_name: String::from("Scaperco Premium Software Services")
+    });
+    c_spss.sync(conn);
+
+    let mut c_wbull = CUSTOMER_FACTORY.new(Customer {
+        cust_id:String::from("WBULL"),
+        cust_name: String::from("The Weeping Bull, Public House")
+    });
+    c_wbull.sync(conn);
+
+    let mut c_bfbg = CUSTOMER_FACTORY.new(Customer {
+        cust_id:String::from("BFBG"),
+        cust_name: String::from("Big Frankie's Bar and Grill")
+    });
+    c_bfbg.sync(conn);
+
+    let mut c_mrich = CUSTOMER_FACTORY.new(Customer {
+        cust_id:String::from("MRICH"),
+        cust_name: String::from("La Maison Richeliu")
+    });
+    c_mrich.sync(conn);
+
+    // Products
+    let mut p_cplane = PRODUCT_FACTORY.new(Product{
+       prod_id: String::from("CPLANE"),
+       prod_name: String::from("Control Plane") 
+    });
+    p_cplane.sync(conn);
+    
+    let mut p_aion = PRODUCT_FACTORY.new(Product{
+       prod_id: String::from("AION"),
+       prod_name: String::from("Schedule Management Application") 
+    });
+    p_aion.sync(conn);
+
+    // Services
+    let mut s_auth = SERVICE_FACTORY.new(Service{
+        svc_id: String::from("AUTH"),
+        svc_name: String::from("Authorization Service"),
+        is_global: String::from("Y")
+    });
+    s_auth.sync(conn);
+    
+    let mut s_aionbl = SERVICE_FACTORY.new(Service{
+        svc_id: String::from("AIONBL"),
+        svc_name: String::from("AION Business Logic"),
+        is_global: String::from("N")
+    });
+    s_aionbl.sync(conn);
+    
+    let mut s_aionui = SERVICE_FACTORY.new(Service{
+        svc_id: String::from("AIONUI"),
+        svc_name: String::from("AION User Interface"),
+        is_global: String::from("N")
+    });
+    s_aionui.sync(conn);
+    
+    let mut s_aiondb = SERVICE_FACTORY.new(Service{
+        svc_id: String::from("AIONDB"),
+        svc_name: String::from("AION Database"),
+        is_global: String::from("N")
+    });
+    s_aiondb.sync(conn);
 }
 
 fn process_parameters(cfg: &mut AppConfig) {

@@ -28,6 +28,17 @@ where
     pub obj: T,
 }
 
+impl<'a, T> DObj<'a, T> 
+where
+    T: FromRow,
+    T: Clone,
+    T: Serialize,
+{
+    pub fn sync(&mut self, conn : &mut PooledConn) -> Option<String> {
+        None
+    }   
+}
+
 impl<'a, T> Serialize for DObj<'a, T>
 where
     T: FromRow,

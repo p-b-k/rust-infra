@@ -69,14 +69,14 @@ VALUES ((SELECT pkey FROM service WHERE svc_id = 'CP'), 0, 0);
 -- 
 
 INSERT INTO product_service (fkey_prod_ver, fkey_svc_ver)
-VALUES ( 0 /* CPLANE 0.0 */,  0 /* AUTH 1.0 */);
+VALUES ( 1 /* CPLANE 0.0 */,  1 /* AUTH 1.0 */);
 
 INSERT INTO product_service (fkey_prod_ver, fkey_svc_ver)
-VALUES ( 4 /* AION 0.1 */,  0 /* AUTH 1.0 */);
+VALUES ( 5 /* AION 0.1 */,  1 /* AUTH 1.0 */);
 
 INSERT INTO product_service (fkey_prod_ver, fkey_svc_ver)
-VALUES ( 4 /* AION 0.1 */,  1 /* SHIFTS 0.0 */);
+VALUES ( 5 /* AION 0.1 */,  2 /* SHIFTS 0.0 */);
 
 INSERT INTO product_service (fkey_prod_ver, fkey_svc_ver)
-VALUES ( 0 /* CPLANE 0.0 */,  1 /* CPUI 0.0 */);
+VALUES ( 1 /* CPLANE 0.0 */,  2 /* CPUI 0.0 */);
 
