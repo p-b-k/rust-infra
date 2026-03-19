@@ -37,6 +37,7 @@ pub enum SqlValue<'a> {
     Field(FieldId<'a>),
     Int(i64),
     Id(u64),
+    ShortU(u32),
     String(String),
     // Timestamp(Time)
     Boolean(bool),
@@ -67,6 +68,7 @@ impl<'a> AsSql for SqlValue<'a> {
             SqlValue::String(s) => format!("'{}'", sql_escape(s)),
             SqlValue::Int(i) => format!("{i}"),
             SqlValue::Id(i) => format!("{i}"),
+            SqlValue::ShortU(i) => format!("{i}"),
             SqlValue::Boolean(b) => {
                 if *b {
                     String::from("'Y'")

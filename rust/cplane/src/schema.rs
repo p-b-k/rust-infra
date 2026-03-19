@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use infra::data_object::{AsRecord, DObj, DObjFactory};
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
-use infra::sql::{SqlValue, sql_escape};
+use infra::sql::{SqlValue };
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 use tables::customer::CUSTOMER;
@@ -44,7 +44,6 @@ pub fn fields_from_table(def: &TableDef) -> String {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Customer {
-    // pub pkey: u64,
     pub cust_id: String,
     pub cust_name: String,
 }
@@ -66,7 +65,6 @@ pub static CUSTOMER_FACTORY: DObjFactory<'static, Customer> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
-    // pub pkey: Option<u64>,
     pub prod_id: String,
     pub prod_name: String,
 }
@@ -88,7 +86,6 @@ pub static PRODUCT_FACTORY: DObjFactory<'static, Product> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductVer {
-    // pub pkey: Option<u64>,
     pub fkey_prod: u64,
     pub maj_ver: u64,
     pub min_ver: u64,
@@ -133,7 +130,6 @@ pub static PRODUCT_VER_FACTORY: DObjFactory<'static, ProductVer> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Service {
-    // pub pkey: Option<u64>,
     pub svc_id: String,
     pub svc_name: String,
     pub is_global: String,
@@ -141,7 +137,11 @@ pub struct Service {
 
 impl<'a> AsRecord<'a> for Service {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+            ("svc_id", SqlValue::String(self.svc_id.clone())),
+            ("svc_name", SqlValue::String(self.svc_name.clone())),
+            ("is_global", SqlValue::String(self.is_global.clone())),
+        ])
     }
 }
 
@@ -153,19 +153,44 @@ pub static SERVICE_FACTORY: DObjFactory<'static, Service> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ServiceVer {
-    // pub pkey: Option<u64>,
-    pub fkey_svc: String,
-    pub maj_ver: u32,
-    pub min_ver: u32,
-    pub rel_ver: Option<u32>,
-    pub bld_ver: Option<u32>,
+    pub fkey_svc: u64,
+    pub maj_ver: u64,
+    pub min_ver: u64,
+    pub rel_ver: Option<u64>,
+    pub bld_ver: Option<u64>,
     pub bld_tag: Option<String>,
-    pub schema_def: Option<String>,
+    // pub schema_def: Option<String>,
 }
 
 impl<'a> AsRecord<'a> for ServiceVer {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        let rel_ver = match self.rel_ver {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None)
+        };
+
+        let bld_ver = match self.bld_ver {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None)
+        };
+
+        let bld_tag = match self.bld_tag.as_ref() {
+            Some(s) => SqlValue::Nullable(Some(Box::new(SqlValue::String(s.clone())))),
+            None => SqlValue::Nullable(None)
+        };
+
+        Vec::from([
+
+            ("fkey_svc", SqlValue::Id(self.fkey_svc)),
+            ("maj_ver", SqlValue::Id(self.maj_ver)),
+            ("min_ver", SqlValue::Id(self.maj_ver)),
+            ("rel_ver", rel_ver),
+            ("bld_ver", bld_ver),
+            ("bld_tag", bld_tag),
+
+
+            
+        ])
     }
 }
 
@@ -177,14 +202,19 @@ pub static SERVICE_VER_FACTORY: DObjFactory<'static, ServiceVer> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductService {
-    // pub pkey: Option<u64>,
     pub fkey_prod: u64,
     pub fkey_svc: u64,
 }
 
 impl<'a> AsRecord<'a> for ProductService {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+
+            ("fkey_prod", SqlValue::Id(self.fkey_prod)),
+            ("fkey_svc", SqlValue::Id(self.fkey_svc)),
+
+            
+        ])
     }
 }
 
@@ -196,7 +226,6 @@ pub static PRODUCT_SERVICE_FACTORY: DObjFactory<'static, ProductService> = DObjF
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Request {
-    // pub pkey: Option<u64>,
     pub req_type: String,
     pub req_start: u64,
     pub req_status: String,
@@ -204,7 +233,13 @@ pub struct Request {
 
 impl<'a> AsRecord<'a> for Request {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+
+            ("req_type", SqlValue::String(self.req_type.clone())),
+            ("req_start", SqlValue::Id(self.req_start)),
+            ("req_status", SqlValue::String(self.req_status.clone())),
+            
+        ])
     }
 }
 
@@ -216,13 +251,15 @@ pub static REQUEST_FACTORY: DObjFactory<'static, Request> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Tenant {
-    // pub pkey: Option<u64>,
     pub fkey_acct: u64,
 }
 
 impl<'a> AsRecord<'a> for Tenant {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+            ("fkey_acct", SqlValue::Id(self.fkey_acct)),
+            
+        ])
     }
 }
 
@@ -234,14 +271,19 @@ pub static TENANT_FACTORY: DObjFactory<'static, Tenant> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Task {
-    // pub pkey: Option<u64>,
     pub fkey_req: u64,
     pub status: String,
 }
 
 impl<'a> AsRecord<'a> for Task {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+
+            ("fkey_req", SqlValue::Id(self.fkey_req)),
+            ("status", SqlValue::String(self.status.clone())),
+
+            
+        ])
     }
 }
 
@@ -253,14 +295,17 @@ pub static TASK_FACTORY: DObjFactory<'static, Task> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductTenant {
-    // pub pkey: Option<u64>,
     pub fkey_tnet: u64,
     pub fkey_prod_ver: u64,
 }
 
 impl<'a> AsRecord<'a> for ProductTenant {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+            
+            ("fkey_tnet", SqlValue::Id(self.fkey_tnet)),
+            ("fkey_prod_ver", SqlValue::Id(self.fkey_prod_ver)),
+        ])
     }
 }
 
@@ -272,17 +317,25 @@ pub static PRODUCT_TENANT_FACTORY: DObjFactory<'static, ProductTenant> = DObjFac
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Worker {
-    // pub pkey: Option<u64>,
     pub name: String,
     pub host: String,
     pub port: u32,
-    pub status: u32,
+    pub status: String,
     // pub last_check: Time,
 }
 
 impl<'a> AsRecord<'a> for Worker {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([])
+        Vec::from([
+
+
+            ("name", SqlValue::String(self.name.clone())),
+            ("host", SqlValue::String(self.host.clone())),
+            ("port", SqlValue::ShortU(self.port)),
+            ("status", SqlValue::String(self.status.clone())),
+
+            
+        ])
     }
 }
 

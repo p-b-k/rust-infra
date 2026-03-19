@@ -29,7 +29,7 @@ const FIELDS: [FieldSpec; 4] = [
     FieldSpec {
         name: "status",
         default: None,
-        type_def: TypeDef::Data(DataType::Integer),
+        type_def: TypeDef::Data(DataType::String(64)),
         nullable: true,
         unique: false,
     },

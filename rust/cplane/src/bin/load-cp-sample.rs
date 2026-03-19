@@ -8,7 +8,7 @@ use cplane::schema::{
     CUSTOMER_FACTORY, Customer, PRODUCT_FACTORY, Product, SERVICE_FACTORY, Service,
 };
 
-use mysql::{Params, Pool, PooledConn, prelude::Queryable};
+use mysql::{ Pool, PooledConn };
 
 use std::env;
 
