@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use infra::data_object::{AsRecord, DObj, DObjFactory};
+use infra::record::{AsRecord, DObj, DObjFactory};
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
 use infra::sql::{SqlValue };
