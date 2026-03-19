@@ -90,7 +90,7 @@ where
 {
     pub fn sync(&mut self, conn: &mut PooledConn) -> Option<String> {
         let tablename = &self.table.name;
-        println!("pkey for {tablename} is {:?}", self.pkey);
+        // println!("pkey for {tablename} is {:?}", self.pkey);
         match self.pkey {
             None => {
                 let fields = self.obj.insert_fields();
@@ -102,7 +102,7 @@ where
                 match conn.query_drop(stmt) {
                     Ok(_) => {
                         self.pkey = Some(conn.last_insert_id());
-                        println!("pkey for {tablename} is set now to {:?}", self.pkey);
+                        // println!("pkey for {tablename} is set now to {:?}", self.pkey);
                         None
                     }
                     Err(e) => {
@@ -119,7 +119,10 @@ where
 
                 match conn.query_drop(stmt) {
                     Ok(_) => None,
-                    Err(_) => Some(String::from("An Error Occured on Update")),
+                    Err(e) => {
+                        error!("Got some kind of error: {}", e.to_string());
+                        Some(String::from("An Error Occured on Update"))
+                    }
                 }
             }
         }
