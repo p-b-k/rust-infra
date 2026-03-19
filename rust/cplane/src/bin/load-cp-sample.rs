@@ -173,7 +173,7 @@ fn load_sample_data(conn: &mut PooledConn) {
         bld_ver : None,
         bld_tag : None
     });
-    sv_auth_0_1.sync(conn);
+    sv_aiondb_0_1.sync(conn);
 
     let mut sv_aionbl_0_1 = SERVICE_VER_FACTORY.new(ServiceVer{
         fkey_svc : s_aionbl.pkey.unwrap(),
@@ -183,7 +183,7 @@ fn load_sample_data(conn: &mut PooledConn) {
         bld_ver : None,
         bld_tag : None
     });
-    sv_auth_0_1.sync(conn);
+    sv_aionbl_0_1.sync(conn);
 
     let mut sv_aionui_0_1 = SERVICE_VER_FACTORY.new(ServiceVer{
         fkey_svc : s_aionui.pkey.unwrap(),
@@ -193,7 +193,7 @@ fn load_sample_data(conn: &mut PooledConn) {
         bld_ver : None,
         bld_tag : None
     });
-    sv_auth_0_1.sync(conn);
+    sv_aionui_0_1.sync(conn);
 
     // Product Services
     let mut ps_aion_auth = PRODUCT_SERVICE_FACTORY.new(ProductService{
@@ -201,6 +201,24 @@ fn load_sample_data(conn: &mut PooledConn) {
         fkey_svc_ver : sv_auth_0_1.pkey.unwrap(),
     });
     ps_aion_auth.sync(conn);
+
+    let mut ps_aion_aionbl = PRODUCT_SERVICE_FACTORY.new(ProductService{
+        fkey_prod_ver : pv_aion_0_1.pkey.unwrap(),
+        fkey_svc_ver : sv_aionbl_0_1.pkey.unwrap(),
+    });
+    ps_aion_aionbl.sync(conn);
+
+    let mut ps_aion_aionui = PRODUCT_SERVICE_FACTORY.new(ProductService{
+        fkey_prod_ver : pv_aion_0_1.pkey.unwrap(),
+        fkey_svc_ver : sv_aionui_0_1.pkey.unwrap(),
+    });
+    ps_aion_aionui.sync(conn);
+
+    let mut ps_aion_aiondb = PRODUCT_SERVICE_FACTORY.new(ProductService{
+        fkey_prod_ver : pv_aion_0_1.pkey.unwrap(),
+        fkey_svc_ver : sv_aiondb_0_1.pkey.unwrap(),
+    });
+    ps_aion_aiondb.sync(conn);
 
     
 }
