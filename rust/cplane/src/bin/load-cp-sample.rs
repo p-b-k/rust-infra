@@ -6,6 +6,7 @@
 use cplane::app::DbConfig;
 use cplane::schema::{
     CUSTOMER_FACTORY, Customer, PRODUCT_FACTORY, Product, SERVICE_FACTORY, Service,
+    PRODUCT_SERVICE_FACTORY, ProductService, PRODUCT_VER_FACTORY, ProductVer, SERVICE_VER_FACTORY, ServiceVer
 };
 
 use mysql::{ Pool, PooledConn };
@@ -103,6 +104,27 @@ fn load_sample_data(conn: &mut PooledConn) {
     });
     p_aion.sync(conn);
 
+    // Product Versions
+    let mut pv_cplane_0_0 = PRODUCT_VER_FACTORY.new(ProductVer {
+        fkey_prod : p_cplane.pkey.unwrap(),
+        maj_ver : 0,
+        min_ver : 0,
+        rel_ver : None,
+        bld_ver : None,
+        bld_tag : None
+    });
+    pv_cplane_0_0.sync(conn);
+
+    let mut pv_aion_0_1 = PRODUCT_VER_FACTORY.new(ProductVer {
+        fkey_prod : p_aion.pkey.unwrap(),
+        maj_ver : 0,
+        min_ver : 1,
+        rel_ver : None,
+        bld_ver : None,
+        bld_tag : None
+    });
+    pv_aion_0_1.sync(conn);
+
     // Services
     let mut s_auth = SERVICE_FACTORY.new(Service {
         svc_id: String::from("AUTH"),
@@ -131,6 +153,56 @@ fn load_sample_data(conn: &mut PooledConn) {
         is_global: String::from("N"),
     });
     s_aiondb.sync(conn);
+
+    // Service Versions
+    let mut sv_auth_0_1 = SERVICE_VER_FACTORY.new(ServiceVer{
+        fkey_svc : s_auth.pkey.unwrap(),
+        maj_ver : 0,
+        min_ver : 1,
+        rel_ver : None,
+        bld_ver : None,
+        bld_tag : None
+    });
+    sv_auth_0_1.sync(conn);
+
+    let mut sv_aiondb_0_1 = SERVICE_VER_FACTORY.new(ServiceVer{
+        fkey_svc : s_aiondb.pkey.unwrap(),
+        maj_ver : 0,
+        min_ver : 1,
+        rel_ver : None,
+        bld_ver : None,
+        bld_tag : None
+    });
+    sv_auth_0_1.sync(conn);
+
+    let mut sv_aionbl_0_1 = SERVICE_VER_FACTORY.new(ServiceVer{
+        fkey_svc : s_aionbl.pkey.unwrap(),
+        maj_ver : 0,
+        min_ver : 1,
+        rel_ver : None,
+        bld_ver : None,
+        bld_tag : None
+    });
+    sv_auth_0_1.sync(conn);
+
+    let mut sv_aionui_0_1 = SERVICE_VER_FACTORY.new(ServiceVer{
+        fkey_svc : s_aionui.pkey.unwrap(),
+        maj_ver : 0,
+        min_ver : 1,
+        rel_ver : None,
+        bld_ver : None,
+        bld_tag : None
+    });
+    sv_auth_0_1.sync(conn);
+
+    // Product Services
+    let mut ps_aion_auth = PRODUCT_SERVICE_FACTORY.new(ProductService{
+        fkey_prod_ver : pv_aion_0_1.pkey.unwrap(),
+        fkey_svc_ver : sv_auth_0_1.pkey.unwrap(),
+    });
+    ps_aion_auth.sync(conn);
+
+    
 }
 
 fn process_parameters(cfg: &mut AppConfig) {

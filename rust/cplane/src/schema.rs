@@ -202,16 +202,16 @@ pub static SERVICE_VER_FACTORY: DObjFactory<'static, ServiceVer> = DObjFactory {
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct ProductService {
-    pub fkey_prod: u64,
-    pub fkey_svc: u64,
+    pub fkey_prod_ver: u64,
+    pub fkey_svc_ver: u64,
 }
 
 impl<'a> AsRecord<'a> for ProductService {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
 
-            ("fkey_prod", SqlValue::Id(self.fkey_prod)),
-            ("fkey_svc", SqlValue::Id(self.fkey_svc)),
+            ("fkey_prod_ver", SqlValue::Id(self.fkey_prod_ver)),
+            ("fkey_svc_ver", SqlValue::Id(self.fkey_svc_ver)),
 
             
         ])
