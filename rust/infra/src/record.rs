@@ -256,4 +256,18 @@ where
             return self.from(obj, pkey);
         })
     }
+
+    pub fn drop(&self, conn : &mut PooledConn, pkey: u64) -> Option<String> {
+        let table = self.table.name;
+        let query = format!("DELETE FROM {table} WHERE pkey = {pkey}");
+        debug!(target : "drop", "QUERY: {query}");
+        
+        match conn.query_drop(query) {
+            Ok(_) => None,
+            Err(e) => {
+                println!("An error occured: {}", e.to_string());
+                Some(format!("An error occured: {}", e.to_string()))
+            }
+        }
+    }
 }
