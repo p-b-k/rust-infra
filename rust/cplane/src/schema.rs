@@ -92,35 +92,35 @@ pub struct ProductVer {
     pub fkey_prod: u64,
     pub maj_ver: u64,
     pub min_ver: u64,
-    pub rel_ver: Option<u32>,
-    pub bld_ver: Option<u32>,
+    pub rel_ver: Option<u64>,
+    pub bld_ver: Option<u64>,
     pub bld_tag: Option<String>,
 }
 
 impl<'a> AsRecord<'a> for ProductVer {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        // let rel_ver = match self.rel_ver {
-        //     Some(i) => format!("{i}"),
-        //     None => String::from("NULL"),
-        // };
+        let rel_ver = match self.rel_ver {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None)
+        };
 
-        // let bld_ver = match self.bld_ver {
-        //     Some(i) => format!("{i}"),
-        //     None => String::from("NULL"),
-        // };
+        let bld_ver = match self.bld_ver {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None)
+        };
 
-        // let bld_tag = match self.bld_tag {
-        //     Some(s) => format!("'{}''", sql_escape(s.as_str())),
-        //     None => String::from("NULL"),
-        // };
+        let bld_tag = match self.bld_tag.as_ref() {
+            Some(s) => SqlValue::Nullable(Some(Box::new(SqlValue::String(s.clone())))),
+            None => SqlValue::Nullable(None)
+        };
 
         Vec::from([
             ("fkey_prod", SqlValue::Id(self.fkey_prod)),
             ("maj_ver", SqlValue::Id(self.maj_ver)),
             ("min_ver", SqlValue::Id(self.maj_ver)),
-            // ("rel_ver", SqlValue::Id(rel_ver)),
-            // ("bld_ver", SqlValue::Id(bld_ver)),
-            // ("bld_tag", SqlValue::String(bld_tag.clone())),
+            ("rel_ver", rel_ver),
+            ("bld_ver", bld_ver),
+            ("bld_tag", bld_tag),
         ])
     }
 }

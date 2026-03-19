@@ -40,7 +40,7 @@ pub enum SqlValue<'a> {
     String(String),
     // Timestamp(Time)
     Boolean(bool),
-    // Nullable(Box<SqlValue<'a>>),
+    Nullable(Option<Box<SqlValue<'a>>>),
 }
 
 pub fn sql_escape(s: &str) -> String {
@@ -72,6 +72,12 @@ impl<'a> AsSql for SqlValue<'a> {
                     String::from("'Y'")
                 } else {
                     String::from("'N'")
+                }
+            },
+            SqlValue::Nullable(o) => {
+                match o {
+                    None => String::from("NULL"),
+                    Some(v) => v.as_sql()
                 }
             }
         }
