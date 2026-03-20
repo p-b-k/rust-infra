@@ -4,7 +4,6 @@
 
 use std::fmt::{Display, Formatter};
 
-use log::debug;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -112,8 +111,6 @@ impl Iterator for FieldIter<'_> {
     type Item = FieldSpec;
 
     fn next(&mut self) -> Option<Self::Item> {
-        debug!(target: "field iterator", "self.index = {}", self.index);
-
         if self.index < self.table.fields.len() {
             let field_index = self.index;
             self.index = self.index + 1;

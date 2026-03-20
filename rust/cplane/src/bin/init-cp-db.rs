@@ -5,13 +5,13 @@
 use std::env;
 
 use infra::schema::{SchemaDef, TableDef};
-use log::{debug, error};
+use log::{info, debug, error};
 
 use mysql::{Params, Pool, PooledConn, prelude::Queryable};
 
 use cplane::{app::DbConfig, sample::load_sample_data, schema::build_schema_def};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 enum Op {
     Create(bool, bool, bool),
     Drop,
@@ -23,7 +23,6 @@ struct AppConfig {
     pub db: DbConfig,
     pub root_user: String,
     pub root_pass: String,
-    pub help: bool,
     pub local: bool,
 }
 
@@ -40,7 +39,6 @@ impl AppConfig {
             },
             root_user: String::from("root"),
             root_pass: String::from("secret"),
-            help: false,
             local: true,
         }
     }
@@ -75,9 +73,7 @@ fn main() {
 
     match cfg.op {
         Op::Create(i, c, s) => {
-            if i {
-                initalize_db(&cfg)
-            }
+            initialize(&cfg, (i, c, s));
         }
         Op::Drop => {
             drop_db(&cfg);
@@ -86,82 +82,111 @@ fn main() {
             write_help();
         }
     }
+}
 
-    // if process_parameters(&mut cfg) {
-    //     if cfg.help {
-    //         write_help();
-    //     } else {
-    //         initialize_db(&cfg);
+fn drop_db(cfg: &AppConfig) {
+    let root_url = cfg.as_root_url();
+    info!("database root url = {root_url:?}");
 
-    //         let def = build_schema_def();
+    let root_pool = Pool::new(root_url.as_str()).unwrap();
 
-    //         println!("* initialize schema ...");
-    //         initialize_schema(&cfg, &def);
-    //     }
-    // }
+    let mut root_conn = root_pool.get_conn().unwrap();
+
+    let drop_db = stmt_drop_db(&cfg);
+    debug!(target: "drop_db", "{:?}", drop_db);
+    match root_conn.exec_drop(drop_db, Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
+
+    let drop_user = stmt_drop_user(&cfg);
+    debug!(target: "drop_db", "{:?}", drop_user);
+    match root_conn.exec_drop(drop_user, Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
+}
+
+fn initialize(cfg: &AppConfig, (init_db, init_schema, load_sample_data) : (bool, bool, bool)) {
+    if init_db {
+        initialize_db(cfg);
+    }
+
+    if init_schema {
+        let def = build_schema_def();
+        initialize_schema(cfg, &def);
+    }
+
+    if load_sample_data {
+        initialize_data(cfg);
+    }
+}
+
+fn initialize_data(cfg: &AppConfig) {
+    let user_url = cfg.as_user_url();
+    info!("database user url = {user_url:?}");
+
+    let pool = Pool::new(user_url.as_str()).unwrap();
+    debug!(target : "initalize data", "Got pool ...");
+
+    let mut conn = pool.get_conn().unwrap();
+    debug!(target : "initalize data", "Got connection ...");
+    
+    load_sample_data(&mut conn);
 }
 
 fn initialize_schema(cfg: &AppConfig, def: &SchemaDef) {
     let user_url = cfg.as_user_url();
-    println!("database user url = {user_url:?}");
+    info!("database user url = {user_url:?}");
 
     let user_pool = Pool::new(user_url.as_str()).unwrap();
-    println!("Got pool ...");
+    debug!(target: "initalize_schema", "Got pool ...");
 
     let mut user_conn = user_pool.get_conn().unwrap();
-    println!("Got connection ...");
+    debug!(target: "initalize_schema", "Got connection ...");
 
-    match init_schema(&cfg, &def, &mut user_conn) {
+    match init_schema(def, &mut user_conn) {
         Some(msgs) => {
             println!("Completed with errors:");
             msgs.iter().for_each(|msg| println!("{}", msg));
         }
-        _ => {
-            // If set to load sample data, load it
-            if cfg.skip_init {
-                println!("Loading Sample Data ...");
-                load_sample_data(&mut user_conn);
-            } else {
-                println!("Skipping Sample Data");
-            }
-        }
+        _ => {        }
     };
 }
 
 fn initialize_db(cfg: &AppConfig) {
-    if !cfg.skip_create {
         let root_url = cfg.as_root_url();
-        println!("database root url = {root_url:?}");
+        info!("database root url = {root_url:?}");
 
         let root_pool = Pool::new(root_url.as_str()).unwrap();
-        println!("Got pool ...");
+        debug!(target: "initalize_db", "Got pool ...");
 
         let mut root_conn = root_pool.get_conn().unwrap();
-        println!("Got connection ...");
+        debug!(target: "initalize_db", "Got connection ...");
 
-        println!("* create db = {:?}", stmt_create_db(&cfg));
-        match root_conn.exec_drop(stmt_create_db(&cfg), Params::Empty) {
+        let create_db = stmt_create_db(&cfg);
+        debug!(target: "initalize_db", "{:?}", create_db);
+        match root_conn.exec_drop(create_db, Params::Empty) {
             Ok(_) => None,
             Err(e) => Some(format!("{}", e.to_string())),
         };
 
-        println!("* create user = {:?}", stmt_create_user(&cfg));
-        match root_conn.exec_drop(stmt_create_user(&cfg), Params::Empty) {
+        let create_user = stmt_create_user(&cfg);
+        debug!(target: "initalize_db", "{:?}", create_user);
+        match root_conn.exec_drop(create_user, Params::Empty) {
             Ok(_) => None,
             Err(e) => Some(format!("{}", e.to_string())),
         };
-        println!("* grant roles to user = {:?}", stmt_grant_roles(&cfg));
-        match root_conn.exec_drop(stmt_grant_roles(&cfg), Params::Empty) {
+
+        let grant_roles = stmt_grant_roles(&cfg);
+        debug!(target: "initalize_db", "{:?}", grant_roles);
+        match root_conn.exec_drop(grant_roles, Params::Empty) {
             Ok(_) => None,
             Err(e) => Some(format!("{}", e.to_string())),
         };
-    }
 }
 
-fn init_schema(cfg: &AppConfig, def: &SchemaDef, conn: &mut PooledConn) -> Option<Vec<String>> {
-    if cfg.skip_init {
-        None
-    } else {
+fn init_schema(def: &SchemaDef, conn: &mut PooledConn) -> Option<Vec<String>> {
         let mut vec: Vec<String> = Vec::from([]);
 
         def.tables
@@ -175,12 +200,11 @@ fn init_schema(cfg: &AppConfig, def: &SchemaDef, conn: &mut PooledConn) -> Optio
             });
 
         None
-    }
 }
 
 fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
     let sql = tdef.create_sql();
-    println!("Running {sql}");
+    debug!(target: "create table", "{sql}");
     match conn.exec_drop(sql, Params::Empty) {
         Ok(_) => None,
         Err(_) => Some(String::from("An Error Happened")),
@@ -188,6 +212,10 @@ fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
 }
 fn stmt_create_db(cfg: &AppConfig) -> String {
     format!("CREATE DATABASE {}", cfg.db.name)
+}
+
+fn stmt_drop_db(cfg: &AppConfig) -> String {
+    format!("DROP DATABASE {}", cfg.db.name)
 }
 
 fn stmt_create_user(cfg: &AppConfig) -> String {
@@ -200,6 +228,17 @@ fn stmt_create_user(cfg: &AppConfig) -> String {
     let pass = cfg.db.pass.clone();
 
     format!("CREATE USER {user}@{host} IDENTIFIED BY '{pass}'")
+}
+
+fn stmt_drop_user(cfg: &AppConfig) -> String {
+    let user = cfg.db.user.clone();
+    let host = if cfg.local {
+        String::from("localhost")
+    } else {
+        env::var("HOSTNAME").unwrap()
+    };
+
+    format!("DROP USER {user}@{host}")
 }
 
 fn stmt_grant_roles(cfg: &AppConfig) -> String {
@@ -252,27 +291,33 @@ fn process_parameters(cfg: &mut AppConfig) -> bool {
             cfg.root_pass = args[i].clone();
             debug!(target: "read_parameters", "root_pass = {}", cfg.root_pass);
         } else if next == "-c" {
-            cfg.skip_create = true;
-            debug!(target: "read_parameters", "skip database creation");
-        } else if next == "-i" {
-            // cfg.skip_init = true;
             cfg.op = match cfg.op {
                 Op::Create(_, c, s) => Op::Create(false, c, s),
                 o => o,
             };
-            debug!(target: "read_parameters", "skip schema initalization");
-        } else if next == "-s" {
-            // cfg.load_sample = true;
+            debug!(target: "read_parameters", "skip database creation");
+        } else if next == "-i" {
             cfg.op = match cfg.op {
-                Op::Create(i, c, _) => Op::Create(i, c, false),
+                Op::Create(i, _, s) => Op::Create(i, false, s),
                 o => o,
             };
-            debug!(target: "read_parameters", "skip schema creation");
-        } else if next == "-h" {
-            // cfg.help = true;
+            debug!(target: "read_parameters", "skip schema initalization");
+        } else if next == "-s" {
             cfg.op = match cfg.op {
                 Op::Create(i, c, _) => Op::Create(i, c, true),
                 o => o,
+            };
+            debug!(target: "read_parameters", "load sample data");
+        } else if next == "-h" {
+            cfg.op = match cfg.op {
+                Op::Create(_, _, _) => Op::Help,
+                o => panic!("Cannot set operation to Help when it's already {o:?}"),
+            };
+            debug!(target: "read_parameters", "printing help");
+        } else if next == "-d" {
+            cfg.op = match cfg.op {
+                Op::Create(_, _, _) => Op::Drop,
+                o => panic!("Cannot set operation to Drop when it's already {o:?}"),
             };
             debug!(target: "read_parameters", "printing help");
         } else {
@@ -294,6 +339,7 @@ fn write_help() {
     println!(
         "{prog_name}: Prepare a database for connecting cplane to, optionally with sample data"
     );
+    println!("With no options or flags it will create the database and the user and then initialize the schema");
     println!();
     println!("Options:");
     println!("--name         : cp        : The name of the database (defaults to \"cp\")");
@@ -310,6 +356,7 @@ fn write_help() {
     println!();
     println!("Flags:");
     println!("-h : Show this message");
+    println!("-d : Drop the database");
     println!("-c : Do not create the database or the user");
     println!("-i : Do not create the schema (tables and such)");
     println!("-s : Load the sample data");

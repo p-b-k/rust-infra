@@ -3,11 +3,10 @@
 // IS THIS USED?
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// use log::debug;
-
 use std::marker::PhantomData;
 
 use log::{debug, error};
+
 use mysql::{
     Error, PooledConn, Row,
     prelude::{FromRow, Queryable},
@@ -90,19 +89,17 @@ where
 {
     pub fn sync(&mut self, conn: &mut PooledConn) -> Option<String> {
         let tablename = &self.table.name;
-        // println!("pkey for {tablename} is {:?}", self.pkey);
         match self.pkey {
             None => {
                 let fields = self.obj.insert_fields();
                 let values = self.obj.insert_values();
 
                 let stmt = format!("INSERT INTO {tablename} ({fields}) VALUES ({values})");
-                println!("INSERT: {stmt}");
+                debug!("INSERT: {stmt}");
 
                 match conn.query_drop(stmt) {
                     Ok(_) => {
                         self.pkey = Some(conn.last_insert_id());
-                        // println!("pkey for {tablename} is set now to {:?}", self.pkey);
                         None
                     }
                     Err(e) => {
@@ -115,7 +112,7 @@ where
                 let fields = self.obj.update_fields();
 
                 let stmt = format!("UPDATE {tablename} SET {fields} WHERE pkey = {id}");
-                println!("UPDATE: {stmt}");
+                debug!("UPDATE: {stmt}");
 
                 match conn.query_drop(stmt) {
                     Ok(_) => None,
