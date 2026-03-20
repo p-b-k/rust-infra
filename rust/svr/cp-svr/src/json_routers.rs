@@ -72,7 +72,7 @@ async fn get_prod_test_head() -> Json<Box<TableDef>> {
         columns: Box::new(Vec::from([
             ColumnDef {
                 column: String::from("prod_id"),
-                class: Some(String::from("test_id")),
+                class: Some(String::from("prod_id")),
                 text: String::from("Product Id"),
             },
             ColumnDef {
