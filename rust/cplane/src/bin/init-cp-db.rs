@@ -86,7 +86,7 @@ fn main() {
 
 fn drop_db(cfg: &AppConfig) {
     let root_url = cfg.as_root_url();
-    info!("database root url = {root_url:?}");
+    info!(target: "drop db", "database root url = {root_url:?}");
 
     let root_pool = Pool::new(root_url.as_str()).unwrap();
 
@@ -124,7 +124,7 @@ fn initialize(cfg: &AppConfig, (init_db, init_schema, load_sample_data) : (bool,
 
 fn initialize_data(cfg: &AppConfig) {
     let user_url = cfg.as_user_url();
-    info!("database user url = {user_url:?}");
+    info!(target: "sample data", "database user url = {user_url:?}");
 
     let pool = Pool::new(user_url.as_str()).unwrap();
     debug!(target : "initalize data", "Got pool ...");
@@ -137,7 +137,7 @@ fn initialize_data(cfg: &AppConfig) {
 
 fn initialize_schema(cfg: &AppConfig, def: &SchemaDef) {
     let user_url = cfg.as_user_url();
-    info!("database user url = {user_url:?}");
+    info!(target: "init schema", "database user url = {user_url:?}");
 
     let user_pool = Pool::new(user_url.as_str()).unwrap();
     debug!(target: "initalize_schema", "Got pool ...");
@@ -155,51 +155,51 @@ fn initialize_schema(cfg: &AppConfig, def: &SchemaDef) {
 }
 
 fn initialize_db(cfg: &AppConfig) {
-        let root_url = cfg.as_root_url();
-        info!("database root url = {root_url:?}");
+    let root_url = cfg.as_root_url();
+    info!(target: "create db", "database root url = {root_url:?}");
 
-        let root_pool = Pool::new(root_url.as_str()).unwrap();
-        debug!(target: "initalize_db", "Got pool ...");
+    let root_pool = Pool::new(root_url.as_str()).unwrap();
+    debug!(target: "initalize_db", "Got pool ...");
 
-        let mut root_conn = root_pool.get_conn().unwrap();
-        debug!(target: "initalize_db", "Got connection ...");
+    let mut root_conn = root_pool.get_conn().unwrap();
+    debug!(target: "initalize_db", "Got connection ...");
 
-        let create_db = stmt_create_db(&cfg);
-        debug!(target: "initalize_db", "{:?}", create_db);
-        match root_conn.exec_drop(create_db, Params::Empty) {
-            Ok(_) => None,
-            Err(e) => Some(format!("{}", e.to_string())),
-        };
+    let create_db = stmt_create_db(&cfg);
+    debug!(target: "initalize_db", "{:?}", create_db);
+    match root_conn.exec_drop(create_db, Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
 
-        let create_user = stmt_create_user(&cfg);
-        debug!(target: "initalize_db", "{:?}", create_user);
-        match root_conn.exec_drop(create_user, Params::Empty) {
-            Ok(_) => None,
-            Err(e) => Some(format!("{}", e.to_string())),
-        };
+    let create_user = stmt_create_user(&cfg);
+    debug!(target: "initalize_db", "{:?}", create_user);
+    match root_conn.exec_drop(create_user, Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
 
-        let grant_roles = stmt_grant_roles(&cfg);
-        debug!(target: "initalize_db", "{:?}", grant_roles);
-        match root_conn.exec_drop(grant_roles, Params::Empty) {
-            Ok(_) => None,
-            Err(e) => Some(format!("{}", e.to_string())),
-        };
+    let grant_roles = stmt_grant_roles(&cfg);
+    debug!(target: "initalize_db", "{:?}", grant_roles);
+    match root_conn.exec_drop(grant_roles, Params::Empty) {
+        Ok(_) => None,
+        Err(e) => Some(format!("{}", e.to_string())),
+    };
 }
 
 fn init_schema(def: &SchemaDef, conn: &mut PooledConn) -> Option<Vec<String>> {
-        let mut vec: Vec<String> = Vec::from([]);
+    let mut vec: Vec<String> = Vec::from([]);
 
-        def.tables
-            .iter()
-            .for_each(|(_, tdef)| match create_table(conn, tdef) {
-                Some(err_msg) => {
-                    error!("Error creating table {}: {err_msg}", tdef.name);
-                    vec.push(format!("{}, {err_msg}", tdef.name))
-                }
-                _ => (),
-            });
+    def.tables
+        .iter()
+        .for_each(|(_, tdef)| match create_table(conn, tdef) {
+            Some(err_msg) => {
+                error!("Error creating table {}: {err_msg}", tdef.name);
+                vec.push(format!("{}, {err_msg}", tdef.name))
+            }
+            _ => (),
+        });
 
-        None
+    None
 }
 
 fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
