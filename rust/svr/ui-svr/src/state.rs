@@ -9,7 +9,7 @@ use std::{clone::Clone, marker::PhantomData};
 use ui::filecache::FileCache;
 
 use ui::{
-    filecache::{RFileCacheLogic, RFileCacheState},
+    filecache::{FileCacheLogic, FileCacheState},
     rescache::ResCache,
 };
 
@@ -31,11 +31,11 @@ impl AppConfig {
 }
 
 pub struct AppState {
-    pub html_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
-    pub json_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
-    pub css_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
-    pub js_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
-    pub svg_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
+    pub html_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
+    pub json_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
+    pub css_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
+    pub js_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
+    pub svg_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
 
     pub config: AppConfig,
 }
@@ -43,7 +43,7 @@ pub struct AppState {
 pub fn create_app_state(config: AppConfig) -> AppState {
     let html_cache = FileCache {
         phantom: PhantomData {},
-        state: RFileCacheState {
+        state: FileCacheState {
             mime: mime::TEXT_HTML,
             root: "res/html".to_string(),
         },
@@ -52,7 +52,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
 
     let json_cache = FileCache {
         phantom: PhantomData {},
-        state: RFileCacheState {
+        state: FileCacheState {
             mime: mime::APPLICATION_JSON,
             root: "res/json".to_string(),
         },
@@ -61,7 +61,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
 
     let css_cache = FileCache {
         phantom: PhantomData {},
-        state: RFileCacheState {
+        state: FileCacheState {
             mime: mime::TEXT_CSS,
             root: "res/css".to_string(),
         },
@@ -70,7 +70,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
 
     let js_cache = FileCache {
         phantom: PhantomData {},
-        state: RFileCacheState {
+        state: FileCacheState {
             mime: mime::APPLICATION_JAVASCRIPT,
             root: "res/js".to_string(),
         },
@@ -79,7 +79,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
 
     let svg_cache = FileCache {
         phantom: PhantomData {},
-        state: RFileCacheState {
+        state: FileCacheState {
             mime: mime::IMAGE_SVG,
             root: "res/svg".to_string(),
         },
