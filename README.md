@@ -6,5 +6,5 @@
 You know, ```$ cargo build```
 
 ### Start and Stop
-* start - ```$ start-all```
-* stop - ```$ stop-all```
+* start - ```$ ./cplane start```
+* stop - ```$ ./cplane stop```
