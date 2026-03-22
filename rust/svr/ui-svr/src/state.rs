@@ -7,11 +7,6 @@ use std::clone::Clone;
 use std::sync::Mutex;
 use ui::filecache::FileCache;
 
-use ui::{
-    filecache::{FileCacheLogic, FileCacheState},
-    rescache::ResCache,
-};
-
 #[derive(Clone)]
 pub struct AppConfig {
     pub port: u32,
@@ -30,11 +25,11 @@ impl AppConfig {
 }
 
 pub struct AppState {
-    pub html_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub json_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub css_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub js_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub svg_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
+    pub html_cache: Mutex<FileCache>,
+    pub json_cache: Mutex<FileCache>,
+    pub css_cache: Mutex<FileCache>,
+    pub js_cache: Mutex<FileCache>,
+    pub svg_cache: Mutex<FileCache>,
 
     pub config: AppConfig,
 }

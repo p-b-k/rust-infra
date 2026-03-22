@@ -11,7 +11,6 @@ use mime::Mime;
 
 pub struct CacheEntry<E> {
     pub obj: E,
-    pub data: String,
     pub timestamp: SystemTime,
 }
 
@@ -30,6 +29,7 @@ where
     fn sync(state: &S, entry: &mut CacheEntry<E>, cache_key: &str) -> Option<String>;
     fn find_resource(state: &S, cache_key: &str) -> Option<CacheEntry<E>>;
     fn mime_type(state: &S, cache_key: &str) -> Mime;
+    fn generate_content(state: &S, entry: &CacheEntry<E>) -> Result<String, (u32, String)>;
 }
 
 pub struct ResCache<S, E, L>
@@ -78,7 +78,10 @@ where
                 } else {
                     debug!(target: "get_entry", "{cache_key} up to date");
                 }
-                Some(e.data.clone())
+                match L::generate_content(&self.state, e) {
+                    Ok(s) => Some(s),
+                    Err(_) => None,
+                }
             }
             None => {
                 debug!(target: "get_entry", "Cache miss for {cache_key}");
@@ -86,9 +89,12 @@ where
                 match L::find_resource(&self.state, cache_key) {
                     Some(e) => {
                         debug!(target: "get_entry", "Found resource for {cache_key}, creating entry");
-                        let str = e.data.clone();
+                        let content = L::generate_content(&self.state, &e);
                         self.map.insert(cache_key.to_string(), e);
-                        Some(str)
+                        match content {
+                            Ok(s) => Some(s),
+                            Err(_) => None,
+                        }
                     }
                     None => {
                         debug!(target: "get_entry", "No resource found for {cache_key}, returning 404");

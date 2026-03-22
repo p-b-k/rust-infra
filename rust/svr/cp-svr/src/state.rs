@@ -6,10 +6,7 @@ use cplane::app::{DEFAULT_CP_PORT, DbConfig, PtConfig};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
-use ui::{
-    filecache::{FileCache, FileCacheLogic, FileCacheState},
-    rescache::ResCache,
-};
+use ui::filecache::FileCache;
 
 use log::debug;
 
@@ -39,11 +36,11 @@ impl AppConfig {
 }
 
 pub struct AppState {
-    pub html_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub json_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub css_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub js_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
-    pub svg_cache: Mutex<ResCache<FileCacheState, String, FileCacheLogic>>,
+    pub html_cache: Mutex<FileCache>,
+    pub json_cache: Mutex<FileCache>,
+    pub css_cache: Mutex<FileCache>,
+    pub js_cache: Mutex<FileCache>,
+    pub svg_cache: Mutex<FileCache>,
 
     pub pool: Mutex<Option<Pool>>,
     pub config: AppConfig,
