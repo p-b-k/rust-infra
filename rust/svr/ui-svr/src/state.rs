@@ -6,9 +6,10 @@ use cplane::app::PtConfig;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use std::{clone::Clone, marker::PhantomData};
+use ui::filecache::FileCache;
 
 use ui::{
-    filecache::{FileCache, RFileCache, RFileCacheLogic, RFileCacheState, StaticFileCacheLogic},
+    filecache::{RFileCacheLogic, RFileCacheState},
     rescache::ResCache,
 };
 
@@ -30,47 +31,53 @@ impl AppConfig {
 }
 
 pub struct AppState {
-    pub html_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub json_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub css_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub js_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    // pub svg_cache: Mutex<FileCache<StaticFileCacheLogic>>,
+    pub html_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
+    pub json_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
+    pub css_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
+    pub js_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
     pub svg_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
 
     pub config: AppConfig,
 }
 
 pub fn create_app_state(config: AppConfig) -> AppState {
-    let html_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/html"),
-        mime::TEXT_HTML,
-    );
+    let html_cache = FileCache {
+        phantom: PhantomData {},
+        state: RFileCacheState {
+            mime: mime::TEXT_HTML,
+            root: "res/html".to_string(),
+        },
+        map: HashMap::new(),
+    };
 
-    let json_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/json"),
-        mime::APPLICATION_JSON,
-    );
+    let json_cache = FileCache {
+        phantom: PhantomData {},
+        state: RFileCacheState {
+            mime: mime::APPLICATION_JSON,
+            root: "res/json".to_string(),
+        },
+        map: HashMap::new(),
+    };
 
-    let css_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/css"),
-        mime::TEXT_CSS,
-    );
+    let css_cache = FileCache {
+        phantom: PhantomData {},
+        state: RFileCacheState {
+            mime: mime::TEXT_CSS,
+            root: "res/css".to_string(),
+        },
+        map: HashMap::new(),
+    };
 
-    let js_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/js"),
-        mime::APPLICATION_JAVASCRIPT,
-    );
+    let js_cache = FileCache {
+        phantom: PhantomData {},
+        state: RFileCacheState {
+            mime: mime::APPLICATION_JAVASCRIPT,
+            root: "res/js".to_string(),
+        },
+        map: HashMap::new(),
+    };
 
-    // let svg_cache = FileCache::new(
-    //     StaticFileCacheLogic {},
-    //     String::from("res/svg"),
-    //     mime::IMAGE_SVG,
-    // );
-    let svg_cache = RFileCache {
+    let svg_cache = FileCache {
         phantom: PhantomData {},
         state: RFileCacheState {
             mime: mime::IMAGE_SVG,
