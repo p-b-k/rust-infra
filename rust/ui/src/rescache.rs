@@ -47,6 +47,14 @@ where
     S: CacheState,
     L: CacheLogic<S, E>,
 {
+    pub fn new(state: S) -> ResCache<S, E, L> {
+        ResCache {
+            phantom: PhantomData,
+            state,
+            map: HashMap::new(),
+        }
+    }
+
     pub fn get_entry(&mut self, cache_key: &str) -> Option<String> {
         // Check if the cache itself needs to sync
         if self.state.needs_sync() {

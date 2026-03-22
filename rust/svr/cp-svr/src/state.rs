@@ -4,9 +4,8 @@
 
 use cplane::app::{DEFAULT_CP_PORT, DbConfig, PtConfig};
 use mysql::{Opts, Pool};
-use std::marker::PhantomData;
+use std::clone::Clone;
 use std::sync::Mutex;
-use std::{clone::Clone, collections::HashMap};
 use ui::{
     filecache::{FileCache, FileCacheLogic, FileCacheState},
     rescache::ResCache,
@@ -62,50 +61,11 @@ impl AppState {
 }
 
 pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
-    let html_cache = FileCache {
-        phantom: PhantomData {},
-        state: FileCacheState {
-            mime: mime::TEXT_HTML,
-            root: "res/html".to_string(),
-        },
-        map: HashMap::new(),
-    };
-
-    let json_cache = FileCache {
-        phantom: PhantomData {},
-        state: FileCacheState {
-            mime: mime::APPLICATION_JSON,
-            root: "res/json".to_string(),
-        },
-        map: HashMap::new(),
-    };
-
-    let css_cache = FileCache {
-        phantom: PhantomData {},
-        state: FileCacheState {
-            mime: mime::TEXT_CSS,
-            root: "res/css".to_string(),
-        },
-        map: HashMap::new(),
-    };
-
-    let js_cache = FileCache {
-        phantom: PhantomData {},
-        state: FileCacheState {
-            mime: mime::APPLICATION_JAVASCRIPT,
-            root: "res/js".to_string(),
-        },
-        map: HashMap::new(),
-    };
-
-    let svg_cache = FileCache {
-        phantom: PhantomData {},
-        state: FileCacheState {
-            mime: mime::IMAGE_SVG,
-            root: "res/svg".to_string(),
-        },
-        map: HashMap::new(),
-    };
+    let html_cache = FileCache::from_mime_and_root(mime::TEXT_HTML, "res/html");
+    let json_cache = FileCache::from_mime_and_root(mime::APPLICATION_JSON, "res/json");
+    let css_cache = FileCache::from_mime_and_root(mime::TEXT_CSS, "res/css");
+    let js_cache = FileCache::from_mime_and_root(mime::APPLICATION_JAVASCRIPT, "res/js");
+    let svg_cache = FileCache::from_mime_and_root(mime::IMAGE_SVG, "res/svg");
 
     let opts = Opts::from_url(db_url).unwrap();
     let conn_pool = Pool::new(opts).unwrap();

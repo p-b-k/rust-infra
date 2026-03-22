@@ -2,7 +2,10 @@
 // File Caching
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use std::fs::{exists, metadata, read_to_string};
+use std::{
+    collections::HashMap,
+    fs::{exists, metadata, read_to_string},
+};
 
 use mime::Mime;
 
@@ -61,3 +64,16 @@ impl CacheLogic<FileCacheState, String> for FileCacheLogic {
 }
 
 pub type FileCache = ResCache<FileCacheState, String, FileCacheLogic>;
+
+impl FileCache {
+    pub fn from_mime_and_root(mime: Mime, root: &str) -> FileCache {
+        FileCache {
+            phantom: std::marker::PhantomData,
+            state: FileCacheState {
+                root: root.to_string(),
+                mime,
+            },
+            map: HashMap::new(),
+        }
+    }
+}
