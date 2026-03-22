@@ -2165,6 +2165,7 @@ name = "ui"
 version = "0.1.0"
 dependencies = [
  "http",
+ "infra",
  "log",
  "mime",
  "serde",

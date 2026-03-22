@@ -9,6 +9,8 @@ use std::collections::HashMap;
 use std::fs::{exists, metadata, read_to_string};
 use std::time::SystemTime;
 
+use crate::rescache::{CacheEntry, CacheLogic as RCacheLogic, CacheState, ResCache};
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Define the cache logic
 // ---------------------------------------------------------------------------------------------------------------------
@@ -102,3 +104,61 @@ impl CacheLogic for StaticFileCacheLogic {
         timestamp < metadata(file_name).unwrap().modified().unwrap()
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Above here is for historical purposes only
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+type RFileCacheEntry = CacheEntry<String>;
+
+pub struct RFileCacheState {
+    pub root: String,
+    pub mime: Mime,
+}
+
+impl CacheState for RFileCacheState {
+    fn needs_sync(&self) -> bool {
+        false
+    }
+    fn sync(&mut self) -> Option<String> {
+        None
+    }
+}
+
+pub struct RFileCacheLogic {}
+
+impl RCacheLogic<RFileCacheState, String> for RFileCacheLogic {
+    fn needs_sync(_state: &RFileCacheState, entry: &RFileCacheEntry, _cache_key: &str) -> bool {
+        exists(entry.obj.as_str()).unwrap()
+            && entry.timestamp < metadata(entry.obj.as_str()).unwrap().modified().unwrap()
+    }
+
+    fn sync(
+        _state: &RFileCacheState,
+        entry: &mut CacheEntry<String>,
+        _cache_key: &str,
+    ) -> Option<String> {
+        entry.data = read_to_string(entry.obj.as_str()).unwrap();
+        entry.timestamp = metadata(entry.obj.as_str()).unwrap().modified().unwrap();
+        None
+    }
+
+    fn find_resource(state: &RFileCacheState, cache_key: &str) -> Option<CacheEntry<String>> {
+        let path = format!("{}/{}", state.root, cache_key);
+        if exists(&path).unwrap() {
+            Some(RFileCacheEntry {
+                data: read_to_string(&path).unwrap(),
+                timestamp: metadata(&path).unwrap().modified().unwrap(),
+                obj: path,
+            })
+        } else {
+            None
+        }
+    }
+
+    fn mime_type(state: &RFileCacheState, _cache_key: &str) -> Mime {
+        state.mime.clone()
+    }
+}
+
+pub type RFileCache = ResCache<RFileCacheState, String, RFileCacheLogic>;

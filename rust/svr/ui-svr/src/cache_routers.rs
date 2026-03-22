@@ -94,16 +94,9 @@ async fn static_svg_get(
     State(state): State<Arc<AppState>>,
     Path(path): Path<String>,
 ) -> Result<Response<String>, ErrorResponse> {
-    // debug!(target: "static_svg_get", "called with path {path:?}");
-
     let svg_cache = &mut state.svg_cache.lock().unwrap();
-    let static_root = svg_cache.root.clone();
 
-    let full_path = format!("{}/{}", static_root, path);
-
-    // debug!(target: "static_svg_get", "full static path is {full_path:?}");
-
-    static_get(svg_cache, &full_path)
+    svg_cache.get_result(&path)
 }
 
 fn static_get(

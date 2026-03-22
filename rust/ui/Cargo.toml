@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 http = "1.4.0"
+infra = { version = "0.1.0", path = "../infra" }
 log = "0.4.29"
 mime = "0.3.17"
 serde = "1.0.228"

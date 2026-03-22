@@ -3,10 +3,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use cplane::app::PtConfig;
-use std::clone::Clone;
+use std::collections::HashMap;
 use std::sync::Mutex;
+use std::{clone::Clone, marker::PhantomData};
 
-use ui::filecache::{FileCache, StaticFileCacheLogic};
+use ui::{
+    filecache::{FileCache, RFileCache, RFileCacheLogic, RFileCacheState, StaticFileCacheLogic},
+    rescache::ResCache,
+};
 
 #[derive(Clone)]
 pub struct AppConfig {
@@ -30,7 +34,8 @@ pub struct AppState {
     pub json_cache: Mutex<FileCache<StaticFileCacheLogic>>,
     pub css_cache: Mutex<FileCache<StaticFileCacheLogic>>,
     pub js_cache: Mutex<FileCache<StaticFileCacheLogic>>,
-    pub svg_cache: Mutex<FileCache<StaticFileCacheLogic>>,
+    // pub svg_cache: Mutex<FileCache<StaticFileCacheLogic>>,
+    pub svg_cache: Mutex<ResCache<RFileCacheState, String, RFileCacheLogic>>,
 
     pub config: AppConfig,
 }
@@ -60,11 +65,19 @@ pub fn create_app_state(config: AppConfig) -> AppState {
         mime::APPLICATION_JAVASCRIPT,
     );
 
-    let svg_cache = FileCache::new(
-        StaticFileCacheLogic {},
-        String::from("res/svg"),
-        mime::IMAGE_SVG,
-    );
+    // let svg_cache = FileCache::new(
+    //     StaticFileCacheLogic {},
+    //     String::from("res/svg"),
+    //     mime::IMAGE_SVG,
+    // );
+    let svg_cache = RFileCache {
+        phantom: PhantomData {},
+        state: RFileCacheState {
+            mime: mime::IMAGE_SVG,
+            root: "res/svg".to_string(),
+        },
+        map: HashMap::new(),
+    };
 
     AppState {
         html_cache: Mutex::new(html_cache),
