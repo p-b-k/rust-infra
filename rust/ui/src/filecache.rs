@@ -3,20 +3,19 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use std::{
-    collections::HashMap,
+    collections::HashMap, time::SystemTime,
     fs::{exists, metadata, read_to_string},
 };
 
 use mime::Mime;
 
-use crate::rescache::{CacheEntry, CacheLogic, CacheState, ResCache};
+use crate::rescache::{ CacheLogic, CacheState, ResCache};
 
 pub struct StaticFileData {
     pub path: String,
     pub data: String,
+    pub timestamp: SystemTime,
 }
-
-type FileCacheEntry = CacheEntry<StaticFileData>;
 
 pub struct FileCacheState {
     pub root: String,
@@ -35,10 +34,10 @@ impl CacheState for FileCacheState {
 pub struct FileCacheLogic {}
 
 impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {
-    fn needs_sync(_state: &FileCacheState, entry: &FileCacheEntry, _cache_key: &str) -> bool {
-        exists(entry.obj.path.as_str()).unwrap()
+    fn needs_sync(_state: &FileCacheState, entry: &StaticFileData, _cache_key: &str) -> bool {
+        exists(entry.path.as_str()).unwrap()
             && entry.timestamp
-                < metadata(entry.obj.path.as_str())
+                < metadata(entry.path.as_str())
                     .unwrap()
                     .modified()
                     .unwrap()
@@ -46,26 +45,24 @@ impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {
 
     fn sync(
         _state: &FileCacheState,
-        entry: &mut FileCacheEntry,
+        entry: &mut StaticFileData,
         _cache_key: &str,
     ) -> Option<String> {
-        entry.obj.data = read_to_string(entry.obj.path.as_str()).unwrap();
-        entry.timestamp = metadata(entry.obj.path.as_str())
+        entry.data = read_to_string(entry.path.as_str()).unwrap();
+        entry.timestamp = metadata(entry.path.as_str())
             .unwrap()
             .modified()
             .unwrap();
         None
     }
 
-    fn find_resource(state: &FileCacheState, cache_key: &str) -> Option<FileCacheEntry> {
+    fn find_resource(state: &FileCacheState, cache_key: &str) -> Option<StaticFileData> {
         let path = format!("{}/{}", state.root, cache_key);
         if exists(&path).unwrap() {
-            Some(FileCacheEntry {
+            Some(StaticFileData {
                 timestamp: metadata(&path).unwrap().modified().unwrap(),
-                obj: StaticFileData {
-                    data: read_to_string(&path).unwrap(),
-                    path,
-                },
+                data: read_to_string(&path).unwrap(),
+                path,
             })
         } else {
             None
@@ -78,9 +75,9 @@ impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {
 
     fn generate_content(
         _state: &FileCacheState,
-        entry: &FileCacheEntry,
+        entry: &StaticFileData,
     ) -> Result<String, (u32, String)> {
-        Ok(entry.obj.data.clone())
+        Ok(entry.data.clone())
     }
 }
 

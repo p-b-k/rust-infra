@@ -2,19 +2,12 @@
 // Generic Resource Caching
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use std::{collections::HashMap, marker::PhantomData, time::SystemTime};
+use std::{collections::HashMap, marker::PhantomData};
 
 use http::Response;
 use infra::error::ErrorResponse;
 use log::{debug, info, warn};
 use mime::Mime;
-
-pub struct CacheEntry<E> {
-    pub obj: E,
-    pub timestamp: SystemTime,
-}
-
-impl<E> CacheEntry<E> {}
 
 pub trait CacheState {
     fn needs_sync(&self) -> bool;
@@ -25,11 +18,11 @@ pub trait CacheLogic<S, E>
 where
     S: CacheState,
 {
-    fn needs_sync(state: &S, entry: &CacheEntry<E>, cache_key: &str) -> bool;
-    fn sync(state: &S, entry: &mut CacheEntry<E>, cache_key: &str) -> Option<String>;
-    fn find_resource(state: &S, cache_key: &str) -> Option<CacheEntry<E>>;
+    fn needs_sync(state: &S, entry: &E, cache_key: &str) -> bool;
+    fn sync(state: &S, entry: &mut E, cache_key: &str) -> Option<String>;
+    fn find_resource(state: &S, cache_key: &str) -> Option<E>;
     fn mime_type(state: &S, cache_key: &str) -> Mime;
-    fn generate_content(state: &S, entry: &CacheEntry<E>) -> Result<String, (u32, String)>;
+    fn generate_content(state: &S, entry: &E) -> Result<String, (u32, String)>;
 }
 
 pub struct ResCache<S, E, L>
@@ -39,7 +32,7 @@ where
 {
     pub phantom: PhantomData<L>,
     pub state: S,
-    pub map: HashMap<String, CacheEntry<E>>,
+    pub map: HashMap<String, E>,
 }
 
 impl<S, E, L> ResCache<S, E, L>
