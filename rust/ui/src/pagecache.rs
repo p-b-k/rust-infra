@@ -4,6 +4,8 @@
 
 use crate::rescache::{CacheEntry, CacheLogic, CacheState, ResCache};
 
+use log::warn;
+
 pub struct Page {
     pub id: String,
     pub name: String,
@@ -37,8 +39,14 @@ pub struct PageCacheState {
 }
 
 impl CacheState for PageCacheState {
-    fn needs_sync(&self) -> bool;
-    fn sync(&mut self) -> Option<String>;
+    fn needs_sync(&self) -> bool {
+        warn!(target: "PageCacheState", "{} not implemented", "needs_sync");
+        false
+    }
+    fn sync(&mut self) -> Option<String> {
+        warn!(target: "PageCacheState", "{} not implemented", "sync");
+        None
+    }
 }
 
 pub struct PageCacheLogic {}
