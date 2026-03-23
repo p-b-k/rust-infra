@@ -6,6 +6,7 @@ use cplane::app::PtConfig;
 use std::clone::Clone;
 use std::sync::Mutex;
 use ui::filecache::FileCache;
+use ui::pagecache::PageCache;
 
 #[derive(Clone)]
 pub struct AppConfig {
@@ -31,6 +32,8 @@ pub struct AppState {
     pub js_cache: Mutex<FileCache>,
     pub svg_cache: Mutex<FileCache>,
 
+    pub page_cache: Mutex<PageCache>,
+
     pub config: AppConfig,
 }
 
@@ -40,6 +43,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
     let css_cache = FileCache::from_mime_and_root(mime::TEXT_CSS, "res/css");
     let js_cache = FileCache::from_mime_and_root(mime::APPLICATION_JAVASCRIPT, "res/js");
     let svg_cache = FileCache::from_mime_and_root(mime::IMAGE_SVG, "res/svg");
+    let page_cache = PageCache::from_root_and_file("rest/pages", "res/templates/main.html");
 
     AppState {
         html_cache: Mutex::new(html_cache),
@@ -47,6 +51,8 @@ pub fn create_app_state(config: AppConfig) -> AppState {
         css_cache: Mutex::new(css_cache),
         js_cache: Mutex::new(js_cache),
         svg_cache: Mutex::new(svg_cache),
+        page_cache: Mutex::new(page_cache),
+
         config,
     }
 }

@@ -4,7 +4,7 @@
 
 use crate::rescache::{CacheLogic, CacheState, ResCache};
 
-use std::{time::SystemTime};
+use std::{time::SystemTime, collections::HashMap};
 
 use mime::Mime;
 
@@ -43,7 +43,10 @@ pub struct PageData {
 }
 
 pub struct PageCacheState {
+    pub page_root: String,
+    pub html_template: String,
     pub parts: Vec<Part>,
+    pub timestamp: SystemTime,
 }
 
 impl CacheState for PageCacheState {
@@ -95,4 +98,20 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
     }
 }
 
-pub type PageCache = ResCache<PageCacheState, PageData, PageCacheLogic>;
+pub type PageCache = ResCache<PageCacheState, PageCacheEntry, PageCacheLogic>;
+
+impl PageCache {
+    pub fn from_root_and_file(root: &str, file : &str) -> PageCache {
+        PageCache {
+            phantom: std::marker::PhantomData,
+            state: PageCacheState {
+                page_root: root.to_string(),
+                html_template: file.to_string(),
+                parts:Vec::new(),
+                timestamp: SystemTime::now()
+            },
+            map: HashMap::new(),
+        }
+    }
+}
+
