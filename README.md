@@ -3,8 +3,9 @@
 ## A Rust control plane application
 
 ### Build
-You know, ```$ cargo build```
+You know, the usual.
+```$ cargo build```
 
 ### Start and Stop
-* start - ```$ ./cplane start```
-* stop - ```$ ./cplane stop```
+* start ```$ ./cplane start```
+* stop ```$ ./cplane stop```
