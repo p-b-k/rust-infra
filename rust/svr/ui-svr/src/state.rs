@@ -43,7 +43,7 @@ pub fn create_app_state(config: AppConfig) -> AppState {
     let css_cache = FileCache::from_mime_and_root(mime::TEXT_CSS, "res/css");
     let js_cache = FileCache::from_mime_and_root(mime::APPLICATION_JAVASCRIPT, "res/js");
     let svg_cache = FileCache::from_mime_and_root(mime::IMAGE_SVG, "res/svg");
-    let page_cache = PageCache::from_root_and_file("rest/pages", "res/templates/main.html");
+    let page_cache = PageCache::from_root_and_file("res/pages", "res/templates/main.html").unwrap();
 
     AppState {
         html_cache: Mutex::new(html_cache),

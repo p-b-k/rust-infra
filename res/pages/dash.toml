@@ -1,0 +1,4 @@
+id = "dash"
+name = "CPlane Dashboard Page"
+icon = "static/svg/dash.svg"
+help = "static/html/help/dash.html"

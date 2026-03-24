@@ -6,7 +6,7 @@ use std::{collections::HashMap, marker::PhantomData};
 
 use http::Response;
 use infra::error::ErrorResponse;
-use log::{debug, info, warn};
+use log::{ info, warn};
 use mime::Mime;
 
 pub trait CacheState {
@@ -59,29 +59,43 @@ where
                     info!(target: "ResCache", "Resynched Cache State");
                 }
             }
+        } else {
+            info!(target: "ResCache", "No synch needed for {cache_key}");
         }
+
+        info!("About to look for the entry for {cache_key}");
 
         // Look for the entry
         match self.map.get_mut(cache_key) {
             Some(e) => {
-                debug!(target: "get_entry", "Got cache hit for {cache_key}");
+                info!(target: "get_entry", "Got cache hit for {cache_key}");
                 if L::needs_sync(&self.state, e, cache_key) {
-                    debug!(target: "get_entry", "{cache_key} needs synch");
-                    L::sync(&self.state, e, cache_key);
+                    info!(target: "get_entry", "{cache_key} needs synch");
+                    match L::sync(&self.state, e, cache_key) {
+                        Some(err_msg) => {
+                            warn!(target: "ResCache", "Error synching cache state for ({cache_key}): {err_msg}");
+                        }, _ => {
+                            info!("{cache_key} synched successfully")
+                        }
+                    }
                 } else {
-                    debug!(target: "get_entry", "{cache_key} up to date");
+                    info!(target: "get_entry", "{cache_key} up to date");
                 }
+
                 match L::generate_content(&self.state, e) {
                     Ok(s) => Some(s),
-                    Err(_) => None,
+                    Err((_i, m)) => {
+                        warn!("Unable to get content for {cache_key}: {m}");
+                        None
+                    },
                 }
             }
             None => {
-                debug!(target: "get_entry", "Cache miss for {cache_key}");
+                info!(target: "get_entry", "Cache miss for {cache_key}");
 
                 match L::find_resource(&self.state, cache_key) {
                     Some(e) => {
-                        debug!(target: "get_entry", "Found resource for {cache_key}, creating entry");
+                        info!(target: "get_entry", "Found resource for {cache_key}, creating entry");
                         let content = L::generate_content(&self.state, &e);
                         self.map.insert(cache_key.to_string(), e);
                         match content {
@@ -90,7 +104,7 @@ where
                         }
                     }
                     None => {
-                        debug!(target: "get_entry", "No resource found for {cache_key}, returning 404");
+                        info!(target: "get_entry", "No resource found for {cache_key}, returning 404");
                         None
                     }
                 }

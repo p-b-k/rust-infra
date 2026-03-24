@@ -10,10 +10,13 @@ use std::{
     time::SystemTime,
 };
 
+use serde::Deserialize;
+
 use mime::Mime;
 
-use log::warn;
+use log::{error, warn, info};
 
+#[derive(Deserialize, Debug)]
 pub struct Page {
     pub id: String,
     pub name: String,
@@ -30,6 +33,7 @@ pub struct PageCacheEntry {
     pub html_ts: SystemTime,
 }
 
+#[derive(Debug)]
 pub enum PageField {
     Title,
     Icon,
@@ -37,6 +41,7 @@ pub enum PageField {
     Desc,
 }
 
+#[derive(Debug)]
 pub enum Part {
     Text(String),
     Field(PageField),
@@ -64,7 +69,9 @@ impl CacheState for PageCacheState {
             return true;
         }
 
-        metadata(&self.html_template).unwrap().modified().unwrap() > self.timestamp
+        let res = metadata(&self.html_template).unwrap().modified().unwrap() > self.timestamp;
+        info!("does {} need sync? {res}", self.html_template);
+        res
     }
 
     fn sync(&mut self) -> Option<String> {
@@ -75,8 +82,9 @@ impl CacheState for PageCacheState {
                     self.timestamp = metadata(&self.html_template).unwrap().modified().unwrap();
                     None
                 },
-                Err(s) => 
+                Err(s) =>  {
                     Some(format!("Error parsing {:?}: {s}", &self.html_template))
+                }
             }
         } else {
             Some(format!("The file {:?} does not exist", &self.html_template))
@@ -86,12 +94,20 @@ impl CacheState for PageCacheState {
 
 pub struct PageCacheLogic {}
 
-fn read_page_from_file(_file: &str) -> Result<Page, String> {
-    Err("Not Implemented".to_string())
+fn read_page_from_file(file: &str) -> Result<Page, String> {
+    let page_content = read_to_string(&file).unwrap();
+    match toml::from_str(page_content.as_str()) {
+        Ok(p) => Ok(p),
+        Err(e) => Err(format!("{}", e.to_string()))
+    }
 }
 
-fn read_html_from_file(_file: &str) -> Result<Vec<Part>, String> {
-    Err("Not Implemented".to_string())
+fn read_html_from_file(file: &str) -> Result<Vec<Part>, String> {
+    let mut v : Vec<Part> = Vec::new();
+
+    let string = read_to_string(file).unwrap();
+    v.push(Part::Text(string));
+    Ok(v)
 }
 
 impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
@@ -163,12 +179,31 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
 
         if exists(page_path.as_str()).unwrap() {
             if exists(html_path.as_str()).unwrap() {
-                None
+                warn!(target:"PageCacheLogic", "find_resource: path ({html_path} found, but returning None");
+
+                match read_page_from_file(page_path.as_str()) {
+                    Ok(p) => {
+                        let html = read_to_string(&html_path).unwrap();
+                        Some(PageCacheEntry {
+                            page : p,
+                            html,
+                            html_ts : metadata(&html_path).unwrap().modified().unwrap(),
+                            page_ts : metadata(&page_path).unwrap().modified().unwrap(),
+                            html_path,
+                            page_path,
+                        })
+                    }, Err(e) => {
+                        error!("Unable to parse page file {page_path}: {}", e.to_string());
+                        None
+                    }
+                }
             } else {
                 match read_page_from_file(page_path.as_str()) {
                     Ok(p) => match read_to_string(page_path.as_str()) {
                         Ok(s) => {
+                            info!("html_path = {html_path}");
                             let html_ts = metadata(html_path.as_str()).unwrap().modified().unwrap();
+                            info!("page_path = {page_path}");
                             let page_ts = metadata(page_path.as_str()).unwrap().modified().unwrap();
                             Some(PageCacheEntry {
                                 page: p,
@@ -203,30 +238,39 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
     }
 
     fn generate_content(
-        _state: &PageCacheState,
-        _entry: &PageCacheEntry,
+        state: &PageCacheState,
+        entry: &PageCacheEntry,
     ) -> Result<String, (u32, String)> {
-        warn!(target: "PageCacheLogic", "{} not implemented", "generate_contents");
-        Err((
-            500,
-            format!("PageCacheLogic::generate_contents is not implemented yet"),
-        ))
+        let mut content = String::new();
+
+        state.parts.iter().for_each(|it| warn!("Part: {it:?}"));
+        
+        Ok("Hello World".to_string())
     }
 }
 
 pub type PageCache = ResCache<PageCacheState, PageCacheEntry, PageCacheLogic>;
 
 impl PageCache {
-    pub fn from_root_and_file(root: &str, file: &str) -> PageCache {
-        PageCache {
-            phantom: std::marker::PhantomData,
-            state: PageCacheState {
-                page_root: root.to_string(),
-                html_template: file.to_string(),
-                parts: Vec::new(),
-                timestamp: SystemTime::now(),
+    pub fn from_root_and_file(root: &str, file: &str) -> Result<PageCache, String> {
+        info!("Calling from_root_and_file on {root}, {file}");
+
+        match read_html_from_file (file) {
+            Ok(v) => {
+                Ok(PageCache {
+                    phantom: std::marker::PhantomData,
+                    state: PageCacheState {
+                        page_root: root.to_string(),
+                        html_template: file.to_string(),
+                        parts: v,
+                        timestamp: SystemTime::now(),
+                    },
+                    map: HashMap::new(),
+                })
             },
-            map: HashMap::new(),
+            Err(s) => {
+                Err(s)
+            }
         }
     }
 }
