@@ -58,12 +58,29 @@ pub struct PageCacheState {
 
 impl CacheState for PageCacheState {
     fn needs_sync(&self) -> bool {
-        warn!(target: "PageCacheState", "{} not implemented", "needs_sync");
-        false
+
+        if !exists(&self.html_template).unwrap() {
+            warn!(target: "PageCacheLogic", "needs_sync: page file does not exist ({})", self.html_template);
+            return true;
+        }
+
+        metadata(&self.html_template).unwrap().modified().unwrap() > self.timestamp
     }
+
     fn sync(&mut self) -> Option<String> {
-        warn!(target: "PageCacheState", "{} not implemented", "sync");
-        None
+        if exists(&self.html_template).unwrap () {
+            match read_html_from_file(self.html_template.as_str()) {
+                Ok(v) => {
+                    self.parts = v;
+                    self.timestamp = metadata(&self.html_template).unwrap().modified().unwrap();
+                    None
+                },
+                Err(s) => 
+                    Some(format!("Error parsing {:?}: {s}", &self.html_template))
+            }
+        } else {
+            Some(format!("The file {:?} does not exist", &self.html_template))
+        }
     }
 }
 

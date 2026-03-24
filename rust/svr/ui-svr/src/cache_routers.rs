@@ -12,6 +12,8 @@ use infra::error::ErrorResponse;
 
 use crate::state::AppState;
 
+use log::info;
+
 pub fn static_router(app: Arc<AppState>) -> Router<()> {
     Router::new()
         .route("/static/html/{*path}", get(static_html_get))
@@ -19,6 +21,7 @@ pub fn static_router(app: Arc<AppState>) -> Router<()> {
         .route("/static/css/{*path}", get(static_css_get))
         .route("/static/js/{*path}", get(static_js_get))
         .route("/static/svg/{*path}", get(static_svg_get))
+        .route("/page/{*path}", get(static_page_get))
         .with_state(app)
 }
 
@@ -65,4 +68,14 @@ async fn static_svg_get(
     let svg_cache = &mut state.svg_cache.lock().unwrap();
 
     svg_cache.get_result(&path)
+}
+
+async fn static_page_get(
+    State(state): State<Arc<AppState>>,
+    Path(path): Path<String>,
+) -> Result<Response<String>, ErrorResponse> {
+    info!("Got page request for {path:?}");
+    let page_cache = &mut state.page_cache.lock().unwrap();
+
+    page_cache.get_result(&path)
 }
