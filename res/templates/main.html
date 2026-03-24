@@ -6,7 +6,7 @@
 
     <!-- Local CSS style -->
     <link rel="stylesheet" href="/static/css/colors.css"/>
-    <link rel="stylesheet" href="/static/css/test.css"/>
+    <link rel="stylesheet" href="/static/css/main.css"/>
 
     <!-- Javascript File -->
     <!--
@@ -19,18 +19,23 @@
 
   <body>
     <script type="text/javascript"> let data = {}; </script>
+
+    <!-- The sidebar controll -->
     <div id="sidebar">
+      <img src="<{icon}>" width="32px" height="32px"/>
+      <img src="<{icon}>" width="32px" height="32px"/>
+      <img src="<{icon}>" width="32px" height="32px"/>
+      <img src="<{icon}>" width="32px" height="32px"/>
     </div>
+
+    <!-- The page header -->
     <div id="header">
-    <img src="<{icon}>" width="150px" height="150px"/>
-    <span><{desc}></span>
+      <img src="<{icon}>" width="128px" height="128px"/>
+      <span><{desc}></span>
     </div>
 
-    <h1>Testing Page Generation</h1>
-  
-    <hr/>
-
-    <div><{body}></div>
+    <!-- The page contents -->
+    <div id="contents"><{body}></div>
 
     <script type="text/javascript">
       console.log('The file has loaded. Repeat, the file has loaded');

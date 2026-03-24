@@ -1,0 +1,31 @@
+/* Read colors from another source */
+
+* {
+  font-family      : sans-serif;
+  background       : var(--main-bg);
+  color            : var(--main-fg);
+  margin           : 4px;
+}
+
+#header {
+  margin-left      : 64px;
+  position         : absolute;
+}
+
+#sidebar {
+  padding          : 8px;
+  position         : absolute;
+  background       : var(--menu-bg);
+  color            : var(--menu-fg);
+  border-radius    : var(--menu-radius);
+  height           : 70%;
+  overflow-y       : hidden;
+  width            : 40px;
+}
+
+#contents {
+  margin-left      : 64px;
+  margin-top       : 34px;
+  /* border           : solid black 4px; */
+}
+
