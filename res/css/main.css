@@ -8,13 +8,26 @@
 }
 
 #header {
-  margin-left      : 64px;
+  font-size        : xx-large;
+  padding-left     : 8px;
+  padding-top      : 8px;
+  padding-bottom   : 8px;
+  border-radius    : var(--menu-radius);
   position         : absolute;
+  background       : var(--menu-bg);
+  color            : var(--menu-fg);
+  width            : 96%;
+}
+
+#header * {
+  background       : var(--menu-bg);
+  color            : var(--menu-fg);
 }
 
 #sidebar {
   padding          : 8px;
   position         : absolute;
+  margin-top       : 232px;
   background       : var(--menu-bg);
   color            : var(--menu-fg);
   border-radius    : var(--menu-radius);
@@ -23,9 +36,24 @@
   width            : 40px;
 }
 
+#sidebar * {
+  background       : var(--menu-bg);
+  color            : var(--menu-fg);
+}
+
 #contents {
-  margin-left      : 64px;
-  margin-top       : 34px;
+  margin-left      : 72px;
+  margin-top       : 232px;
+  position         : absolute;
   /* border           : solid black 4px; */
 }
 
+#page-name {
+  /* font-size        : xx-large; */
+  border           : solid black 4px;
+  margin-left      : 172px;
+}
+
+#page-desc {
+  font-size        : medium;
+}

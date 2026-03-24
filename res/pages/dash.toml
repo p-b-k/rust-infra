@@ -1,4 +1,5 @@
-name = "CPlane Dashboard Page"
+name = "Dashboard"
+title = "CPlane Dashboard Page"
 desc = "Main information landing page"
 icon = "/static/svg/copy.svg"
 help = "/static/html/help/dash.html"

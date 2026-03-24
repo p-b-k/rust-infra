@@ -14,13 +14,14 @@ use serde::Deserialize;
 
 use mime::Mime;
 
-use log::{error, warn, info};
+use log::{error, info, warn};
 
 #[derive(Deserialize, Debug)]
 pub struct Page {
     pub name: String,
+    pub title: String,
     pub icon: String,
-    pub desc : String,
+    pub desc: String,
     pub help: String,
 }
 
@@ -36,6 +37,7 @@ pub struct PageCacheEntry {
 #[derive(Debug)]
 pub enum PageField {
     Title,
+    Name,
     Icon,
     Help,
     Desc,
@@ -43,17 +45,17 @@ pub enum PageField {
 }
 
 impl PageCacheEntry {
-    pub fn value_for(&self, f : &PageField) -> String {
+    pub fn value_for(&self, f: &PageField) -> String {
         match f {
-            PageField::Title => self.page.name.clone(),
+            PageField::Name => self.page.name.clone(),
+            PageField::Title => self.page.title.clone(),
             PageField::Icon => self.page.icon.clone(),
             PageField::Help => self.page.help.clone(),
             PageField::Desc => self.page.desc.clone(),
-            PageField::Body => self.html.clone()
+            PageField::Body => self.html.clone(),
         }
     }
 }
-
 
 #[derive(Debug)]
 pub enum Part {
@@ -62,7 +64,7 @@ pub enum Part {
 }
 
 impl Part {
-    pub fn to_string (&self, entry : &PageCacheEntry) -> String {
+    pub fn to_string(&self, entry: &PageCacheEntry) -> String {
         match self {
             Part::Text(s) => s.clone(),
             Part::Field(f) => entry.value_for(f),
@@ -86,7 +88,6 @@ pub struct PageCacheState {
 
 impl CacheState for PageCacheState {
     fn needs_sync(&self) -> bool {
-
         if !exists(&self.html_template).unwrap() {
             warn!(target: "PageCacheLogic", "needs_sync: page file does not exist ({})", self.html_template);
             return true;
@@ -98,16 +99,14 @@ impl CacheState for PageCacheState {
     }
 
     fn sync(&mut self) -> Option<String> {
-        if exists(&self.html_template).unwrap () {
+        if exists(&self.html_template).unwrap() {
             match read_html_from_file(self.html_template.as_str()) {
                 Ok(v) => {
                     self.parts = v;
                     self.timestamp = metadata(&self.html_template).unwrap().modified().unwrap();
                     None
-                },
-                Err(s) =>  {
-                    Some(format!("Error parsing {:?}: {s}", &self.html_template))
                 }
+                Err(s) => Some(format!("Error parsing {:?}: {s}", &self.html_template)),
             }
         } else {
             Some(format!("The file {:?} does not exist", &self.html_template))
@@ -122,14 +121,14 @@ enum ParseState {
     Out,
     In,
     Bracket,
-    Brace
+    Brace,
 }
 
-fn process_template(s : &str, v : &mut Vec<Part>) {
+fn process_template(s: &str, v: &mut Vec<Part>) {
     let mut part = String::new();
     let mut state = ParseState::Out;
-    
-    for i  in 0 ..s.len() {
+
+    for i in 0..s.len() {
         let c = s.chars().nth(i).unwrap();
         info!(target: "process_template", "State = {state:?}, c = {c:?}, i = {i}/{}", s.len());
         match state {
@@ -139,14 +138,14 @@ fn process_template(s : &str, v : &mut Vec<Part>) {
                 } else {
                     part.push(c);
                 }
-            },
+            }
             ParseState::In => {
                 if c == '}' {
                     state = ParseState::Brace;
                 } else {
                     part.push(c);
                 }
-            },
+            }
             ParseState::Bracket => {
                 if c == '{' {
                     v.push(Part::Text(part));
@@ -157,26 +156,28 @@ fn process_template(s : &str, v : &mut Vec<Part>) {
                     part.push(c);
                     state = ParseState::Out;
                 }
-            },
+            }
             ParseState::Brace => {
                 if c == '>' {
                     let part_name = part.clone();
                     part = String::new();
                     let p = find_part_from_name(part_name.trim()).unwrap();
                     v.push(Part::Field(p));
-                    state = ParseState::Out;                        
+                    state = ParseState::Out;
                 } else {
                     panic!("Invalid character: {c}");
                 }
-            },
+            }
         }
     }
 
     v.push(Part::Text(part))
 }
 
-fn find_part_from_name(name : &str) -> Option<PageField> {
+fn find_part_from_name(name: &str) -> Option<PageField> {
     if name == "name" {
+        Some(PageField::Name)
+    } else if name == "title" {
         Some(PageField::Title)
     } else if name == "icon" {
         Some(PageField::Icon)
@@ -195,12 +196,12 @@ fn read_page_from_file(file: &str) -> Result<Page, String> {
     let page_content = read_to_string(&file).unwrap();
     match toml::from_str(page_content.as_str()) {
         Ok(p) => Ok(p),
-        Err(e) => Err(format!("{}", e.to_string()))
+        Err(e) => Err(format!("{}", e.to_string())),
     }
 }
 
 fn read_html_from_file(file: &str) -> Result<Vec<Part>, String> {
-    let mut v : Vec<Part> = Vec::new();
+    let mut v: Vec<Part> = Vec::new();
 
     process_template(read_to_string(file).unwrap().as_str(), &mut v);
 
@@ -282,14 +283,15 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
                     Ok(p) => {
                         let html = read_to_string(&html_path).unwrap();
                         Some(PageCacheEntry {
-                            page : p,
+                            page: p,
                             html,
-                            html_ts : metadata(&html_path).unwrap().modified().unwrap(),
-                            page_ts : metadata(&page_path).unwrap().modified().unwrap(),
+                            html_ts: metadata(&html_path).unwrap().modified().unwrap(),
+                            page_ts: metadata(&page_path).unwrap().modified().unwrap(),
                             html_path,
                             page_path,
                         })
-                    }, Err(e) => {
+                    }
+                    Err(e) => {
                         error!("Unable to parse page file {page_path}: {}", e.to_string());
                         None
                     }
@@ -340,7 +342,9 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
     ) -> Result<String, (u32, String)> {
         let mut content = String::new();
 
-        state.parts.iter().for_each(|it| { content.push_str(it.to_string(entry).as_str()); });
+        state.parts.iter().for_each(|it| {
+            content.push_str(it.to_string(entry).as_str());
+        });
 
         Ok(content)
     }
@@ -352,22 +356,18 @@ impl PageCache {
     pub fn from_root_and_file(root: &str, file: &str) -> Result<PageCache, String> {
         info!("Calling from_root_and_file on {root}, {file}");
 
-        match read_html_from_file (file) {
-            Ok(v) => {
-                Ok(PageCache {
-                    phantom: std::marker::PhantomData,
-                    state: PageCacheState {
-                        page_root: root.to_string(),
-                        html_template: file.to_string(),
-                        parts: v,
-                        timestamp: SystemTime::now(),
-                    },
-                    map: HashMap::new(),
-                })
-            },
-            Err(s) => {
-                Err(s)
-            }
+        match read_html_from_file(file) {
+            Ok(v) => Ok(PageCache {
+                phantom: std::marker::PhantomData,
+                state: PageCacheState {
+                    page_root: root.to_string(),
+                    html_template: file.to_string(),
+                    parts: v,
+                    timestamp: SystemTime::now(),
+                },
+                map: HashMap::new(),
+            }),
+            Err(s) => Err(s),
         }
     }
 }

@@ -2,7 +2,7 @@
 <!-- -->
 <html>
   <head>
-    <title><{name}></title>
+    <title><{title}></title>
 
     <!-- Local CSS style -->
     <link rel="stylesheet" href="/static/css/colors.css"/>
@@ -22,16 +22,30 @@
 
     <!-- The sidebar controll -->
     <div id="sidebar">
-      <img src="<{icon}>" width="32px" height="32px"/>
-      <img src="<{icon}>" width="32px" height="32px"/>
-      <img src="<{icon}>" width="32px" height="32px"/>
-      <img src="<{icon}>" width="32px" height="32px"/>
+      <img src="/static/svg/copy.svg" width="32px" height="32px"/>
+      <img src="/static/svg/search.svg" width="32px" height="32px"/>
+      <img src="/static/svg/reload.svg" width="32px" height="32px"/>
     </div>
 
     <!-- The page header -->
     <div id="header">
-      <img src="<{icon}>" width="128px" height="128px"/>
-      <span><{desc}></span>
+      <table>
+        <tr>
+          <td id="page-icon"><img src="<{icon}>" width="128px" height="128px"/></td>
+          <td>
+            <table>
+              <tr>
+                <td id="page-name"><h2><{name}></h2></td>
+              </tr>
+              <tr>
+                <td id="page-desc"><{desc}></td>
+              </tr>
+            </table>
+          </td>
+          <td id="brand-name"><h1>Control Plane</h1></td>
+          <td id="brand-name"><img src="/static/svg/icon.svg" width="128px" height="128px"/></td>
+        </tr>
+      </table>
     </div>
 
     <!-- The page contents -->
