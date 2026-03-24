@@ -117,10 +117,78 @@ impl CacheState for PageCacheState {
 
 pub struct PageCacheLogic {}
 
-fn process_template(idx : usize, s : &str, v : &mut Vec<Part>) {
-    if idx < s.len() {
+#[derive(Debug)]
+enum ParseState {
+    Out,
+    In,
+    Bracket,
+    Brace
+}
+
+fn process_template(s : &str, v : &mut Vec<Part>) {
+    let mut part = String::new();
+    let mut state = ParseState::Out;
+    
+    for i  in 0 ..s.len() {
+        let c = s.chars().nth(i).unwrap();
+        info!(target: "process_template", "State = {state:?}, c = {c:?}, i = {i}/{}", s.len());
+        match state {
+            ParseState::Out => {
+                if c == '<' {
+                    state = ParseState::Bracket;
+                } else {
+                    part.push(c);
+                }
+            },
+            ParseState::In => {
+                if c == '}' {
+                    state = ParseState::Brace;
+                } else {
+                    part.push(c);
+                }
+            },
+            ParseState::Bracket => {
+                if c == '{' {
+                    v.push(Part::Text(part));
+                    part = String::new();
+                    state = ParseState::In;
+                } else {
+                    part.push('<');
+                    part.push(c);
+                    state = ParseState::Out;
+                }
+            },
+            ParseState::Brace => {
+                if c == '>' {
+                    let part_name = part.clone();
+                    part = String::new();
+                    let p = find_part_from_name(part_name.trim()).unwrap();
+                    v.push(Part::Field(p));
+                    state = ParseState::Out;                        
+                } else {
+                    panic!("Invalid character: {c}");
+                }
+            },
+        }
+    }
+
+    v.push(Part::Text(part))
+}
+
+fn find_part_from_name(name : &str) -> Option<PageField> {
+    if name == "name" {
+        Some(PageField::Title)
+    } else if name == "icon" {
+        Some(PageField::Icon)
+    } else if name == "help" {
+        Some(PageField::Help)
+    } else if name == "desc" {
+        Some(PageField::Desc)
+    } else if name == "body" {
+        Some(PageField::Body)
     } else {
-    }    
+        None
+    }
 }
 
 fn read_page_from_file(file: &str) -> Result<Page, String> {
@@ -134,7 +202,7 @@ fn read_page_from_file(file: &str) -> Result<Page, String> {
 fn read_html_from_file(file: &str) -> Result<Vec<Part>, String> {
     let mut v : Vec<Part> = Vec::new();
 
-    process_template(0, read_to_string(file).unwrap().as_str(), &mut v);
+    process_template(read_to_string(file).unwrap().as_str(), &mut v);
 
     Ok(v)
 }
