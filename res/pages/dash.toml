@@ -1,4 +1,4 @@
-id = "dash"
 name = "CPlane Dashboard Page"
+desc = "Main information landing page"
 icon = "static/svg/dash.svg"
 help = "static/html/help/dash.html"

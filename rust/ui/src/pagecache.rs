@@ -18,9 +18,9 @@ use log::{error, warn, info};
 
 #[derive(Deserialize, Debug)]
 pub struct Page {
-    pub id: String,
     pub name: String,
     pub icon: String,
+    pub desc : String,
     pub help: String,
 }
 
@@ -39,12 +39,35 @@ pub enum PageField {
     Icon,
     Help,
     Desc,
+    Body,
 }
+
+impl PageCacheEntry {
+    pub fn value_for(&self, f : &PageField) -> String {
+        match f {
+            PageField::Title => self.page.name.clone(),
+            PageField::Icon => self.page.icon.clone(),
+            PageField::Help => self.page.help.clone(),
+            PageField::Desc => self.page.desc.clone(),
+            PageField::Body => self.html.clone()
+        }
+    }
+}
+
 
 #[derive(Debug)]
 pub enum Part {
     Text(String),
     Field(PageField),
+}
+
+impl Part {
+    pub fn to_string (&self, entry : &PageCacheEntry) -> String {
+        match self {
+            Part::Text(s) => s.clone(),
+            Part::Field(f) => entry.value_for(f),
+        }
+    }
 }
 
 pub struct PageData {
@@ -94,6 +117,12 @@ impl CacheState for PageCacheState {
 
 pub struct PageCacheLogic {}
 
+fn process_template(idx : usize, s : &str, v : &mut Vec<Part>) {
+    if idx < s.len() {
+    } else {
+    }    
+}
+
 fn read_page_from_file(file: &str) -> Result<Page, String> {
     let page_content = read_to_string(&file).unwrap();
     match toml::from_str(page_content.as_str()) {
@@ -105,8 +134,8 @@ fn read_page_from_file(file: &str) -> Result<Page, String> {
 fn read_html_from_file(file: &str) -> Result<Vec<Part>, String> {
     let mut v : Vec<Part> = Vec::new();
 
-    let string = read_to_string(file).unwrap();
-    v.push(Part::Text(string));
+    process_template(0, read_to_string(file).unwrap().as_str(), &mut v);
+
     Ok(v)
 }
 
@@ -243,9 +272,9 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
     ) -> Result<String, (u32, String)> {
         let mut content = String::new();
 
-        state.parts.iter().for_each(|it| warn!("Part: {it:?}"));
-        
-        Ok("Hello World".to_string())
+        state.parts.iter().for_each(|it| { content.push_str(it.to_string(entry).as_str()); });
+
+        Ok(content)
     }
 }
 
