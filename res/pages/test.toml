@@ -1,5 +1,5 @@
 name = "Test"
-title = "Testing "
-desc = "Main information landing page"
-icon = "/static/svg/rust.svg"
+title = "Testing Page Layout with Data Access"
+desc = "Test loading some data"
+icon = "/static/svg/search.svg"
 help = "/static/html/help/test.html"

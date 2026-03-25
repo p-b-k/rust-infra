@@ -25,13 +25,17 @@
 }
 
 #header-space {
-  width: 200px;  
+  width            : 200px;  
+}
+
+TD {
+  /* border           : solid red 10px; */
 }
 
 #sidebar {
   padding          : 8px;
   position         : absolute;
-  margin-top       : 232px;
+  margin-top       : 200px;
   background       : var(--menu-bg);
   color            : var(--menu-fg);
   border-radius    : var(--menu-radius);
@@ -47,7 +51,7 @@
 
 #contents {
   margin-left      : 72px;
-  margin-top       : 232px;
+  margin-top       : 200px;
   position         : absolute;
   /* border           : solid black 4px; */
 }

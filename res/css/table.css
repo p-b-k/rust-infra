@@ -49,9 +49,9 @@
   font-size               : x-large;
   font-weight             : bold;
   margin                  : 0px;
-  padding-left            : 32px;
-  margin-top              : 10px;
-  margin-bottom           : 10px;
+  padding-left            : 4px;
+  margin-top              : 2px;
+  margin-bottom           : 2px;
 }
 
 .column-header * {
