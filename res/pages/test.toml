@@ -1,0 +1,5 @@
+name = "Test"
+title = "Testing "
+desc = "Main information landing page"
+icon = "/static/svg/rust.svg"
+help = "/static/html/help/test.html"

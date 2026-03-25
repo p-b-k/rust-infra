@@ -24,6 +24,10 @@
   color            : var(--menu-fg);
 }
 
+#header-space {
+  width: 200px;  
+}
+
 #sidebar {
   padding          : 8px;
   position         : absolute;
@@ -50,7 +54,7 @@
 
 #page-name {
   /* font-size        : xx-large; */
-  border           : solid black 4px;
+  /* border           : solid black 4px; */
   margin-left      : 172px;
 }
 
