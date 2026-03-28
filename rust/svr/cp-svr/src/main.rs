@@ -4,6 +4,7 @@
 // This is the main manager and controller, accessable through the ui-svr and interacting with wb_svrs
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+pub mod dashboard_routers;
 pub mod json_routers;
 pub mod state;
 

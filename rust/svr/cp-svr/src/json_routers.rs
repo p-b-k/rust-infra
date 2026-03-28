@@ -1,5 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Handle for dynamic Json requests
+// Handle to test Json requests -- not for final product, just as an example of how it works
+//
+// Will be removed when no longer needed because real examples are already in place
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{Json, Router, extract::State, routing::get};
@@ -16,11 +18,10 @@ use ui::table::{ColumnDef, TableDef};
 
 use log::debug;
 
-// use log::{info, warn};
-
 pub fn json_router(app: Arc<AppState>) -> Router<()> {
     let json_root = &app.config.pt.root;
     Router::new()
+        // These are only for testing and practice
         .route(
             format!("/{json_root}/test/prod/table/head").as_str(),
             get(get_prod_test_head),
