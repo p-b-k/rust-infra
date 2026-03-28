@@ -7,20 +7,21 @@ use std::collections::HashMap;
 use infra::record::{AsRecord, DObj, DObjFactory};
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
-use infra::sql::{SqlValue };
+use infra::sql::SqlValue;
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
-use tables::customer::CUSTOMER;
-use tables::product::PRODUCT;
-use tables::product_service::PRODUCT_SERVICE;
-use tables::product_tenant::PRODUCT_TENANT;
-use tables::product_ver::PRODUCT_VERSION;
-use tables::request::REQUEST;
-use tables::service::SERVICE;
-use tables::service_ver::SERVICE_VERSION;
-use tables::task::TASK;
-use tables::tenant::TENANT;
-use tables::worker::WORKER;
+
+use crate::tabs::customer::CUSTOMER;
+use crate::tabs::product::PRODUCT;
+use crate::tabs::product_service::PRODUCT_SERVICE;
+use crate::tabs::product_tenant::PRODUCT_TENANT;
+use crate::tabs::product_ver::PRODUCT_VERSION;
+use crate::tabs::request::REQUEST;
+use crate::tabs::service::SERVICE;
+use crate::tabs::service_ver::SERVICE_VERSION;
+use crate::tabs::task::TASK;
+use crate::tabs::tenant::TENANT;
+use crate::tabs::worker::WORKER;
 
 // use time::Time;
 
@@ -41,27 +42,6 @@ pub fn fields_from_table(def: &TableDef) -> String {
 // ---------------------------------------------------------------------------------------------------------------------
 // Define the tables
 // ---------------------------------------------------------------------------------------------------------------------
-
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
-pub struct Customer {
-    pub cust_id: String,
-    pub cust_name: String,
-}
-
-impl<'a> AsRecord<'a> for Customer {
-    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([
-            ("cust_id", SqlValue::String(self.cust_id.clone())),
-            ("cust_name", SqlValue::String(self.cust_name.clone())),
-        ])
-    }
-}
-
-pub type CustomerDO<'a> = DObj<'a, Customer>;
-pub static CUSTOMER_FACTORY: DObjFactory<'static, Customer> = DObjFactory {
-    phantom: std::marker::PhantomData {},
-    table: &CUSTOMER,
-};
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Product {
@@ -98,17 +78,17 @@ impl<'a> AsRecord<'a> for ProductVer {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         let rel_ver = match self.rel_ver {
             Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
-            None => SqlValue::Nullable(None)
+            None => SqlValue::Nullable(None),
         };
 
         let bld_ver = match self.bld_ver {
             Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
-            None => SqlValue::Nullable(None)
+            None => SqlValue::Nullable(None),
         };
 
         let bld_tag = match self.bld_tag.as_ref() {
             Some(s) => SqlValue::Nullable(Some(Box::new(SqlValue::String(s.clone())))),
-            None => SqlValue::Nullable(None)
+            None => SqlValue::Nullable(None),
         };
 
         Vec::from([
@@ -166,30 +146,26 @@ impl<'a> AsRecord<'a> for ServiceVer {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         let rel_ver = match self.rel_ver {
             Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
-            None => SqlValue::Nullable(None)
+            None => SqlValue::Nullable(None),
         };
 
         let bld_ver = match self.bld_ver {
             Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
-            None => SqlValue::Nullable(None)
+            None => SqlValue::Nullable(None),
         };
 
         let bld_tag = match self.bld_tag.as_ref() {
             Some(s) => SqlValue::Nullable(Some(Box::new(SqlValue::String(s.clone())))),
-            None => SqlValue::Nullable(None)
+            None => SqlValue::Nullable(None),
         };
 
         Vec::from([
-
             ("fkey_svc", SqlValue::Id(self.fkey_svc)),
             ("maj_ver", SqlValue::Id(self.maj_ver)),
             ("min_ver", SqlValue::Id(self.maj_ver)),
             ("rel_ver", rel_ver),
             ("bld_ver", bld_ver),
             ("bld_tag", bld_tag),
-
-
-            
         ])
     }
 }
@@ -209,11 +185,8 @@ pub struct ProductService {
 impl<'a> AsRecord<'a> for ProductService {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
-
             ("fkey_prod_ver", SqlValue::Id(self.fkey_prod_ver)),
             ("fkey_svc_ver", SqlValue::Id(self.fkey_svc_ver)),
-
-            
         ])
     }
 }
@@ -234,11 +207,9 @@ pub struct Request {
 impl<'a> AsRecord<'a> for Request {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
-
             ("req_type", SqlValue::String(self.req_type.clone())),
             ("req_start", SqlValue::Id(self.req_start)),
             ("req_status", SqlValue::String(self.req_status.clone())),
-            
         ])
     }
 }
@@ -256,10 +227,7 @@ pub struct Tenant {
 
 impl<'a> AsRecord<'a> for Tenant {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
-        Vec::from([
-            ("fkey_acct", SqlValue::Id(self.fkey_acct)),
-            
-        ])
+        Vec::from([("fkey_acct", SqlValue::Id(self.fkey_acct))])
     }
 }
 
@@ -278,11 +246,8 @@ pub struct Task {
 impl<'a> AsRecord<'a> for Task {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
-
             ("fkey_req", SqlValue::Id(self.fkey_req)),
             ("status", SqlValue::String(self.status.clone())),
-
-            
         ])
     }
 }
@@ -302,7 +267,6 @@ pub struct ProductTenant {
 impl<'a> AsRecord<'a> for ProductTenant {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
-            
             ("fkey_tnet", SqlValue::Id(self.fkey_tnet)),
             ("fkey_prod_ver", SqlValue::Id(self.fkey_prod_ver)),
         ])
@@ -327,14 +291,10 @@ pub struct Worker {
 impl<'a> AsRecord<'a> for Worker {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
-
-
             ("name", SqlValue::String(self.name.clone())),
             ("host", SqlValue::String(self.host.clone())),
             ("port", SqlValue::ShortU(self.port)),
             ("status", SqlValue::String(self.status.clone())),
-
-            
         ])
     }
 }

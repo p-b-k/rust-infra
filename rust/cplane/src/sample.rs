@@ -4,9 +4,12 @@
 
 use mysql::PooledConn;
 
-use crate::schema::{
-    CUSTOMER_FACTORY, Customer, PRODUCT_FACTORY, PRODUCT_SERVICE_FACTORY, PRODUCT_VER_FACTORY,
-    Product, ProductService, ProductVer, SERVICE_FACTORY, SERVICE_VER_FACTORY, Service, ServiceVer,
+use crate::{
+    schema::{
+        PRODUCT_FACTORY, PRODUCT_SERVICE_FACTORY, PRODUCT_VER_FACTORY, Product, ProductService,
+        ProductVer, SERVICE_FACTORY, SERVICE_VER_FACTORY, Service, ServiceVer,
+    },
+    tabs::customer::{CUSTOMER_FACTORY, Customer},
 };
 
 pub fn load_sample_data(conn: &mut PooledConn) {

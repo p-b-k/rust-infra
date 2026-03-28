@@ -6,4 +6,5 @@ pub mod app;
 pub mod ro;
 pub mod sample;
 pub mod schema;
+pub mod tabs;
 pub mod worker_reg;
