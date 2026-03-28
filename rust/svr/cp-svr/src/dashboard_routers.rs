@@ -3,32 +3,30 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{Json, Router, extract::State, routing::get};
+use cplane::ro::requests::RequestRO;
 
-use cplane::schema::{REQUEST_FACTORY, RequestDO};
-use log::debug;
-use mysql::PooledConn;
 use std::sync::Arc;
 
 use crate::state::AppState;
 use ui::table::{ColumnDef, TableDef};
 
-pub fn json_router(app: Arc<AppState>) -> Router<()> {
+pub fn dashboard_router(app: Arc<AppState>) -> Router<()> {
     let json_root = &app.config.pt.root;
 
     Router::new()
         // These are only for testing and practice
         .route(
-            format!("/{json_root}/dash/jobs/table/head").as_str(),
-            get(get_jobs_head),
+            format!("/{json_root}/dash/jobs/head").as_str(),
+            get(get_request_head),
         )
         .route(
-            format!("/{json_root}/test/prod/table/body").as_str(),
-            get(get_jobs_body),
+            format!("/{json_root}/dash/jobs/body").as_str(),
+            get(get_request_body),
         )
         .with_state(app)
 }
 
-async fn get_jobs_head(State(state): State<Arc<AppState>>) -> Json<Box<TableDef>> {
+async fn get_request_head(State(state): State<Arc<AppState>>) -> Json<Box<TableDef>> {
     let json_root = &state.config.pt.root;
     Json(Box::new(TableDef {
         title: String::from("Request Monitor"),
@@ -49,14 +47,14 @@ async fn get_jobs_head(State(state): State<Arc<AppState>>) -> Json<Box<TableDef>
     }))
 }
 
-async fn get_jobs_body<'a>(State(state): State<Arc<AppState>>) -> Json<Vec<RequestDO<'a>>> {
-    let mut pool = state.pool.lock().unwrap();
-    let mut_pool = pool.as_mut();
-    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+async fn get_request_body<'a>(State(_state): State<Arc<AppState>>) -> Json<Option<Vec<RequestRO>>> {
+    // let mut pool = state.pool.lock().unwrap();
+    // let mut_pool = pool.as_mut();
+    // let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
 
-    let services = REQUEST_FACTORY.all(&mut conn).unwrap();
+    // let requests = REQUEST_FACTORY.all(&mut conn).unwrap();
 
-    debug!(target: "get_jobs_body", "services = {services:?}");
+    // debug!(target: "get_request_body", "services = {requests:?}");
 
-    Json(services)
+    Json(None)
 }
