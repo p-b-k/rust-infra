@@ -1,35 +1,31 @@
-<div>
-  <body>
-    <!-- <link rel="stylesheet" href="/static/css/colors.css"/> -->
-    <!-- <link rel="stylesheet" href="/static/css/test.css"/> -->
-    <link rel="stylesheet" href="/static/css/table.css"/>
+<!-- <link rel="stylesheet" href="/static/css/colors.css"/> -->
+<!-- <link rel="stylesheet" href="/static/css/test.css"/> -->
+<link rel="stylesheet" href="/static/css/table.css"/>
 
-    <!-- Javascript File -->
-    <script src="/static/js/core.js"></script>
-    <script src="/static/js/table.js"></script>
+<!-- Javascript File -->
+<script src="/static/js/core.js"></script>
+<script src="/static/js/table.js"></script>
 
-    <script src="/static/js/test.js"></script>
-    <h1>Testing Rusty Web Services</h1>
-    <h3>Loads the data from the DB and uses JS to dynamically write the tables</h3>
+<script src="/static/js/test.js"></script>
+<h1>Testing Rusty Web Services</h1>
+<h3>Loads the data from the DB and uses JS to dynamically write the tables</h3>
 
-    <hr/>
+<hr/>
 
-    <h2>This table loads the product table from the database</h2>
-    <div id="prod-table">
-      <script type="text/javascript">
-        populateTable('prod-table', '/pass/test/prod/table/head', '/pass/test/prod/table/body'); 
-      </script>
-    </div>
-
-    <h2>This table loads the service table from the database</h2>
-    <div id="svc-table">
-      <script type="text/javascript">
-        populateTable('svc-table', '/pass/test/svc/table/head', '/pass/test/svc/table/body'); 
-      </script>
-    </div>
-
-    <script type="text/javascript">
-      console.log('The file has loaded. Repeat, the file has loaded');
-    </script>
-  </body>
+<h2>This table loads the product table from the database</h2>
+<div id="prod-table">
+  <script type="text/javascript">
+    populateTable('prod-table', '/pass/test/prod/table/head', '/pass/test/prod/table/body'); 
+  </script>
 </div>
+
+<h2>This table loads the service table from the database</h2>
+<div id="svc-table">
+  <script type="text/javascript">
+    populateTable('svc-table', '/pass/test/svc/table/head', '/pass/test/svc/table/body'); 
+  </script>
+</div>
+
+<script type="text/javascript">
+  console.log('The file has loaded. Repeat, the file has loaded');
+</script>

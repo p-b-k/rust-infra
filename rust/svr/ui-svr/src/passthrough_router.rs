@@ -8,7 +8,7 @@ use http::Response;
 // use http::response::Response;
 
 use infra::error::{ErrorResponse, make_error};
-use log::info;
+use log::{debug, info};
 use std::sync::Arc;
 
 use crate::state::AppState;
@@ -38,23 +38,33 @@ async fn get_pass_through(
     // let mut request = Request::builder().uri(pt_url);
     let resp = reqwest::get(pt_url).await;
     match resp {
-        Ok(r) => match r.text().await {
-            Ok(body) => {
-                info!("Got Body: {body}");
-                let builder = Response::builder()
-                    .header("Content-Type", format!("{}", mime::APPLICATION_JSON));
+        Ok(r) => {
+            debug!("status = {:?}", &r.status());
+            if r.status().as_u16() == SC::OK.as_u16() {
+                match r.text().await {
+                    Ok(body) => {
+                        debug!("Got Body: {body}");
+                        let builder = Response::builder()
+                            .header("Content-Type", format!("{}", mime::APPLICATION_JSON));
 
-                let response = builder.body(body.clone()).unwrap();
-                Ok(response)
-            }
-            Err(err) => {
-                error!("{err}");
+                        let response = builder.body(body.clone()).unwrap();
+                        Ok(response)
+                    }
+                    Err(err) => {
+                        error!("{err}");
+                        Err(make_error(
+                            SC::INTERNAL_SERVER_ERROR,
+                            format!("Error: {}", err.to_string()),
+                        ))
+                    }
+                }
+            } else {
                 Err(make_error(
-                    SC::INTERNAL_SERVER_ERROR,
-                    format!("Error: {}", err.to_string()),
+                    SC::from_u16(r.status().as_u16()).unwrap(),
+                    format!("No rest enpoint found for passthrough request"),
                 ))
             }
-        },
+        }
         Err(err) => {
             error!("{err}");
             Err(make_error(
