@@ -14,7 +14,7 @@ use serde::Deserialize;
 
 use mime::Mime;
 
-use log::{error, info, warn};
+use log::{debug, error, info, warn};
 
 #[derive(Deserialize, Debug)]
 pub struct Page {
@@ -25,6 +25,7 @@ pub struct Page {
     pub help: String,
 }
 
+#[derive(Deserialize, Debug)]
 pub struct PageCacheEntry {
     pub page: Page,
     pub html: String,
@@ -94,7 +95,7 @@ impl CacheState for PageCacheState {
         }
 
         let res = metadata(&self.html_template).unwrap().modified().unwrap() > self.timestamp;
-        info!("does {} need sync? {res}", self.html_template);
+        info!(target: "PageCacheLogic", "does {} need sync? {res}", self.html_template);
         res
     }
 
@@ -130,7 +131,7 @@ fn process_template(s: &str, v: &mut Vec<Part>) {
 
     for i in 0..s.len() {
         let c = s.chars().nth(i).unwrap();
-        info!(target: "process_template", "State = {state:?}, c = {c:?}, i = {i}/{}", s.len());
+        // info!(target: "process_template", "State = {state:?}, c = {c:?}, i = {i}/{}", s.len());
         match state {
             ParseState::Out => {
                 if c == '<' {
@@ -277,10 +278,10 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
 
         if exists(page_path.as_str()).unwrap() {
             if exists(html_path.as_str()).unwrap() {
-                warn!(target:"PageCacheLogic", "find_resource: path ({html_path} found, but returning None");
-
+                debug!(target:"PageCacheLogic", "find_resource: path ({html_path}) found");
                 match read_page_from_file(page_path.as_str()) {
                     Ok(p) => {
+                        debug!(target:"PageCacheLogic", "find_resource: read page ({html_path}) okay");
                         let html = read_to_string(&html_path).unwrap();
                         Some(PageCacheEntry {
                             page: p,
@@ -297,6 +298,7 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
                     }
                 }
             } else {
+                debug!(target:"PageCacheLogic", "find_resource: file {page_path} does not exist");
                 match read_page_from_file(page_path.as_str()) {
                     Ok(p) => match read_to_string(page_path.as_str()) {
                         Ok(s) => {
@@ -353,7 +355,7 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
 pub type PageCache = ResCache<PageCacheState, PageCacheEntry, PageCacheLogic>;
 
 impl PageCache {
-    pub fn from_root_and_file(root: &str, file: &str) -> Result<PageCache, String> {
+    pub fn from_root_and_file(dev_mode: bool, root: &str, file: &str) -> Result<PageCache, String> {
         info!("Calling from_root_and_file on {root}, {file}");
 
         match read_html_from_file(file) {
@@ -366,6 +368,7 @@ impl PageCache {
                     timestamp: SystemTime::now(),
                 },
                 map: HashMap::new(),
+                dynamic: dev_mode,
             }),
             Err(s) => Err(s),
         }

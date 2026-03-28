@@ -65,6 +65,9 @@ fn create_app_config() -> AppConfig {
             let port_str = &args[i];
             debug!(target: "read_parameters", "port_str = {port_str:?}");
             cfg.port = port_str.parse().unwrap();
+        } else if next == "--dev-mode" {
+            cfg.dev_mode = true;
+            debug!(target: "read_parameters", "login_page = {}", cfg.login_page);
         } else if next == "--login-page" {
             i = i + 1;
             cfg.login_page = args[i].clone();

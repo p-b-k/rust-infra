@@ -8,11 +8,12 @@ $env.PATH = $env.PATH | append ([(pwd) target/debug] | str join /)
 # 
 def "start cplane" [ ] {
   print "Starting Control Plane"
-
+  ./cplane start
 }
 
 def "stop cplane" [ ] { 
   print "Stopping Control Plane"
+  ./cplane stop
 }
 
 def "build cplane" [ ] {

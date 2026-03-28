@@ -6,7 +6,7 @@ use std::{collections::HashMap, marker::PhantomData};
 
 use http::Response;
 use infra::error::ErrorResponse;
-use log::{ info, warn};
+use log::{info, warn};
 use mime::Mime;
 
 pub trait CacheState {
@@ -33,6 +33,7 @@ where
     pub phantom: PhantomData<L>,
     pub state: S,
     pub map: HashMap<String, E>,
+    pub dynamic: bool,
 }
 
 impl<S, E, L> ResCache<S, E, L>
@@ -45,6 +46,7 @@ where
             phantom: PhantomData,
             state,
             map: HashMap::new(),
+            dynamic: true,
         }
     }
 
@@ -74,7 +76,8 @@ where
                     match L::sync(&self.state, e, cache_key) {
                         Some(err_msg) => {
                             warn!(target: "ResCache", "Error synching cache state for ({cache_key}): {err_msg}");
-                        }, _ => {
+                        }
+                        _ => {
                             info!("{cache_key} synched successfully")
                         }
                     }
@@ -87,7 +90,7 @@ where
                     Err((_i, m)) => {
                         warn!("Unable to get content for {cache_key}: {m}");
                         None
-                    },
+                    }
                 }
             }
             None => {

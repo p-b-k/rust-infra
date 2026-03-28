@@ -13,6 +13,7 @@ pub struct AppConfig {
     pub port: u32,
     pub login_page: String,
     pub pt: PtConfig,
+    pub dev_mode: bool,
 }
 
 impl AppConfig {
@@ -21,6 +22,7 @@ impl AppConfig {
             port: 7021,
             login_page: String::from("res/html/login.html"),
             pt: PtConfig::default(),
+            dev_mode: false,
         }
     }
 }
@@ -38,12 +40,16 @@ pub struct AppState {
 }
 
 pub fn create_app_state(config: AppConfig) -> AppState {
-    let html_cache = FileCache::from_mime_and_root(mime::TEXT_HTML, "res/html");
-    let json_cache = FileCache::from_mime_and_root(mime::APPLICATION_JSON, "res/json");
-    let css_cache = FileCache::from_mime_and_root(mime::TEXT_CSS, "res/css");
-    let js_cache = FileCache::from_mime_and_root(mime::APPLICATION_JAVASCRIPT, "res/js");
-    let svg_cache = FileCache::from_mime_and_root(mime::IMAGE_SVG, "res/svg");
-    let page_cache = PageCache::from_root_and_file("res/pages", "res/templates/main.html").unwrap();
+    let html_cache = FileCache::from_mime_and_root(config.dev_mode, mime::TEXT_HTML, "res/html");
+    let json_cache =
+        FileCache::from_mime_and_root(config.dev_mode, mime::APPLICATION_JSON, "res/json");
+    let css_cache = FileCache::from_mime_and_root(config.dev_mode, mime::TEXT_CSS, "res/css");
+    let js_cache =
+        FileCache::from_mime_and_root(config.dev_mode, mime::APPLICATION_JAVASCRIPT, "res/js");
+    let svg_cache = FileCache::from_mime_and_root(config.dev_mode, mime::IMAGE_SVG, "res/svg");
+    let page_cache =
+        PageCache::from_root_and_file(config.dev_mode, "res/pages", "res/templates/main.html")
+            .unwrap();
 
     AppState {
         html_cache: Mutex::new(html_cache),

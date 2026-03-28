@@ -14,6 +14,8 @@ CP_POD_NAME=cp
 W1_PORT=7031
 W2_PORT=7032
 
+DEV_MODE_FLAG=
+
 function worker-pod-name () {
   echo "w${1}"
 }
@@ -52,50 +54,82 @@ function start-dev () {
 	mkdir -p ./log
 	
 	log "Starting CP Service"
-	cp-svr 2> log/cp.log &
+	cp-svr $DEV_MODE_FLAG 2> log/cp.log &
 	echo $! > ~/.cp.pid
 	sleep 1
 
 	log "Starting UI Service"
-	ui-svr 2> log/ui.log  &
+	ui-svr $DEV_MODE_FLAG 2> log/ui.log  &
 	echo $! > ~/.ui.pid
 
 	log "Starting W1 Service"
-	w-svr --port $W1_PORT  2> log/w1.log &
+	w-svr $DEV_MODE_FLAG --port $W1_PORT  2> log/w1.log &
 	echo $! > ~/.w1.pid
 
 	log "Starting W2 Service"
-	w-svr --port $W2_PORT  2> log/w2.log &
+	w-svr $DEV_MODE_FLAG --port $W2_PORT  2> log/w2.log &
 	echo $! > ~/.w2.pid
 }
 
 ########################################################################################################################
 # Process command line parameters
 
-if [ -n "$1" ]; then
-  OPERATION=$1
-  shift
-else
-  echo "Error [$(basename $0)]: An operation is required" >&2
-  exit -1
-fi
+while [ -n "$1" ]; do
+	case "$1" in
+		start)
+			OPERATION=start
+		;;
+
+		stop)
+			OPERATION=stop
+		;;
+
+		-d)
+			DEV_MODE_FLAG=--dev-mode
+		;;
+
+		-l)
+			shift
+			if [ -z "$1" ]; then
+				echo "Missing log level argument to -l (expect trace, debug, info, warn or error)"
+				exit 1
+			else
+				RUST_LOG="${RUST_LOG}${LOG_SEP_CHAR}$1"
+				LOG_SEP_CHAR=","
+			fi
+		;;
+
+		*)
+			echo "Unknown parameter $1" 1>&2
+			exit 1
+		;;
+	esac
+
+	shift
+done
+
 
 ########################################################################################################################
 # Start the application
 
-case $OPERATION in
-  start)
-    stop-dev  
-    start-dev  
-  ;;
+if [ -n "$OPERATION" ]; then
+	case $OPERATION in
+	  start)
+	    stop-dev  
+	    echo "Starting with RUST_LOG=$RUST_LOG"
+	    start-dev  
+	  ;;
   
-  stop)
-    stop-dev  
-  ;;
+	  stop)
+	    stop-dev  
+	  ;;
   
-  *)
-    echo "Error [$(basename $0)]: unknown operation: ${OPERATION}" >&2
-    exit 1
-  ;;
-esac
-
+	  *)
+	    echo "Error [$(basename $0)]: unknown operation: ${OPERATION}" >&2
+	    exit 1
+	  ;;
+	esac
+else
+	echo "No operation defined" 1>&2
+	exit 1
+fi

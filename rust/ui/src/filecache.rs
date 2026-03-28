@@ -3,14 +3,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use std::{
-    collections::HashMap, time::SystemTime,
+    collections::HashMap,
     fs::{exists, metadata, read_to_string},
+    time::SystemTime,
 };
 
 use mime::Mime;
 
-use crate::rescache::{ CacheLogic, CacheState, ResCache};
+use crate::rescache::{CacheLogic, CacheState, ResCache};
 
+#[derive(Debug)]
 pub struct StaticFileData {
     pub path: String,
     pub data: String,
@@ -36,11 +38,7 @@ pub struct FileCacheLogic {}
 impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {
     fn needs_sync(_state: &FileCacheState, entry: &StaticFileData, _cache_key: &str) -> bool {
         exists(entry.path.as_str()).unwrap()
-            && entry.timestamp
-                < metadata(entry.path.as_str())
-                    .unwrap()
-                    .modified()
-                    .unwrap()
+            && entry.timestamp < metadata(entry.path.as_str()).unwrap().modified().unwrap()
     }
 
     fn sync(
@@ -49,10 +47,7 @@ impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {
         _cache_key: &str,
     ) -> Option<String> {
         entry.data = read_to_string(entry.path.as_str()).unwrap();
-        entry.timestamp = metadata(entry.path.as_str())
-            .unwrap()
-            .modified()
-            .unwrap();
+        entry.timestamp = metadata(entry.path.as_str()).unwrap().modified().unwrap();
         None
     }
 
@@ -84,7 +79,7 @@ impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {
 pub type FileCache = ResCache<FileCacheState, StaticFileData, FileCacheLogic>;
 
 impl FileCache {
-    pub fn from_mime_and_root(mime: Mime, root: &str) -> FileCache {
+    pub fn from_mime_and_root(dev_mode: bool, mime: Mime, root: &str) -> FileCache {
         FileCache {
             phantom: std::marker::PhantomData,
             state: FileCacheState {
@@ -92,6 +87,7 @@ impl FileCache {
                 mime,
             },
             map: HashMap::new(),
+            dynamic: dev_mode,
         }
     }
 }
