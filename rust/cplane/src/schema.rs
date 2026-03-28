@@ -4,12 +4,7 @@
 
 use std::collections::HashMap;
 
-use infra::record::{AsRecord, DObj, DObjFactory};
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
-
-use infra::sql::SqlValue;
-use mysql::prelude::FromRow;
-use serde::{Deserialize, Serialize};
 
 use crate::tabs::customer::CUSTOMER;
 use crate::tabs::product::PRODUCT;
