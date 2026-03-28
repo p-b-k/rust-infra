@@ -2,7 +2,14 @@
 // Mange the account table
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use infra::schema::{FieldSpec, TableDef, TypeDef};
+use infra::{
+    record::{AsRecord, DObj, DObjFactory},
+    schema::{FieldSpec, TableDef, TypeDef},
+    sql::SqlValue,
+};
+use mysql::prelude::FromRow;
+use serde::{Deserialize, Serialize};
+
 const FIELDS: [FieldSpec; 2] = [
     FieldSpec {
         name: "fkey_prod_ver",
@@ -23,4 +30,25 @@ const FIELDS: [FieldSpec; 2] = [
 pub const PRODUCT_SERVICE: TableDef = TableDef {
     name: "product_service",
     fields: &FIELDS,
+};
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
+pub struct ProductService {
+    pub fkey_prod_ver: u64,
+    pub fkey_svc_ver: u64,
+}
+
+impl<'a> AsRecord<'a> for ProductService {
+    fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        Vec::from([
+            ("fkey_prod_ver", SqlValue::Id(self.fkey_prod_ver)),
+            ("fkey_svc_ver", SqlValue::Id(self.fkey_svc_ver)),
+        ])
+    }
+}
+
+pub type ProductServiceDO<'a> = DObj<'a, ProductService>;
+pub static PRODUCT_SERVICE_FACTORY: DObjFactory<'static, ProductService> = DObjFactory {
+    phantom: std::marker::PhantomData {},
+    table: &PRODUCT_SERVICE,
 };

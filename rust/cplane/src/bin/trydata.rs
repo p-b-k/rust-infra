@@ -4,9 +4,9 @@
 
 use mysql::Pool;
 
-use cplane::{
-    schema::{PRODUCT_FACTORY, PRODUCT_VER_FACTORY, SERVICE_FACTORY, SERVICE_VER_FACTORY},
-    tabs::customer::CUSTOMER_FACTORY,
+use cplane::tabs::{
+    customer::CUSTOMER_FACTORY, product::PRODUCT_FACTORY, product_ver::PRODUCT_VER_FACTORY,
+    service::SERVICE_FACTORY, service_ver::SERVICE_VER_FACTORY,
 };
 
 use log::{debug, info};

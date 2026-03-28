@@ -6,7 +6,11 @@
 
 use axum::{Json, Router, extract::State, routing::get};
 
-use cplane::schema::{PRODUCT_FACTORY, ProductDO, SERVICE_FACTORY, ServiceDO};
+use cplane::{
+    tabs::product::{PRODUCT_FACTORY, ProductDO},
+    tabs::service::{SERVICE_FACTORY, ServiceDO},
+};
+
 use mysql::{
     PooledConn,
     prelude::{FromRow, Queryable},
