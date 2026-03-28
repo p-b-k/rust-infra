@@ -15,6 +15,7 @@ pub struct AppConfig {
     pub login_page: String,
     pub db: DbConfig,
     pub pt: PtConfig,
+    pub dev_mode: bool,
 }
 
 impl AppConfig {
@@ -30,6 +31,7 @@ impl AppConfig {
                 port: 3306,
             },
             pt: PtConfig::default(),
+            dev_mode: false,
         }
     }
 }

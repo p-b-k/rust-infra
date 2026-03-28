@@ -65,6 +65,8 @@ fn create_app_config() -> AppConfig {
             let port_str = &args[i];
             debug!(target: "read_parameters", "port_str = {port_str:?}");
             cfg.port = Some(port_str.parse().unwrap());
+        } else if next == "--dev-mode" {
+            cfg.dev_mode = true;
         } else {
             panic!("Unknown paramater: {next}");
         }

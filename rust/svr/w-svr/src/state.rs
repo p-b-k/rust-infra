@@ -17,6 +17,7 @@ pub struct AppConfig {
     pub db_pool_size: usize,
     pub pt: PtConfig,
     pub db: DbConfig,
+    pub dev_mode: bool,
 }
 
 impl AppConfig {
@@ -33,6 +34,7 @@ impl AppConfig {
             pt: PtConfig::default(),
             th_pool_size: 8,
             db_pool_size: 4,
+            dev_mode: false,
         }
     }
 }

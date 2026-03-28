@@ -80,6 +80,9 @@ fn create_app_config() -> AppConfig {
             i = i + 1;
             cfg.db.pass = args[i].clone();
             debug!(target: "read-parameters", "db-pass = {}", cfg.db.pass);
+        } else if next == "--dev-mode" {
+            cfg.dev_mode = true;
+            debug!(target: "read-parameters", "db-pass = {}", cfg.db.pass);
         } else if next == "--db-port" {
             i = i + 1;
             let port_str = &args[i];
