@@ -7,6 +7,7 @@ use crate::rescache::{CacheLogic, CacheState, ResCache};
 use std::{
     collections::HashMap,
     fs::{exists, metadata, read_to_string},
+    path::Path,
     time::SystemTime,
 };
 
@@ -29,6 +30,7 @@ pub struct Page {
 
 #[derive(Deserialize, Debug)]
 pub struct PageCacheEntry {
+    pub id: String,
     pub page: Page,
     pub html: String,
     pub page_path: String,
@@ -39,6 +41,7 @@ pub struct PageCacheEntry {
 
 #[derive(Debug)]
 pub enum PageField {
+    Id,
     Title,
     Name,
     Icon,
@@ -52,6 +55,7 @@ pub enum PageField {
 impl PageCacheEntry {
     pub fn value_for(&self, f: &PageField) -> String {
         match f {
+            PageField::Id => self.id.clone(),
             PageField::Name => self.page.name.clone(),
             PageField::Title => self.page.title.clone(),
             PageField::Icon => self.page.icon.clone(),
@@ -184,11 +188,18 @@ fn process_template(s: &str, v: &mut Vec<Part>) {
             }
             ParseState::Brace => {
                 if c == '>' {
-                    let part_name = part.clone();
+                    let part_name = part.trim().to_string();
                     part = String::new();
-                    let p = find_part_from_name(part_name.trim()).unwrap();
-                    v.push(Part::Field(p));
-                    state = ParseState::Out;
+                    let p = find_part_from_name(part_name.trim());
+                    match p {
+                        Some(pp) => {
+                            v.push(Part::Field(pp));
+                            state = ParseState::Out;
+                        }
+                        None => {
+                            panic!("Invalid part name: {part_name:?}");
+                        }
+                    }
                 } else {
                     panic!("Invalid character: {c}");
                 }
@@ -200,7 +211,9 @@ fn process_template(s: &str, v: &mut Vec<Part>) {
 }
 
 fn find_part_from_name(name: &str) -> Option<PageField> {
-    if name == "name" {
+    if name == "id" {
+        Some(PageField::Id)
+    } else if name == "name" {
         Some(PageField::Name)
     } else if name == "title" {
         Some(PageField::Title)
@@ -301,8 +314,15 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
     }
 
     fn find_resource(state: &PageCacheState, cache_key: &str) -> Option<PageCacheEntry> {
-        let page_path = format!("{}/{cache_key}.toml", state.page_root);
-        let html_path = format!("{}/{cache_key}.html", state.page_root);
+        let page_spath = format!("{}/{cache_key}.toml", state.page_root);
+        let html_spath = format!("{}/{cache_key}.html", state.page_root);
+
+        let page_ppath = Path::new(page_spath.as_str());
+        let html_ppath = Path::new(html_spath.as_str());
+
+        let page_path = String::from(page_ppath.to_str().unwrap());
+        let html_path = String::from(html_ppath.to_str().unwrap());
+        let page_id = String::from(page_ppath.file_stem().unwrap().to_str().unwrap());
 
         if exists(page_path.as_str()).unwrap() {
             if exists(html_path.as_str()).unwrap() {
@@ -312,6 +332,7 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
                         debug!(target:"PageCacheLogic", "find_resource: read page ({html_path}) okay");
                         let html = read_to_string(&html_path).unwrap();
                         Some(PageCacheEntry {
+                            id: page_id,
                             page: p,
                             html,
                             html_ts: metadata(&html_path).unwrap().modified().unwrap(),
@@ -335,6 +356,7 @@ impl CacheLogic<PageCacheState, PageCacheEntry> for PageCacheLogic {
                             info!("page_path = {page_path}");
                             let page_ts = metadata(page_path.as_str()).unwrap().modified().unwrap();
                             Some(PageCacheEntry {
+                                id: page_id,
                                 page: p,
                                 html: s,
                                 page_path,

@@ -5,8 +5,8 @@
 $env.PATH = $env.PATH | append ([(pwd) target/debug] | str join /)
 $env.PROJ_ROOT = $env.PWD
 
-$env.profiles.ui = "PurpleMenace"
-$env.profiles.cp = "HotMess"
+$env.profiles.ui = "BaseBlue"
+$env.profiles.cp = "BaseBlack"
 
 # const core_server = cat 
 # 
@@ -28,7 +28,7 @@ def "start cp" [
   ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.cp
     -e target/debug/cp-svr
     -t "CP"
-    --geometry 80x16+0-0
+    --geometry 132x16+0-0
   )
 }
 
@@ -40,7 +40,7 @@ def "start ui" [
   ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.ui
     -e target/debug/ui-svr
     -t "UI"
-    --geometry 80x16+0-360
+    --geometry 132x16+0-360
   )
 }
 
