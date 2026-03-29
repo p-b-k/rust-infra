@@ -23,6 +23,8 @@ pub struct Page {
     pub icon: String,
     pub desc: String,
     pub help: String,
+    pub css: Vec<String>,
+    pub js: Vec<String>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -43,6 +45,8 @@ pub enum PageField {
     Help,
     Desc,
     Body,
+    Css,
+    Js,
 }
 
 impl PageCacheEntry {
@@ -54,8 +58,28 @@ impl PageCacheEntry {
             PageField::Help => self.page.help.clone(),
             PageField::Desc => self.page.desc.clone(),
             PageField::Body => self.html.clone(),
+            PageField::Css => css_as_string(&self.page.css),
+            PageField::Js => js_as_string(&self.page.js),
         }
     }
+}
+
+fn js_as_string(js: &Vec<String>) -> String {
+    let mut result = String::new();
+
+    js.iter()
+        .for_each(|i| result.push_str(format!("<script src=\"{i}\"></script>").as_str()));
+
+    result
+}
+
+fn css_as_string(css: &Vec<String>) -> String {
+    let mut result = String::new();
+
+    css.iter()
+        .for_each(|i| result.push_str(format!("<link rel=\"stylesheet\" href=\"{i}\"/>").as_str()));
+
+    result
 }
 
 #[derive(Debug)]
@@ -188,6 +212,10 @@ fn find_part_from_name(name: &str) -> Option<PageField> {
         Some(PageField::Desc)
     } else if name == "body" {
         Some(PageField::Body)
+    } else if name == "css" {
+        Some(PageField::Css)
+    } else if name == "js" {
+        Some(PageField::Js)
     } else {
         None
     }
