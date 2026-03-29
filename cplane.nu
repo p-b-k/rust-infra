@@ -3,6 +3,10 @@
 ########################################################################################################################
 
 $env.PATH = $env.PATH | append ([(pwd) target/debug] | str join /)
+$env.PROJ_ROOT = $env.PWD
+
+$env.profiles.ui = "PurpleMenace"
+$env.profiles.cp = "HotMess"
 
 # const core_server = cat 
 # 
@@ -14,6 +18,30 @@ def "start cplane" [ ] {
 def "stop cplane" [ ] { 
   print "Stopping Control Plane"
   ./cplane stop
+}
+
+def "start cp" [
+  --log = warn
+] {
+  $env.RUST_LOG = $log
+
+  ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.cp
+    -e target/debug/cp-svr
+    -t "CP"
+    --geometry 80x16+0-0
+  )
+}
+
+def "start ui" [
+  --log: string = warn
+] {
+  $env.RUST_LOG = $log
+
+  ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.ui
+    -e target/debug/ui-svr
+    -t "UI"
+    --geometry 80x16+0-360
+  )
 }
 
 def "build cplane" [ ] {
