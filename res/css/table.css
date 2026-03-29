@@ -46,7 +46,7 @@
 }
 
 .table-header {
-  font-size               : x-large;
+  font-size               : medium;
   font-weight             : bold;
   margin                  : 0px;
   padding-left            : 4px;
@@ -60,6 +60,8 @@
   text-align              : left;
   padding-top             : 6px;
   padding-bottom          : 6px;
+  font-size               : small;
+  font-weight             : normal;
 }
 
 .table-data * {
