@@ -5,6 +5,9 @@
 function addColumnToHead (tr, col) {
   console.log('addColumnToHead: called on ' + tr + ', ' + col);
   let td = document.createElement('th');
+  if (col.width) {
+    td.style = "width: " + col.width + "px;";
+  }
   let span = document.createElement('span');
   td.appendChild(span)
   tr.appendChild(td)

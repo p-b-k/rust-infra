@@ -79,11 +79,13 @@ async fn get_prod_test_head() -> Json<Box<TableDef>> {
                 column: String::from("prod_id"),
                 class: Some(String::from("prod_id")),
                 text: String::from("Product Id"),
+                width: None,
             },
             ColumnDef {
                 column: String::from("prod_name"),
                 class: Some(String::from("test_name")),
                 text: String::from("Product Name"),
+                width: None,
             },
         ])),
     }))
@@ -121,11 +123,13 @@ async fn get_svc_test_head() -> Json<Box<TableDef>> {
                 column: String::from("svc_id"),
                 class: Some(String::from("svc_id")),
                 text: String::from("Service Id"),
+                width: None,
             },
             ColumnDef {
                 column: String::from("svc_name"),
                 class: Some(String::from("svc_name")),
                 text: String::from("Service Name"),
+                width: None,
             },
         ])),
     }))

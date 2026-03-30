@@ -35,7 +35,7 @@ TD {
 #sidebar {
   padding          : 8px;
   position         : absolute;
-  margin-top       : 200px;
+  margin-top       : 180px;
   background       : var(--menu-bg);
   color            : var(--menu-fg);
   border-radius    : var(--menu-radius);
@@ -51,7 +51,7 @@ TD {
 
 #contents {
   margin-left      : 72px;
-  margin-top       : 200px;
+  margin-top       : 180px;
   position         : absolute;
   /* border           : solid black 4px; */
 }

@@ -37,11 +37,13 @@ async fn get_request_head(State(state): State<Arc<AppState>>) -> Json<Box<TableD
                 column: String::from("req_type"),
                 class: None,
                 text: String::from("Request Type"),
+                width: Some(200),
             },
             ColumnDef {
                 column: String::from("req_status"),
                 class: None,
                 text: String::from("Request Status"),
+                width: Some(800),
             },
         ])),
     }))
