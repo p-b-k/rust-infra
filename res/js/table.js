@@ -116,6 +116,9 @@ function rePopulateBody (tbody, tableId) {
       }
     } else {
       console.log('rePopulateBody: No table body data found');
+      let noDataDiv = document.createElement('div');
+      noDataDiv.innerText = 'No records found';
+      tbody.appendChild(noDataDiv);
     }
     
   } else {

@@ -3,7 +3,11 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{Json, Router, extract::State, routing::get};
-use cplane::ro::requests::RequestRO;
+use cplane::{
+    ro::requests::{RequestError, RequestRO},
+    tabs::request::REQUEST_FACTORY,
+};
+use mysql::PooledConn;
 
 use std::sync::Arc;
 
@@ -49,14 +53,32 @@ async fn get_request_head(State(state): State<Arc<AppState>>) -> Json<Box<TableD
     }))
 }
 
-async fn get_request_body<'a>(State(_state): State<Arc<AppState>>) -> Json<Option<Vec<RequestRO>>> {
-    // let mut pool = state.pool.lock().unwrap();
-    // let mut_pool = pool.as_mut();
-    // let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BEGIN // This will eventuall by moved to some other module
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // let requests = REQUEST_FACTORY.all(&mut conn).unwrap();
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END // This will eventuall by moved to some other module
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // debug!(target: "get_request_body", "services = {requests:?}");
+// This is the get request call that should probably stay in this module for now
+async fn get_request_body<'a>(State(state): State<Arc<AppState>>) -> Json<Option<Vec<RequestRO>>> {
+    let mut pool = state.pool.lock().unwrap();
+    let mut_pool = pool.as_mut();
+    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+
+    match get_notable_requests(&mut conn) {
+        Ok(_vec) => {}
+        Err(_e) => {}
+    }
+
+    // debug!(target: "get_request_body", "requests = {requests:?}");
 
     Json(None)
+}
+
+fn get_notable_requests(conn: &mut PooledConn) -> Result<Vec<RequestRO>, RequestError> {
+    let _requests = REQUEST_FACTORY.all(conn).unwrap();
+
+    Err(RequestError::new("Not Implemented"))
 }
