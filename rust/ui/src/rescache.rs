@@ -6,7 +6,7 @@ use std::{collections::HashMap, marker::PhantomData};
 
 use http::Response;
 use infra::error::ErrorResponse;
-use log::{info, warn};
+use log::{error, info, warn};
 use mime::Mime;
 
 pub trait CacheState {
@@ -17,6 +17,7 @@ pub trait CacheState {
 pub trait CacheLogic<S, E>
 where
     S: CacheState,
+    S: Clone,
 {
     fn needs_sync(state: &S, entry: &E, cache_key: &str) -> bool;
     fn sync(state: &S, entry: &mut E, cache_key: &str) -> Option<String>;
@@ -25,10 +26,13 @@ where
     fn generate_content(state: &S, entry: &E) -> Result<String, (u32, String)>;
 }
 
+#[derive(Clone)]
 pub struct ResCache<S, E, L>
 where
     S: CacheState,
+    S: Clone,
     L: CacheLogic<S, E>,
+    L: Clone,
 {
     pub phantom: PhantomData<L>,
     pub state: S,
@@ -39,7 +43,9 @@ where
 impl<S, E, L> ResCache<S, E, L>
 where
     S: CacheState,
+    S: Clone,
     L: CacheLogic<S, E>,
+    L: Clone,
 {
     pub fn new(state: S) -> ResCache<S, E, L> {
         ResCache {
@@ -132,6 +138,25 @@ where
                     .body(format!("No entry found for '{cache_key}'"))
                     .unwrap())
             }
+        }
+    }
+
+    pub fn map<X>(&self, f: fn(&String, &E) -> Result<X, String>) -> Result<Vec<X>, String> {
+        let mut v: Vec<X> = Vec::new();
+        let mut failed = false;
+
+        self.map.iter().for_each(|(a, b)| match f(a, b) {
+            Ok(x) => v.push(x),
+            Err(e) => {
+                error!("Error: {e}");
+                failed = true;
+            }
+        });
+
+        if failed {
+            Err("Falied to process map".to_string())
+        } else {
+            Ok(v)
         }
     }
 }

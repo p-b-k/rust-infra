@@ -1,31 +1,70 @@
 /* Read colors from another source */
 
 * {
-  font-family      : sans-serif;
-  background       : var(--main-bg);
-  color            : var(--main-fg);
-  margin           : 4px;
+  font-family       : sans-serif;
+  background        : var(--main-bg);
+  color             : var(--main-fg);
+  margin            : 4px;
 }
 
 #header {
-  font-size        : xx-large;
-  padding-left     : 8px;
-  padding-top      : 8px;
-  padding-bottom   : 8px;
-  border-radius    : var(--menu-radius);
-  position         : absolute;
-  background       : var(--menu-bg);
-  color            : var(--menu-fg);
-  width            : 96%;
+  position          : fixed;
+  font-size         : x-large;
+  padding-left      : 8px;
+  padding-top       : 8px;
+  padding-bottom    : 8px;
+  border-radius     : var(--menu-radius);
+  background        : var(--menu-bg);
+  color             : var(--menu-fg);
+  width             : 1024px;
+  height            : 32px;
+  z-index           : 1;
 }
 
-#header * {
-  background       : var(--menu-bg);
-  color            : var(--menu-fg);
+#brand-icon {
+  background        : var(--menu-bg);
+  color             : var(--menu-fg);
+  position          : fixed;
+  margin-top        : 4px;
 }
 
-#header-space {
-  width            : 200px;  
+#brand-name {
+  position          : fixed;
+  margin-left       : 48px;
+  padding-top       : 0px;
+  font-weight       : bold;
+  background        : var(--menu-bg);
+  color             : var(--menu-fg);
+  line-height       : 24px;
+}
+
+#page-icon {
+  position          : relative;
+  margin-top        : 65px;
+  margin-left       : 65px;
+  background        : var(--icon-bg);
+  /* background        : var(--main-bg); */
+  /* background        : var(--menu-bg); */
+  border            : solid var(--main-fg) 3px;
+  padding           : 0px;
+  border-radius     : 10px;
+}
+
+#page-name {
+  position          : absolute;
+  margin-top        : 65px;
+  font-weight       : bold;
+  font-size         : xx-large;
+  /* border            : solid white 1px; */
+  line-height       : 32px;
+}
+
+#page-desc {
+  position          : absolute;
+  margin-top        : -80px;  /* I don't understand why I need this? */
+  /* padding-top       : 65px; */
+  /* border            : solid white 1px; */
+  margin-left       : 400px;
 }
 
 TD {
@@ -33,35 +72,25 @@ TD {
 }
 
 #sidebar {
-  padding          : 8px;
-  position         : absolute;
-  margin-top       : 180px;
-  background       : var(--menu-bg);
-  color            : var(--menu-fg);
-  border-radius    : var(--menu-radius);
-  height           : 70%;
-  overflow-y       : hidden;
-  width            : 40px;
+  padding           : 8px;
+  position          : fixed;
+  margin-top        : 65px;
+  background        : var(--menu-bg);
+  color             : var(--menu-fg);
+  border-radius     : var(--menu-radius);
+  height            : 70%;
+  overflow-y        : hidden;
+  width             : 40px;
 }
 
 #sidebar * {
-  background       : var(--menu-bg);
-  color            : var(--menu-fg);
+  background        : var(--menu-bg);
+  color             : var(--menu-fg);
 }
 
 #contents {
-  margin-left      : 72px;
-  margin-top       : 180px;
-  position         : absolute;
+  margin-left       : 72px;
+  margin-top        : 180px;
+  position          : absolute;
   /* border           : solid black 4px; */
-}
-
-#page-name {
-  /* font-size        : xx-large; */
-  /* border           : solid black 4px; */
-  margin-left      : 172px;
-}
-
-#page-desc {
-  font-size        : medium;
 }

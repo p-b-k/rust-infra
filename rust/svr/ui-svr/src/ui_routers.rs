@@ -19,6 +19,7 @@ pub fn basic_router(app: Arc<AppState>) -> Router<()> {
         .route(format!("/health").as_str(), get(get_health))
         .route("/login", get(login_page).post(login_action))
         .route("/favicon.ico", get(favicon))
+        .route("/pages", get(pagelist))
         .with_state(app)
 }
 
@@ -68,4 +69,17 @@ async fn favicon() -> Result<Response<String>, ErrorResponse> {
             ))
         }
     }
+}
+
+async fn pagelist(State(state): State<Arc<AppState>>) -> Result<Response<String>, ErrorResponse> {
+    let cache_lock = state.page_cache.lock().unwrap();
+
+    cache_lock.map.iter().for_each(|_a| {
+        println!("Got Page");
+    });
+
+    Err(make_error(
+        SC::NOT_IMPLEMENTED,
+        format!("Page List is not implemented yet"),
+    ))
 }

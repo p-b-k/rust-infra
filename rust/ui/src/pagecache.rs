@@ -6,7 +6,7 @@ use crate::rescache::{CacheLogic, CacheState, ResCache};
 
 use std::{
     collections::HashMap,
-    fs::{exists, metadata, read_to_string},
+    fs::{exists, metadata, read_dir, read_to_string},
     path::Path,
     time::SystemTime,
 };
@@ -17,7 +17,7 @@ use mime::Mime;
 
 use log::{debug, error, info, warn};
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Page {
     pub name: String,
     pub title: String,
@@ -28,7 +28,7 @@ pub struct Page {
     pub js: Vec<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct PageCacheEntry {
     pub id: String,
     pub page: Page,
@@ -39,7 +39,7 @@ pub struct PageCacheEntry {
     pub html_ts: SystemTime,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum PageField {
     Id,
     Title,
@@ -86,7 +86,7 @@ fn css_as_string(css: &Vec<String>) -> String {
     result
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub enum Part {
     Text(String),
     Field(PageField),
@@ -101,13 +101,7 @@ impl Part {
     }
 }
 
-pub struct PageData {
-    pub title: String,
-    pub icon: String,
-    pub help: String,
-    pub desc: String,
-}
-
+#[derive(Clone)]
 pub struct PageCacheState {
     pub page_root: String,
     pub html_template: String,
@@ -143,6 +137,7 @@ impl CacheState for PageCacheState {
     }
 }
 
+#[derive(Clone)]
 pub struct PageCacheLogic {}
 
 #[derive(Debug)]
@@ -421,6 +416,23 @@ impl PageCache {
                 dynamic: dev_mode,
             }),
             Err(s) => Err(s),
+        }
+    }
+
+    pub fn initialize(&mut self) {
+        for file in read_dir(self.state.page_root.as_str()).unwrap() {
+            let entry = file.unwrap();
+
+            let path = entry.path();
+            let ext = path.extension().unwrap();
+            let stem = path.file_stem().unwrap();
+
+            println!("Read Line {entry:?} (stem = {stem:?}, extension = {ext:?})");
+
+            if ext == "toml" {
+                println!("PAGE {:?}", stem);
+                PageCacheLogic::find_resource(&self.state, stem.to_str().unwrap()).unwrap();
+            }
         }
     }
 }

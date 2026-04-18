@@ -1,10 +1,12 @@
 * {
---main-bg        : #e7d7cc;
+--main-bg        : #d7d7bc;
 --main-fg        : #530000;
 
---menu-bg        : #007831;
+--menu-bg        : #600831;
 --menu-fg        : #e7d7cc;
 --menu-radius    : 10px;
+
+--icon-bg        : #f3e1da;
 
 --aion-title-font     : FreeMono;
 --aion-main-font      : sans-serif;

@@ -34,7 +34,9 @@ pub struct RequestRO {
     req_type: String,
     req_scope: String,
     req_status: RequestStatus,
-    req_message: Option<Vec<RequestMsg>>,
+    req_msgs: u32,
+    req_warns: u32,
+    req_errors: u32,
 }
 
 impl RequestError {

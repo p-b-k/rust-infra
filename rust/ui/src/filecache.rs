@@ -19,6 +19,7 @@ pub struct StaticFileData {
     pub timestamp: SystemTime,
 }
 
+#[derive(Clone)]
 pub struct FileCacheState {
     pub root: String,
     pub mime: Mime,
@@ -33,6 +34,7 @@ impl CacheState for FileCacheState {
     }
 }
 
+#[derive(Clone)]
 pub struct FileCacheLogic {}
 
 impl CacheLogic<FileCacheState, StaticFileData> for FileCacheLogic {

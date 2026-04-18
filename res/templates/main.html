@@ -21,6 +21,9 @@
       data [pageId] = {};
     </script>
 
+    <!-- The page contents -->
+    <div id="contents"><{body}></div>
+
     <!-- The sidebar controll -->
     <div id="sidebar">
       <img src="/static/svg/pages/beige/dashboard.svg" width="32px" height="32px"/>
@@ -34,22 +37,12 @@
 
     <!-- The page header -->
     <div id="header">
-      <table>
-        <tr>
-          <td id="brand-name"><img src="/static/svg/icon.svg" width="32px" height="32px"/></td>
-          <td id="brand-name"><h4>Control Plane</h4></td>
-        </tr>
-        <tr>
-          <td id="page-icon"><img src="<{icon}>" width="64px" height="64px"/></td>
-          <td id="page-name" width="500px"><h5><{name}></h5></td>
-          <td id="page-desc"><{desc}></td>
-          <!-- <td id="header-space"/> -->
-        </tr>
-      </table>
+      <img id="brand-icon" src="/static/svg/icon.svg" width="24px" height="24px"/>
+      <span id="brand-name">Control Plane</span>
     </div>
-
-    <!-- The page contents -->
-    <div id="contents"><{body}></div>
+    <img id="page-icon" src="<{icon}>" width="64px" height="64px"/>
+    <span id="page-name"h5><{name}></span>
+    <div id="page-desc"><{desc}></div>
 
     <script type="text/javascript">
       console.log('The file has loaded. Repeat, the file has loaded');

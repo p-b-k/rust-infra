@@ -1,4 +1,5 @@
 pub mod customer;
+pub mod log;
 pub mod product;
 pub mod product_service;
 pub mod product_tenant;

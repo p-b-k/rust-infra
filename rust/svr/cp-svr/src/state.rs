@@ -6,6 +6,7 @@ use cplane::app::{DEFAULT_CP_PORT, DbConfig, PtConfig};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
+use ui::pagecache::PageCache;
 
 use log::debug;
 
@@ -39,6 +40,7 @@ impl AppConfig {
 pub struct AppState {
     pub pool: Mutex<Option<Pool>>,
     pub config: AppConfig,
+    pub pages: Vec<PageCache>,
 }
 
 impl AppState {
@@ -59,5 +61,6 @@ pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
     AppState {
         pool: Mutex::new(Some(conn_pool)),
         config,
+        pages: Vec::new(),
     }
 }

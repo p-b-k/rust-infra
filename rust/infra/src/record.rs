@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Data Object and related structures
-// IS THIS USED?
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use std::marker::PhantomData;
@@ -105,7 +104,7 @@ where
                     Err(e) => {
                         error!("Got some kind of error: {}", e.to_string());
                         Some(String::from("An Error Occured on Insert"))
-                    },
+                    }
                 }
             }
             Some(id) => {
@@ -254,11 +253,11 @@ where
         })
     }
 
-    pub fn drop(&self, conn : &mut PooledConn, pkey: u64) -> Option<String> {
+    pub fn drop(&self, conn: &mut PooledConn, pkey: u64) -> Option<String> {
         let table = self.table.name;
         let query = format!("DELETE FROM {table} WHERE pkey = {pkey}");
         debug!(target : "drop", "QUERY: {query}");
-        
+
         match conn.query_drop(query) {
             Ok(_) => None,
             Err(e) => {
