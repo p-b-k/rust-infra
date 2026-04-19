@@ -78,9 +78,44 @@ async fn pagelist(State(state): State<Arc<AppState>>) -> Json<Vec<(String, Page)
 
     let cache_lock = state.page_cache.lock().unwrap();
 
-    cache_lock.map.iter().for_each(|(n, p)| {
-        vec.push((n.clone(), p.page.clone()));
-    });
+    // cache_lock.map.iter().for_each(|(n, p)| {
+    //     vec.push((n.clone(), p.page.clone()));
+    // });
+
+    vec.push((
+        "dash".to_string(),
+        cache_lock.map.get("dash").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "cust".to_string(),
+        cache_lock.map.get("cust").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "db".to_string(),
+        cache_lock.map.get("db").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "serve".to_string(),
+        cache_lock.map.get("serve").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "logs".to_string(),
+        cache_lock.map.get("logs").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "query".to_string(),
+        cache_lock.map.get("query").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "cfg".to_string(),
+        cache_lock.map.get("cfg").unwrap().page.clone(),
+    ));
 
     Json(vec)
 }
