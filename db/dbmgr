@@ -1,0 +1,107 @@
+#!/bin/bash
+########################################################################################################################
+## Create a database (and register it with cp?)
+########################################################################################################################
+
+DB_ROOT=${DB_ROOT:-$(dirname $0)}
+
+DEF_DB_PASS=secret
+DB_PASS=$DEF_DB_PASS
+
+INIT_SCHEMA=true
+
+if [ -z "$MYSQL_PASSWORD" ]; then
+  echo -n "Enter MySql password: "
+  read -s MYSQL_PASSWORD
+  echo
+fi
+
+echo | mysql --password=$MYSQL_PASSWORD 2> /dev/null || INVALID_PASSWORD=true
+
+if [ -n "$INVALID_PASSWORD" ]; then
+  echo "Invalid SQL Password, failing" 1>&2
+  exit 1
+fi
+
+########################################################################################################################
+## CREATE SOME FUNCTIONS
+########################################################################################################################
+ 
+function drop_db () {
+  if [ -n "$(echo 'show databases' | mysql --password=$MYSQL_PASSWORD | grep ^${1}$)" ]; then
+    echo "Dropping DB $1"
+    echo "DROP DATABASE $1;" | mysql --password=$MYSQL_PASSWORD
+  else
+    echo "No database $1 to drop"
+  fi
+}
+
+function create_db () {
+  DB_NAME=$(gen-name | tr '-' '_')
+  echo "CREATE DATABASE ${DB_NAME};" | mysql --password=$MYSQL_PASSWORD
+  echo "$DB_NAME"
+}
+
+########################################################################################################################
+## CREATE THE DATABASE
+########################################################################################################################
+
+OP=
+DB=
+
+while [ -n "$1" ]; do
+  case $1 in
+    new)
+      if [ -z "$OP" ]; then
+        OP=$1
+      else
+        echo "Operation already defined as '$OP'" 1>&2
+        exit -1
+      fi
+    ;;
+    
+    drop)
+      if [ -z "$OP" ]; then
+        OP=$1
+      else
+        echo "Operation already defined as '$OP'" 1>&2
+        exit -1
+      fi
+      shift
+      if [ -z "$1" ]; then
+        echo "Drop operation requires a database" 1>&2
+        echo -1
+      else
+        DB=$1
+      fi
+    ;;
+    
+    *)
+      echo "Unknown parameter '$1'. Exiting" 1>&2
+      exit -1
+    ;;
+  esac
+
+  shift
+done
+
+if [ -z "$OP" ]; then
+  echo "No operation defined, exiting" 1>&2
+  exit -1
+else
+  case $OP in
+    drop)
+      drop_db $DB
+    ;;
+
+    new)
+      create_db
+    ;;
+
+    *)
+      echo "Unknown operation: $OP" 1>&2
+      exit -1
+    ;;
+  esac
+fi
+
