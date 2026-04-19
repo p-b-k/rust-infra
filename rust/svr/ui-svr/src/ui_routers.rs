@@ -2,9 +2,10 @@
 // Test executable for lib
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use axum::{Router, extract::State, http::StatusCode as SC, routing::get};
+use axum::{Json, Router, debug_handler, extract::State, http::StatusCode as SC, routing::get};
 
 use http::response::Response;
+use ui::pagecache::Page;
 
 use std::fs::read_to_string;
 use std::sync::Arc;
@@ -71,15 +72,15 @@ async fn favicon() -> Result<Response<String>, ErrorResponse> {
     }
 }
 
-async fn pagelist(State(state): State<Arc<AppState>>) -> Result<Response<String>, ErrorResponse> {
+#[debug_handler]
+async fn pagelist(State(state): State<Arc<AppState>>) -> Json<Vec<Page>> {
+    let mut vec: Vec<Page> = Vec::new();
+
     let cache_lock = state.page_cache.lock().unwrap();
 
-    cache_lock.map.iter().for_each(|_a| {
-        println!("Got Page");
+    cache_lock.map.iter().for_each(|(_, p)| {
+        vec.push(p.page.clone());
     });
 
-    Err(make_error(
-        SC::NOT_IMPLEMENTED,
-        format!("Page List is not implemented yet"),
-    ))
+    Json(vec)
 }

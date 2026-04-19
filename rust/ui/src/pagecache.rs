@@ -11,13 +11,13 @@ use std::{
     time::SystemTime,
 };
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use mime::Mime;
 
 use log::{debug, error, info, warn};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Page {
     pub name: String,
     pub title: String,
@@ -427,11 +427,8 @@ impl PageCache {
             let ext = path.extension().unwrap();
             let stem = path.file_stem().unwrap();
 
-            println!("Read Line {entry:?} (stem = {stem:?}, extension = {ext:?})");
-
             if ext == "toml" {
-                println!("PAGE {:?}", stem);
-                PageCacheLogic::find_resource(&self.state, stem.to_str().unwrap()).unwrap();
+                self.get_entry(stem.to_str().unwrap()).unwrap();
             }
         }
     }
