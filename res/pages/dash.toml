@@ -4,4 +4,4 @@ desc = "Main information landing page"
 icon = "dashboard.svg"
 help = "/static/html/help/dash.html"
 css  = ["/static/css/table.css", "/static/css/dash.css" ]
-js   = ["/static/js/table.js"]
+js   = ["/static/js/table.js", "/static/js/dash.js"]

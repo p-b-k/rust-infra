@@ -128,6 +128,7 @@ function rePopulateBody (tbody, tableId) {
 
 function populateTable (tableId, headUrl, bodyUrl) {
   // Find the root element ...
+  console.log('tableId = ' + tableId);
   let root = document.getElementById(tableId);
   root.classList = [ 'table-control' ];
 
