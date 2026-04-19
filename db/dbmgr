@@ -37,7 +37,7 @@ function drop_db () {
 }
 
 function create_db () {
-  DB_NAME=$(gen-name | tr '-' '_')
+  DB_NAME="db_$(gen-name | tr '-' '_')"
   echo "CREATE DATABASE ${DB_NAME};" | mysql --password=$MYSQL_PASSWORD
   echo "$DB_NAME"
 }
