@@ -1,0 +1,7 @@
+name = "Query"
+title = "Query and Database Console"
+desc = "Issue general queries against databases"
+icon = "query.svg"
+help = "/static/html/help/query.html"
+css  = []
+js   = []

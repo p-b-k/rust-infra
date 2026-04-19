@@ -1,7 +1,7 @@
 name = "Databases"
 title = "Database Managment"
 desc = "Place for managing database"
-icon = "/static/svg/pages/black/db.svg"
+icon = "db.svg"
 help = "/static/html/help/db.html"
 css  = []
 js   = []

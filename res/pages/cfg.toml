@@ -1,0 +1,7 @@
+name = "Settings"
+title = "Configuration and Settings"
+desc = "Mangage general application settings"
+icon = "settings.svg"
+help = "/static/html/help/cfg.html"
+css  = []
+js   = []

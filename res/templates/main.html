@@ -24,16 +24,8 @@
     <!-- The page contents -->
     <div id="contents"><{body}></div>
 
-    <!-- The sidebar controll -->
-    <div id="sidebar">
-      <img src="/static/svg/pages/beige/dashboard.svg" width="32px" height="32px"/>
-      <img src="/static/svg/pages/beige/db.svg" width="32px" height="32px"/>
-      <img src="/static/svg/pages/beige/customers.svg" width="32px" height="32px"/>
-      <img src="/static/svg/pages/beige/server.svg" width="32px" height="32px"/>
-      <img src="/static/svg/pages/beige/query.svg" width="32px" height="32px"/>
-      <img src="/static/svg/pages/beige/logs.svg" width="32px" height="32px"/>
-      <img src="/static/svg/pages/beige/settings.svg" width="32px" height="32px"/>
-    </div>
+    <!-- The sidebar control -->
+    <div id="sidebar"></div>
 
     <!-- The page header -->
     <div id="header">
@@ -45,6 +37,7 @@
     <div id="page-desc"><{desc}></div>
 
     <script type="text/javascript">
+      load_sidebar(document.getElementById('sidebar'));
       console.log('The file has loaded. Repeat, the file has loaded');
     </script>
   </body>

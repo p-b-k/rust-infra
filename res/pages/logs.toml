@@ -1,0 +1,7 @@
+name = "Logs"
+title = "Logging Console"
+desc = "Examine, search and maintain the logs"
+icon = "logs.svg"
+help = "/static/html/help/logs.html"
+css  = []
+js   = []

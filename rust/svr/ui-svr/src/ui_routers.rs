@@ -73,13 +73,13 @@ async fn favicon() -> Result<Response<String>, ErrorResponse> {
 }
 
 #[debug_handler]
-async fn pagelist(State(state): State<Arc<AppState>>) -> Json<Vec<Page>> {
-    let mut vec: Vec<Page> = Vec::new();
+async fn pagelist(State(state): State<Arc<AppState>>) -> Json<Vec<(String, Page)>> {
+    let mut vec: Vec<(String, Page)> = Vec::new();
 
     let cache_lock = state.page_cache.lock().unwrap();
 
-    cache_lock.map.iter().for_each(|(_, p)| {
-        vec.push(p.page.clone());
+    cache_lock.map.iter().for_each(|(n, p)| {
+        vec.push((n.clone(), p.page.clone()));
     });
 
     Json(vec)

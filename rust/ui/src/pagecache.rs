@@ -58,7 +58,7 @@ impl PageCacheEntry {
             PageField::Id => self.id.clone(),
             PageField::Name => self.page.name.clone(),
             PageField::Title => self.page.title.clone(),
-            PageField::Icon => self.page.icon.clone(),
+            PageField::Icon => format!("/static/svg/pages/black/{}", self.page.icon),
             PageField::Help => self.page.help.clone(),
             PageField::Desc => self.page.desc.clone(),
             PageField::Body => self.html.clone(),

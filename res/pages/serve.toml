@@ -1,7 +1,7 @@
-name = "Dashboard"
-title = "CPlane Dashboard"
-desc = "Main information landing page"
-icon = "dashboard.svg"
+name = "Servers"
+title = "Server Management"
+desc = "Handle managing the servers and resources"
+icon = "server.svg"
 help = "/static/html/help/dash.html"
 css  = ["/static/css/table.css", "/static/css/dash.css" ]
 js   = ["/static/js/table.js"]

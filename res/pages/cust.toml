@@ -1,0 +1,7 @@
+name = "Customers"
+title = "Manage Customer Accounts"
+desc = "Handle adding, editing, deleting customers and associated data"
+icon = "customers.svg"
+help = "/static/html/help/cust.html"
+css  = []
+js   = []
