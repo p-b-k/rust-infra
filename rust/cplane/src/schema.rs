@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use infra::schema::{DBUser, GrantInfo, SchemaDef, TableDef};
 
 use crate::tabs::customer::CUSTOMER;
+use crate::tabs::log::LOG;
 use crate::tabs::product::PRODUCT;
 use crate::tabs::product_service::PRODUCT_SERVICE;
 use crate::tabs::product_tenant::PRODUCT_TENANT;
@@ -55,6 +56,7 @@ pub fn build_schema_def() -> SchemaDef {
         )])),
 
         tables: Box::new(HashMap::from([
+            (String::from("log"), &LOG),
             (String::from("customer"), &CUSTOMER),
             (String::from("service"), &SERVICE),
             (String::from("service_ver"), &SERVICE_VERSION),
