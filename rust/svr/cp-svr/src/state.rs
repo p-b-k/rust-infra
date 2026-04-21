@@ -3,12 +3,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use cplane::app::{DEFAULT_CP_PORT, DbConfig, PtConfig};
+use cplane::log::{CPlaneLogger, LogLevel, LogMsg, SimpleLogEngine, SimpleLogEngineFactory};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
+use std::sync::mpsc::Sender;
 use ui::pagecache::PageCache;
 
-use log::debug;
+use log::{debug, error};
 
 #[derive(Clone)]
 pub struct AppConfig {
@@ -41,6 +43,7 @@ pub struct AppState {
     pub pool: Mutex<Option<Pool>>,
     pub config: AppConfig,
     pub pages: Vec<PageCache>,
+    pub tx: Sender<LogMsg>,
 }
 
 impl AppState {
@@ -52,15 +55,28 @@ impl AppState {
         let _old_val = pool.insert(new_pool);
         // TODO? Release _old_val?
     }
+
+    pub fn log(&self, level: LogLevel, msg: String) {
+        let log_msg = LogMsg { level, msg };
+
+        match self.tx.send(log_msg) {
+            Err(err) => {
+                error!("Error sending log message: {}", err.to_string());
+            }
+            _ => {}
+        }
+    }
 }
 
 pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
     let opts = Opts::from_url(db_url).unwrap();
     let conn_pool = Pool::new(opts).unwrap();
+    let tx = CPlaneLogger::init::<SimpleLogEngineFactory, SimpleLogEngine>();
 
     AppState {
         pool: Mutex::new(Some(conn_pool)),
         config,
         pages: Vec::new(),
+        tx,
     }
 }

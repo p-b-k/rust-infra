@@ -75,13 +75,11 @@ impl<'a> AsSql for SqlValue<'a> {
                 } else {
                     String::from("'N'")
                 }
-            },
-            SqlValue::Nullable(o) => {
-                match o {
-                    None => String::from("NULL"),
-                    Some(v) => v.as_sql()
-                }
             }
+            SqlValue::Nullable(o) => match o {
+                None => String::from("NULL"),
+                Some(v) => v.as_sql(),
+            },
         }
     }
 }

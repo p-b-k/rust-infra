@@ -10,6 +10,7 @@ pub mod state;
 
 use std::env;
 
+use cplane::log::LogLevel;
 use infra::status_router::status_router;
 use log::{debug, info};
 
@@ -34,6 +35,8 @@ async fn main() {
 
     debug!("Creating application state");
     let app = Arc::new(create_app_state(&db_url, cfg));
+
+    app.log(LogLevel::Warn, format!("Starting Routers"));
 
     let router = status_router()
         .merge(json_router(app.clone()))
