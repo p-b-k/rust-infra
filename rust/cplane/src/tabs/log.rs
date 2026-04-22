@@ -50,7 +50,7 @@ pub const LOG: TableDef = TableDef {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Log {
     pub log_level: String,
-    pub fkey_req:  Option<u64>,
+    pub fkey_req: Option<u64>,
     pub fkey_step: Option<u64>,
     pub msg: String,
 }

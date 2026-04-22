@@ -21,25 +21,36 @@ pub enum LogLevel {
     Error,
 }
 
+impl Display for LogLevel {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
+        match self {
+            LogLevel::Trace => write!(f, "Trace"),
+            LogLevel::Debug => write!(f, "Debug"),
+            LogLevel::Info => write!(f, "Info"),
+            LogLevel::Warn => write!(f, "Warne"),
+            LogLevel::Error => write!(f, "Error"),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct LogMsg {
     pub level: LogLevel,
-    pub req : Option<u64>,
-    pub step : Option<u64>,
-    pub msg: String,
+    pub req: Option<u64>,
+    pub step: Option<u64>,
+    pub text: String,
 }
 
 impl Display for LogMsg {
-
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
         let scope = match (self.req, self.step) {
             (None, None) => char::from_u32(0x267e).unwrap().to_string(),
             (Some(id), None) => format!("[{id}]"),
             (Some(rid), Some(sid)) => format!("[{rid}:{sid}]"),
-            (None, Some(_)) => panic!("Can't have a step without a request")
+            (None, Some(_)) => panic!("Can't have a step without a request"),
         };
 
-        write!(f, "[{:?}] {} {}", self.level, scope, self.msg)
+        write!(f, "[{:?}] {} {}", self.level, scope, self.text)
     }
 }
 
@@ -51,7 +62,7 @@ pub trait LogEngineFactory<T>
 where
     T: LogEngine,
 {
-    fn new() -> T;
+    fn new(db_url: &str) -> T;
 }
 
 // Trivial Do Nothing Logger
@@ -64,7 +75,7 @@ impl LogEngine for NoOpLogEngine {
 pub struct NoOpLogEngineFactory {}
 
 impl LogEngineFactory<NoOpLogEngine> for NoOpLogEngineFactory {
-    fn new() -> NoOpLogEngine {
+    fn new(_db_url: &str) -> NoOpLogEngine {
         NoOpLogEngine {}
     }
 }
@@ -100,21 +111,22 @@ impl LogEngine for SimpleLogEngine {
 pub struct SimpleLogEngineFactory {}
 
 impl LogEngineFactory<SimpleLogEngine> for SimpleLogEngineFactory {
-    fn new() -> SimpleLogEngine {
+    fn new(_db_url: &str) -> SimpleLogEngine {
         SimpleLogEngine {}
     }
 }
 
 impl CPlaneLogger {
-    pub fn init<T, E>() -> Sender<LogMsg>
+    pub fn init<T, E>(db_url: &str) -> Sender<LogMsg>
     where
         E: LogEngine,
         T: LogEngineFactory<E>,
     {
         let (tx, rx): (Sender<LogMsg>, Receiver<LogMsg>) = channel();
+        let url = db_url.to_string();
 
-        spawn(|| {
-            let eng = T::new();
+        spawn(move || {
+            let eng = T::new(url.as_str());
             start_reading(rx, eng);
         });
 
@@ -131,11 +143,6 @@ where
 
         match msg_result {
             Ok(msg) => {
-                // Insert log record
-                // let mut record = LOG_FACTORY.new(Log {
-                //     log_level: "Error".to_string(),
-                //     log_scope: "Scope".to_string(),
-                // });
                 eng.write_log(&msg);
             }
             Err(msg) => {

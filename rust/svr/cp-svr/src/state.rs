@@ -3,7 +3,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use cplane::app::{DEFAULT_CP_PORT, DbConfig, PtConfig};
-use cplane::log::{CPlaneLogger, LogLevel, LogMsg, SimpleLogEngine, SimpleLogEngineFactory};
+use cplane::db_log_engine::{DbLogEngine, DbLogEngineFactory};
+use cplane::log::{CPlaneLogger, LogLevel, LogMsg};
 use mysql::{Opts, Pool};
 use std::clone::Clone;
 use std::sync::Mutex;
@@ -57,7 +58,12 @@ impl AppState {
     }
 
     pub fn sys_log(&self, level: LogLevel, msg: String) {
-        let log_msg = LogMsg { level, msg, req: None, step:None };
+        let log_msg = LogMsg {
+            level,
+            text: msg,
+            req: None,
+            step: None,
+        };
 
         match self.tx.send(log_msg) {
             Err(err) => {
@@ -68,7 +74,12 @@ impl AppState {
     }
 
     pub fn req_log(&self, level: LogLevel, req: u64, msg: String) {
-        let log_msg = LogMsg { level, msg, req: Some(req), step:None };
+        let log_msg = LogMsg {
+            level,
+            text: msg,
+            req: Some(req),
+            step: None,
+        };
 
         match self.tx.send(log_msg) {
             Err(err) => {
@@ -78,8 +89,13 @@ impl AppState {
         }
     }
 
-    pub fn step_log(&self, level: LogLevel, req: u64, step : u64, msg: String) {
-        let log_msg = LogMsg { level, msg, req: Some(req), step:Some(step) };
+    pub fn step_log(&self, level: LogLevel, req: u64, step: u64, msg: String) {
+        let log_msg = LogMsg {
+            level,
+            text: msg,
+            req: Some(req),
+            step: Some(step),
+        };
 
         match self.tx.send(log_msg) {
             Err(err) => {
@@ -93,7 +109,7 @@ impl AppState {
 pub fn create_app_state(db_url: &String, config: AppConfig) -> AppState {
     let opts = Opts::from_url(db_url).unwrap();
     let conn_pool = Pool::new(opts).unwrap();
-    let tx = CPlaneLogger::init::<SimpleLogEngineFactory, SimpleLogEngine>();
+    let tx = CPlaneLogger::init::<DbLogEngineFactory, DbLogEngine>(db_url.as_str());
 
     AppState {
         pool: Mutex::new(Some(conn_pool)),
