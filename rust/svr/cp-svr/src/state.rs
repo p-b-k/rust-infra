@@ -57,7 +57,7 @@ impl AppState {
     }
 
     pub fn log(&self, level: LogLevel, msg: String) {
-        let log_msg = LogMsg { level, msg };
+        let log_msg = LogMsg { level, msg, req: None, step:None };
 
         match self.tx.send(log_msg) {
             Err(err) => {

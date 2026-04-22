@@ -24,12 +24,22 @@ pub enum LogLevel {
 #[derive(Debug)]
 pub struct LogMsg {
     pub level: LogLevel,
+    pub req : Option<u64>,
+    pub step : Option<u64>,
     pub msg: String,
 }
 
 impl Display for LogMsg {
+
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
-        write!(f, "[{}] {}", "ONE", "TWO")
+        let scope = match (self.req, self.step) {
+            (None, None) => char::from_u32(0x267e).unwrap().to_string(),
+            (Some(id), None) => format!("[{id}]"),
+            (Some(rid), Some(sid)) => format!("[{rid}:{sid}]"),
+            (None, Some(_)) => panic!("Can't have a step without a request")
+        };
+
+        write!(f, "[{:?}] {} {}", self.level, scope, self.msg)
     }
 }
 

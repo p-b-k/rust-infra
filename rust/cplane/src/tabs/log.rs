@@ -11,7 +11,7 @@ use infra::{
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 2] = [
+const FIELDS: [FieldSpec; 4] = [
     FieldSpec {
         name: "log_level",
         default: None,
@@ -20,11 +20,25 @@ const FIELDS: [FieldSpec; 2] = [
         unique: true,
     },
     FieldSpec {
-        name: "log_scope",
+        name: "fkey_req",
         default: None,
-        type_def: TypeDef::Data(DataType::String(256)),
-        nullable: false,
-        unique: true,
+        type_def: TypeDef::Data(DataType::Integer),
+        nullable: true,
+        unique: false,
+    },
+    FieldSpec {
+        name: "fkey_step",
+        default: None,
+        type_def: TypeDef::Data(DataType::Integer),
+        nullable: true,
+        unique: false,
+    },
+    FieldSpec {
+        name: "msg",
+        default: None,
+        type_def: TypeDef::Data(DataType::String(512)),
+        nullable: true,
+        unique: false,
     },
 ];
 
@@ -36,14 +50,26 @@ pub const LOG: TableDef = TableDef {
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, FromRow)]
 pub struct Log {
     pub log_level: String,
-    pub log_scope: String,
+    pub fkey_req:  Option<u64>,
+    pub fkey_step: Option<u64>,
+    pub msg: String,
 }
 
 impl<'a> AsRecord<'a> for Log {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        let fkey_req = match self.fkey_req {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None),
+        };
+        let fkey_step = match self.fkey_step {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None),
+        };
         Vec::from([
             ("log_level", SqlValue::String(self.log_level.clone())),
-            ("log_scope", SqlValue::String(self.log_scope.clone())),
+            ("fkey_req", fkey_req),
+            ("fkey_step", fkey_step),
+            ("msg", SqlValue::String(self.msg.clone())),
         ])
     }
 }
