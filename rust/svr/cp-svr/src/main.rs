@@ -36,7 +36,7 @@ async fn main() {
     debug!("Creating application state");
     let app = Arc::new(create_app_state(&db_url, cfg));
 
-    app.sys_log(LogLevel::Warn, format!("Starting Routers"));
+    app.sys_log(LogLevel::Info, format!("Starting Routers"));
 
     let router = status_router()
         .merge(json_router(app.clone()))

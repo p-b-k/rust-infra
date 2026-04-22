@@ -27,7 +27,7 @@ impl Display for LogLevel {
             LogLevel::Trace => write!(f, "Trace"),
             LogLevel::Debug => write!(f, "Debug"),
             LogLevel::Info => write!(f, "Info"),
-            LogLevel::Warn => write!(f, "Warne"),
+            LogLevel::Warn => write!(f, "Warn"),
             LogLevel::Error => write!(f, "Error"),
         }
     }
