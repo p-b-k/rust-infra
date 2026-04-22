@@ -56,8 +56,30 @@ impl AppState {
         // TODO? Release _old_val?
     }
 
-    pub fn log(&self, level: LogLevel, msg: String) {
+    pub fn sys_log(&self, level: LogLevel, msg: String) {
         let log_msg = LogMsg { level, msg, req: None, step:None };
+
+        match self.tx.send(log_msg) {
+            Err(err) => {
+                error!("Error sending log message: {}", err.to_string());
+            }
+            _ => {}
+        }
+    }
+
+    pub fn req_log(&self, level: LogLevel, req: u64, msg: String) {
+        let log_msg = LogMsg { level, msg, req: Some(req), step:None };
+
+        match self.tx.send(log_msg) {
+            Err(err) => {
+                error!("Error sending log message: {}", err.to_string());
+            }
+            _ => {}
+        }
+    }
+
+    pub fn step_log(&self, level: LogLevel, req: u64, step : u64, msg: String) {
+        let log_msg = LogMsg { level, msg, req: Some(req), step:Some(step) };
 
         match self.tx.send(log_msg) {
             Err(err) => {

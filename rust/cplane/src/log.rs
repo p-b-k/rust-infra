@@ -72,7 +72,7 @@ impl LogEngineFactory<NoOpLogEngine> for NoOpLogEngineFactory {
 // Log to stderr Logger
 pub struct SimpleLogEngine {}
 
-const PREFIX: &str = "Log Engine";
+const PREFIX: &str = "SYS";
 const SIMPLE_LOG_TARGET: &str = "SYSLOG";
 
 impl LogEngine for SimpleLogEngine {
