@@ -2,8 +2,9 @@
 // Include the files that make up the http_svr library
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub mod record;
 pub mod error;
+pub mod record;
 pub mod schema;
 pub mod sql;
 pub mod status_router;
+pub mod version;
