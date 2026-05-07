@@ -17,7 +17,7 @@ const FIELDS: [FieldSpec; 4] = [
         default: None,
         type_def: TypeDef::Data(DataType::String(32)),
         nullable: false,
-        unique: true,
+        unique: false,
     },
     FieldSpec {
         name: "fkey_req",
