@@ -2,7 +2,7 @@
 // SQL Data Structures
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use crate::schema::TableDef;
+use crate::{schema::TableDef, version::Version};
 
 pub trait AsSql {
     fn as_sql(&self) -> String;
@@ -42,6 +42,7 @@ pub enum SqlValue<'a> {
     // Timestamp(Time)
     Boolean(bool),
     Nullable(Option<Box<SqlValue<'a>>>),
+    Version(Version),
 }
 
 pub fn sql_escape(s: &str) -> String {
@@ -80,6 +81,7 @@ impl<'a> AsSql for SqlValue<'a> {
                 None => String::from("NULL"),
                 Some(v) => v.as_sql(),
             },
+            SqlValue::Version(v) => v.to_sort_string(),
         }
     }
 }

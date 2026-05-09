@@ -2,6 +2,7 @@
 // sample data
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use infra::version::Version;
 use mysql::PooledConn;
 
 use crate::tabs::{
@@ -56,21 +57,13 @@ pub fn load_sample_data(conn: &mut PooledConn) {
     // Product Versions
     let mut pv_cplane_0_0 = PRODUCT_VER_FACTORY.new(ProductVer {
         fkey_prod: p_cplane.pkey.unwrap(),
-        maj_ver: 0,
-        min_ver: 0,
-        rel_ver: None,
-        bld_ver: None,
-        bld_tag: None,
+        prod_ver: Version::from_string("0.0.0.1").unwrap(),
     });
     pv_cplane_0_0.sync(conn);
 
     let mut pv_aion_0_1 = PRODUCT_VER_FACTORY.new(ProductVer {
         fkey_prod: p_aion.pkey.unwrap(),
-        maj_ver: 0,
-        min_ver: 1,
-        rel_ver: None,
-        bld_ver: None,
-        bld_tag: None,
+        prod_ver: Version::from_string("0.1").unwrap(),
     });
     pv_aion_0_1.sync(conn);
 

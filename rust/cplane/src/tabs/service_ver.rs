@@ -7,10 +7,11 @@ use infra::{
     schema::{DataType, FieldSpec, TableDef, TypeDef},
     sql::SqlValue,
 };
+
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 7] = [
+const FIELDS: [FieldSpec; 3] = [
     FieldSpec {
         name: "fkey_svc",
         default: None,
@@ -19,39 +20,11 @@ const FIELDS: [FieldSpec; 7] = [
         unique: false,
     },
     FieldSpec {
-        name: "maj_ver",
+        name: "svc_ver",
         default: None,
-        type_def: TypeDef::Data(DataType::Integer),
+        type_def: TypeDef::Data(DataType::Version),
         nullable: false,
-        unique: false,
-    },
-    FieldSpec {
-        name: "min_ver",
-        default: None,
-        type_def: TypeDef::Data(DataType::Integer),
-        nullable: false,
-        unique: false,
-    },
-    FieldSpec {
-        name: "rel_ver",
-        default: None,
-        type_def: TypeDef::Data(DataType::Integer),
-        nullable: true,
-        unique: false,
-    },
-    FieldSpec {
-        name: "bld_ver",
-        default: None,
-        type_def: TypeDef::Data(DataType::Integer),
-        nullable: true,
-        unique: false,
-    },
-    FieldSpec {
-        name: "bld_tag",
-        default: None,
-        type_def: TypeDef::Data(DataType::String(128)),
-        nullable: true,
-        unique: false,
+        unique: true,
     },
     FieldSpec {
         name: "schema_def",

@@ -1,7 +1,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// A Verision type that can be easily sorted and persisted in a sortable manner
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+use serde::{Deserialize, Serialize};
 
+use mysql::{FromValueError, prelude::FromValue};
+
+use std::str::FromStr;
+
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct Version {
     pub maj: u16,
     pub min: u16,
@@ -67,6 +73,32 @@ impl Version {
         let bld = self.bld;
 
         format!("{maj:06}.{min:06}.{rel:06}.{bld:06}")
+    }
+}
+
+impl FromStr for Version {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Version, Self::Err> {
+        Version::from_string(s)
+    }
+}
+
+impl From<String> for Version {
+    fn from(value: String) -> Version {
+        Version::from_string(value.as_str())
+            .expect(format!("Unable to read Version value from {value}").as_str())
+    }
+}
+
+impl FromValue for Version {
+    type Intermediate = String;
+
+    fn from_value_opt(v: mysql::Value) -> Result<Self, FromValueError> {
+        match Version::from_string(v.as_sql(true).as_str()) {
+            Err(_) => Err(FromValueError(v)),
+            Ok(r) => Ok(r),
+        }
     }
 }
 

@@ -15,6 +15,7 @@ pub enum DataType {
     Timestamp,
     Clob,
     Blob,
+    Version,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
@@ -43,6 +44,7 @@ impl TypeDef {
                 DataType::Timestamp => out.push_str("DATE"),
                 DataType::Clob => out.push_str("LONGTEXT"), // Using MySQL Syntax for now, TODO add RDBMS layer
                 DataType::Blob => out.push_str("BLOB"),
+                DataType::Version => out.push_str("VARCHAR(32)"),
             },
         }
     }
@@ -60,6 +62,7 @@ impl Display for TypeDef {
                 DataType::Timestamp => write!(f, "date"),
                 DataType::Clob => write!(f, "clob"),
                 DataType::Blob => write!(f, "blob"),
+                DataType::Version => write!(f, "version"),
             },
         }
     }
