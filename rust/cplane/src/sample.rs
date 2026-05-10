@@ -65,7 +65,9 @@ pub fn load_sample_data(conn: &mut PooledConn) {
         fkey_prod: p_aion.pkey.unwrap(),
         prod_ver: Version::from_string("0.1").unwrap(),
     });
+    println!("before sync, pv_aion_0_1.pkey = {:?}", pv_aion_0_1.pkey);
     pv_aion_0_1.sync(conn);
+    println!("after sync, pv_aion_0_1.pkey = {:?}", pv_aion_0_1.pkey);
 
     // Services
     let mut s_auth = SERVICE_FACTORY.new(Service {
@@ -99,45 +101,30 @@ pub fn load_sample_data(conn: &mut PooledConn) {
     // Service Versions
     let mut sv_auth_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_auth.pkey.unwrap(),
-        maj_ver: 0,
-        min_ver: 1,
-        rel_ver: None,
-        bld_ver: None,
-        bld_tag: None,
+        svc_ver: Version::from_string("0.1").unwrap(),
     });
     sv_auth_0_1.sync(conn);
 
     let mut sv_aiondb_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_aiondb.pkey.unwrap(),
-        maj_ver: 0,
-        min_ver: 1,
-        rel_ver: None,
-        bld_ver: None,
-        bld_tag: None,
+        svc_ver: Version::from_string("0.1").unwrap(),
     });
     sv_aiondb_0_1.sync(conn);
 
     let mut sv_aionbl_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_aionbl.pkey.unwrap(),
-        maj_ver: 0,
-        min_ver: 1,
-        rel_ver: None,
-        bld_ver: None,
-        bld_tag: None,
+        svc_ver: Version::from_string("0.1").unwrap(),
     });
     sv_aionbl_0_1.sync(conn);
 
     let mut sv_aionui_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_aionui.pkey.unwrap(),
-        maj_ver: 0,
-        min_ver: 1,
-        rel_ver: None,
-        bld_ver: None,
-        bld_tag: None,
+        svc_ver: Version::from_string("0.1").unwrap(),
     });
     sv_aionui_0_1.sync(conn);
 
     // Product Services
+    println!("pv_aion_0_1.pkey = {:?}", pv_aion_0_1.pkey);
     let mut ps_aion_auth = PRODUCT_SERVICE_FACTORY.new(ProductService {
         fkey_prod_ver: pv_aion_0_1.pkey.unwrap(),
         fkey_svc_ver: sv_auth_0_1.pkey.unwrap(),

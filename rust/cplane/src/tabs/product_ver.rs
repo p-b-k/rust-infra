@@ -43,7 +43,7 @@ impl<'a> AsRecord<'a> for ProductVer {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
         Vec::from([
             ("fkey_prod", SqlValue::Id(self.fkey_prod)),
-            ("maj_ver", SqlValue::Version(self.prod_ver.clone())),
+            ("prod_ver", SqlValue::Version(self.prod_ver.clone())),
         ])
     }
 }

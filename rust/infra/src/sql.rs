@@ -81,7 +81,7 @@ impl<'a> AsSql for SqlValue<'a> {
                 None => String::from("NULL"),
                 Some(v) => v.as_sql(),
             },
-            SqlValue::Version(v) => v.to_sort_string(),
+            SqlValue::Version(v) => format!("'{}'", v.to_sort_string()),
         }
     }
 }
