@@ -24,7 +24,6 @@ impl Version {
 
         let components: Vec<_> = instr.split(".").collect();
         for i in 0..components.len() {
-            println!("Component = {}", components[i]);
             let next: u16;
 
             match components[i].parse() {

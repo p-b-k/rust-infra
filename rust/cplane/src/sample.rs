@@ -65,9 +65,7 @@ pub fn load_sample_data(conn: &mut PooledConn) {
         fkey_prod: p_aion.pkey.unwrap(),
         prod_ver: Version::from_string("0.1").unwrap(),
     });
-    println!("before sync, pv_aion_0_1.pkey = {:?}", pv_aion_0_1.pkey);
     pv_aion_0_1.sync(conn);
-    println!("after sync, pv_aion_0_1.pkey = {:?}", pv_aion_0_1.pkey);
 
     // Services
     let mut s_auth = SERVICE_FACTORY.new(Service {
@@ -124,7 +122,6 @@ pub fn load_sample_data(conn: &mut PooledConn) {
     sv_aionui_0_1.sync(conn);
 
     // Product Services
-    println!("pv_aion_0_1.pkey = {:?}", pv_aion_0_1.pkey);
     let mut ps_aion_auth = PRODUCT_SERVICE_FACTORY.new(ProductService {
         fkey_prod_ver: pv_aion_0_1.pkey.unwrap(),
         fkey_svc_ver: sv_auth_0_1.pkey.unwrap(),
