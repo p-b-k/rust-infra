@@ -5,7 +5,7 @@
 use std::env;
 
 use infra::schema::{SchemaDef, TableDef};
-use log::{info, debug, error};
+use log::{debug, error, info};
 
 use mysql::{Params, Pool, PooledConn, prelude::Queryable};
 
@@ -107,7 +107,7 @@ fn drop_db(cfg: &AppConfig) {
     };
 }
 
-fn initialize(cfg: &AppConfig, (init_db, init_schema, load_sample_data) : (bool, bool, bool)) {
+fn initialize(cfg: &AppConfig, (init_db, init_schema, load_sample_data): (bool, bool, bool)) {
     if init_db {
         initialize_db(cfg);
     }
@@ -131,7 +131,7 @@ fn initialize_data(cfg: &AppConfig) {
 
     let mut conn = pool.get_conn().unwrap();
     debug!(target : "initalize data", "Got connection ...");
-    
+
     load_sample_data(&mut conn);
 }
 
@@ -150,7 +150,7 @@ fn initialize_schema(cfg: &AppConfig, def: &SchemaDef) {
             println!("Completed with errors:");
             msgs.iter().for_each(|msg| println!("{}", msg));
         }
-        _ => {        }
+        _ => {}
     };
 }
 
@@ -207,7 +207,10 @@ fn create_table(conn: &mut PooledConn, tdef: &TableDef) -> Option<String> {
     debug!(target: "create table", "{sql}");
     match conn.exec_drop(sql, Params::Empty) {
         Ok(_) => None,
-        Err(_) => Some(String::from("An Error Happened")),
+        Err(e) => {
+            let msg = format!("ERR: {}", e.to_string());
+            Some(msg)
+        }
     }
 }
 fn stmt_create_db(cfg: &AppConfig) -> String {
@@ -339,7 +342,9 @@ fn write_help() {
     println!(
         "{prog_name}: Prepare a database for connecting cplane to, optionally with sample data"
     );
-    println!("With no options or flags it will create the database and the user and then initialize the schema");
+    println!(
+        "With no options or flags it will create the database and the user and then initialize the schema"
+    );
     println!();
     println!("Options:");
     println!("--name         : cp        : The name of the database (defaults to \"cp\")");
@@ -350,7 +355,7 @@ fn write_help() {
     );
     println!("--pass         : secret    : The name of the apps db connection user id");
     println!(
-        "--root-name    : root      : The system user of the database (to create the table and users)"
+        "--root-user    : root      : The system user of the database (to create the table and users)"
     );
     println!("--root-pass    : secret    : The system user's password");
     println!();
