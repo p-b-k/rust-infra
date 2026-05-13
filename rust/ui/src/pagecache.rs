@@ -240,7 +240,12 @@ fn read_page_from_file(file: &str) -> Result<Page, String> {
 fn read_html_from_file(file: &str) -> Result<Vec<Part>, String> {
     let mut v: Vec<Part> = Vec::new();
 
-    process_template(read_to_string(file).unwrap().as_str(), &mut v);
+    process_template(
+        read_to_string(file)
+            .expect(format!("Couln't read file {file}").as_str())
+            .as_str(),
+        &mut v,
+    );
 
     Ok(v)
 }
