@@ -75,7 +75,7 @@ async fn get_services_body<'a>(
     // let products = PRODUCT_FACTORY.all(&mut conn).unwrap();
     // let products = Vec::new();
 
-    // debug!(target: "get_services_body", "products = {:?}", Option<Vec && Vec<ProductDO && ProductDO<'a>>>::None);
+    debug!(target: "get_services_body", "Not returning any data yet");
 
     Json(None)
 }
