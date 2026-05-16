@@ -8,13 +8,14 @@
 
 use axum::{Json, Router, extract::State, routing::get};
 use cplane::ro::services::{ServiceMainRecord, get_main_services};
+use mysql::PooledConn;
 
 use std::sync::Arc;
 
 use crate::state::AppState;
 use ui::table::{ColumnDef, TableDef};
 
-use log::{debug, error};
+use log::error;
 
 pub fn services_router(app: Arc<AppState>) -> Router<()> {
     {
@@ -66,9 +67,13 @@ async fn get_services_head() -> Json<Box<TableDef>> {
 }
 
 async fn get_services_body<'a>(
-    State(_state): State<Arc<AppState>>,
+    State(state): State<Arc<AppState>>,
 ) -> Json<Option<Vec<ServiceMainRecord>>> {
-    let return_value = match get_main_services() {
+    let mut pool = state.pool.lock().unwrap();
+    let mut_pool = pool.as_mut();
+    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+
+    let return_value = match get_main_services(&mut conn) {
         Ok(services) => Some(services),
         Err(e) => {
             error!("Error getting services: {}", e.to_string());
