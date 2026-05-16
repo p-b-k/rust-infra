@@ -7,14 +7,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{Json, Router, extract::State, routing::get};
-use cplane::ro::services::ServiceMainRecord;
+use cplane::ro::services::{ServiceMainRecord, get_main_services};
 
 use std::sync::Arc;
 
 use crate::state::AppState;
 use ui::table::{ColumnDef, TableDef};
 
-use log::debug;
+use log::{debug, error};
 
 pub fn services_router(app: Arc<AppState>) -> Router<()> {
     {
@@ -68,25 +68,13 @@ async fn get_services_head() -> Json<Box<TableDef>> {
 async fn get_services_body<'a>(
     State(_state): State<Arc<AppState>>,
 ) -> Json<Option<Vec<ServiceMainRecord>>> {
-    // let mut pool = state.pool.lock().unwrap();
-    // let mut_pool = pool.as_mut();
-    // let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+    let return_value = match get_main_services() {
+        Ok(services) => Some(services),
+        Err(e) => {
+            error!("Error getting services: {}", e.to_string());
+            None
+        }
+    };
 
-    // let products = PRODUCT_FACTORY.all(&mut conn).unwrap();
-    let products = Vec::from([
-        ServiceMainRecord {
-            svc_id: "svc1".to_string(),
-            svc_name: "Some Service".to_string(),
-            version: "1.0.2".to_string(),
-        },
-        ServiceMainRecord {
-            svc_id: "svc2".to_string(),
-            svc_name: "Some Other Service".to_string(),
-            version: "0.0.2".to_string(),
-        },
-    ]);
-
-    debug!(target: "get_services_body", "Not returning any data yet");
-
-    Json(Some(products))
+    Json(return_value)
 }
