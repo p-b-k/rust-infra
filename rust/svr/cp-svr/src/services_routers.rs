@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{Json, Router, extract::State, routing::get};
-use cplane::tabs::product::ProductDO;
+use cplane::ro::services::ServiceMainRecord;
 
 use std::sync::Arc;
 
@@ -67,15 +67,26 @@ async fn get_services_head() -> Json<Box<TableDef>> {
 
 async fn get_services_body<'a>(
     State(_state): State<Arc<AppState>>,
-) -> Json<Option<Vec<ProductDO<'a>>>> {
+) -> Json<Option<Vec<ServiceMainRecord>>> {
     // let mut pool = state.pool.lock().unwrap();
     // let mut_pool = pool.as_mut();
     // let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
 
     // let products = PRODUCT_FACTORY.all(&mut conn).unwrap();
-    // let products = Vec::new();
+    let products = Vec::from([
+        ServiceMainRecord {
+            svc_id: "svc1".to_string(),
+            svc_name: "Some Service".to_string(),
+            version: "1.0.2".to_string(),
+        },
+        ServiceMainRecord {
+            svc_id: "svc2".to_string(),
+            svc_name: "Some Other Service".to_string(),
+            version: "0.0.2".to_string(),
+        },
+    ]);
 
     debug!(target: "get_services_body", "Not returning any data yet");
 
-    Json(None)
+    Json(Some(products))
 }

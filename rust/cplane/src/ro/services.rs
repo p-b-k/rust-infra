@@ -1,8 +1,12 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Dashboard page support JavaScript
+// Request Objects for Services section data
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-document.addEventListener("DOMContentLoaded", () => {
-  populateDOTable('job-table', '/pass/dash/jobs/head', '/pass/dash/jobs/body');
-});
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct ServiceMainRecord {
+    pub svc_id: String,
+    pub svc_name: String,
+    pub version: String,
+}

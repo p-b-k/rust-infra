@@ -16,8 +16,8 @@ function addColumnToHead (tr, col) {
   span.classList.add(col.class);
 }
 
-function appendBodyTd (tr, row, col) {
-  console.log('appendBodyTd: called on ' + tr + ', ' + col);
+function appendDOBodyTd (tr, row, col) {
+  console.log('appendDOBodyTd: called on ' + tr + ', ' + col);
   let td = document.createElement('td');
   let span = document.createElement('span');
   td.appendChild(span);
@@ -60,7 +60,7 @@ function rePopulateToolbar (toolTable, obj) {
     tr.appendChild(inputTd);
   }
 
-  {
+  { // Just to scope td and img
     let td = document.createElement('td');
     let img = document.createElement('img');
     img.src = "/static/svg/copy.svg";
@@ -70,8 +70,7 @@ function rePopulateToolbar (toolTable, obj) {
     tr.appendChild(td);
   }
 
-  if (obj.refresh_url)
-  {
+  if (obj.refresh_url) {
     let td = document.createElement('td');
     let img = document.createElement('img');
     img.src = "/static/svg/reload.svg";
@@ -96,7 +95,7 @@ function rePopulateColumns (thead, tableId) {
   }
 }
 
-function rePopulateBody (tbody, tableId) {
+function rePopulateDOBody (tbody, tableId) {
   if (tbody) {
     tbody.innerHTML = '';
 
@@ -108,25 +107,63 @@ function rePopulateBody (tbody, tableId) {
           let tr = document.createElement('tr');
           tbody.appendChild(tr);
           headData.columns.forEach (function (col) {
-            appendBodyTd (tr, row[1], col);
+            appendDOBodyTd (tr, row[1], col);
           });
         });
       } else {
-        console.log('rePopulateBody: No table column data found for table body');
+        console.log('rePopulateDOBody: No table column data found for table body');
       }
     } else {
-      console.log('rePopulateBody: No table body data found');
+      console.log('rePopulateDOBody: No table body data found');
       let noDataDiv = document.createElement('div');
       noDataDiv.innerText = 'No records found';
       tbody.appendChild(noDataDiv);
     }
     
   } else {
-    console.log('rePopulateBody: tbody not found for ' + tableId);
+    console.log('rePopulateDOBody: tbody not found for ' + tableId);
   }
 }
 
-function populateTable (tableId, headUrl, bodyUrl) {
+function rePopulateROBody (tbody, tableId) {
+  if (tbody) {
+    tbody.innerHTML = '';
+
+    let bodyData = data[tableId].body;
+    if (bodyData) {
+      let headData = data[tableId].head;
+      if (headData) {
+        bodyData.forEach(function (row) {
+          let tr = document.createElement('tr');
+          tbody.appendChild(tr);
+          headData.columns.forEach (function (col) {
+            appendDOBodyTd (tr, row, col);
+          });
+        });
+      } else {
+        console.log('rePopulateDOBody: No table column data found for table body');
+      }
+    } else {
+      console.log('rePopulateDOBody: No table body data found');
+      let noDataDiv = document.createElement('div');
+      noDataDiv.innerText = 'No records found';
+      tbody.appendChild(noDataDiv);
+    }
+    
+  } else {
+    console.log('rePopulateDOBody: tbody not found for ' + tableId);
+  }
+}
+
+function populateDOTable (tableId, headUrl, bodyUrl) {
+  populateTable(tableId, headUrl, bodyUrl, rePopulateDOBody);
+}
+  
+function populateROTable (tableId, headUrl, bodyUrl) {
+  populateTable(tableId, headUrl, bodyUrl, rePopulateROBody);
+}
+  
+function populateTable (tableId, headUrl, bodyUrl, bodyDataCallback) {
   // Find the root element ...
   console.log('tableId = ' + tableId);
   let root = document.getElementById(tableId);
@@ -158,7 +195,8 @@ function populateTable (tableId, headUrl, bodyUrl) {
   let bodyCallback = function (obj) {
     data[tableId].body = obj;
 
-    rePopulateBody (dataBody, tableId);
+    // rePopulateBody (dataBody, tableId);
+    bodyDataCallback (dataBody, tableId);
   }
 
   // Define the body callback function
