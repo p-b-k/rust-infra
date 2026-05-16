@@ -10,26 +10,21 @@ $env.profiles.cp = "BaseBlack"
 
 # const core_server = cat 
 # 
-def "start cplane" [ ] {
-  print "Starting Control Plane"
-  ./cplane start
-}
-
-def "stop cplane" [ ] { 
-  print "Stopping Control Plane"
-  ./cplane stop
-}
-
 def "start cp" [
   --log = warn
 ] {
   $env.RUST_LOG = $log
 
-  ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.cp
-    -e target/debug/cp-svr
-    -t "CP"
-    --geometry 132x16+0-0
-  )
+  if $env.TERM == xterm-kitty {
+    echo "Run in kitty"
+    kitty --class=cplane_svr -T "Control Plane Server" --detach cp-svr
+  } else {
+    ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.cp
+      -e target/debug/cp-svr
+      -t "CP"
+      --geometry 132x16+0-0
+    )
+  }
 }
 
 def "start ui" [

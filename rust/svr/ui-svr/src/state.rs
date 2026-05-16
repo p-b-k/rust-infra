@@ -11,6 +11,7 @@ use ui::pagecache::PageCache;
 #[derive(Clone)]
 pub struct AppConfig {
     pub port: u32,
+    pub cache_root: String,
     pub login_page: String,
     pub pt: PtConfig,
     pub dev_mode: bool,
@@ -20,6 +21,7 @@ impl AppConfig {
     pub fn new() -> AppConfig {
         AppConfig {
             port: 7021,
+            cache_root: String::from("."),
             login_page: String::from("res/html/login.html"),
             pt: PtConfig::default(),
             dev_mode: false,
@@ -40,16 +42,38 @@ pub struct AppState {
 }
 
 pub fn create_app_state(config: AppConfig) -> AppState {
-    let html_cache = FileCache::from_mime_and_root(config.dev_mode, mime::TEXT_HTML, "res/html");
-    let json_cache =
-        FileCache::from_mime_and_root(config.dev_mode, mime::APPLICATION_JSON, "res/json");
-    let css_cache = FileCache::from_mime_and_root(config.dev_mode, mime::TEXT_CSS, "res/css");
-    let js_cache =
-        FileCache::from_mime_and_root(config.dev_mode, mime::APPLICATION_JAVASCRIPT, "res/js");
-    let svg_cache = FileCache::from_mime_and_root(config.dev_mode, mime::IMAGE_SVG, "res/svg");
-    let mut page_cache =
-        PageCache::from_root_and_file(config.dev_mode, "res/pages", "res/templates/main.html")
-            .unwrap();
+    let res_root = format!("{}/res", config.cache_root);
+    let html_cache = FileCache::from_mime_and_root(
+        config.dev_mode,
+        mime::TEXT_HTML,
+        format!("{res_root}/html").as_str(),
+    );
+    let json_cache = FileCache::from_mime_and_root(
+        config.dev_mode,
+        mime::APPLICATION_JSON,
+        format!("{res_root}/json").as_str(),
+    );
+    let css_cache = FileCache::from_mime_and_root(
+        config.dev_mode,
+        mime::TEXT_CSS,
+        format!("{res_root}/css").as_str(),
+    );
+    let js_cache = FileCache::from_mime_and_root(
+        config.dev_mode,
+        mime::APPLICATION_JAVASCRIPT,
+        format!("{res_root}/js").as_str(),
+    );
+    let svg_cache = FileCache::from_mime_and_root(
+        config.dev_mode,
+        mime::IMAGE_SVG,
+        format!("{res_root}/svg").as_str(),
+    );
+    let mut page_cache = PageCache::from_root_and_file(
+        config.dev_mode,
+        format!("{res_root}/pages").as_str(),
+        format!("{res_root}/templates/main.html").as_str(),
+    )
+    .unwrap();
     page_cache.initialize();
 
     AppState {

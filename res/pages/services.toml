@@ -1,0 +1,8 @@
+name = "Services"
+title = "Manage Services"
+desc = "Manage services and versions"
+icon = "services.svg"
+help = "/static/html/help/services.html"
+css  = ["/static/css/table.css"]
+js   = ["/static/js/table.js"]
+

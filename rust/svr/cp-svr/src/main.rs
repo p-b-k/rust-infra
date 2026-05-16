@@ -6,6 +6,7 @@
 
 pub mod dashboard_routers;
 pub mod json_routers;
+pub mod services_routers;
 pub mod state;
 
 use std::env;
@@ -22,6 +23,7 @@ use crate::{
 use std::sync::Arc;
 
 use crate::json_routers::json_router;
+use crate::services_routers::services_router;
 
 #[tokio::main]
 async fn main() {
@@ -40,6 +42,7 @@ async fn main() {
 
     let router = status_router()
         .merge(json_router(app.clone()))
+        .merge(services_router(app.clone()))
         .merge(dashboard_router(app));
     debug!("Created router");
 

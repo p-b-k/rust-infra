@@ -54,8 +54,8 @@ async fn login_action() -> Result<Response<String>, ErrorResponse> {
     ))
 }
 
-async fn favicon() -> Result<Response<String>, ErrorResponse> {
-    let favicon = String::from("res/svg/icon.svg");
+async fn favicon(State(state): State<Arc<AppState>>) -> Result<Response<String>, ErrorResponse> {
+    let favicon = format!("{}/res/svg/icon.svg", state.config.cache_root);
     let mimetype = format!("{}", mime::SVG);
     match read_to_string(&favicon) {
         Ok(contents) => {
@@ -95,6 +95,11 @@ async fn pagelist(State(state): State<Arc<AppState>>) -> Json<Vec<(String, Page)
     vec.push((
         "db".to_string(),
         cache_lock.map.get("db").unwrap().page.clone(),
+    ));
+
+    vec.push((
+        "services".to_string(),
+        cache_lock.map.get("services").unwrap().page.clone(),
     ));
 
     vec.push((
