@@ -86,7 +86,7 @@ impl Display for FieldSpec {
 #[derive(Clone, Serialize, Debug, PartialEq, Eq)]
 pub struct TableDef {
     pub name: &'static str,
-    pub fields: &'static [FieldSpec],
+    pub fields: &'static [&'static FieldSpec],
 }
 
 impl Display for TableDef {

@@ -119,7 +119,7 @@ mod tests {
 
     use super::*;
 
-    const FIELDS: [FieldSpec; 0] = [];
+    const FIELDS: [&FieldSpec; 0] = [];
 
     #[test]
     fn test_value() {
@@ -258,7 +258,7 @@ pub mod select {
 
         use super::*;
 
-        const FIELDS: [FieldSpec; 0] = [];
+        const FIELDS: [&FieldSpec; 0] = [];
 
         #[test]
         fn test_select() {

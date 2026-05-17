@@ -4,49 +4,46 @@
 
 use infra::{
     record::{AsRecord, DObj, DObjFactory},
-    schema::{DataType, FieldSpec, TableDef, TypeDef},
+    schema::{FieldSpec, TableDef},
     sql::SqlValue,
 };
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 4] = [
-    FieldSpec {
+pub mod fields {
+    use infra::schema::{DataType, FieldSpec, TypeDef};
+
+    pub const NAME: FieldSpec = FieldSpec {
         name: "name",
         default: None,
         type_def: TypeDef::Data(DataType::String(32)),
         nullable: false,
         unique: true,
-    },
-    FieldSpec {
+    };
+    pub const HOST: FieldSpec = FieldSpec {
         name: "host",
         default: None,
         type_def: TypeDef::Data(DataType::String(128)),
         nullable: false,
         unique: false,
-    },
-    FieldSpec {
+    };
+    pub const PORT: FieldSpec = FieldSpec {
         name: "port",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: false,
         unique: false,
-    },
-    FieldSpec {
+    };
+    pub const STATUS: FieldSpec = FieldSpec {
         name: "status",
         default: None,
         type_def: TypeDef::Data(DataType::String(64)),
         nullable: true,
         unique: false,
-    },
-    // FieldSpec {
-    //     name: String::from("last_check"),
-    //     default: None,
-    //     type_def: TypeDef::Data(DataType::Timestamp),
-    //     nullable: true,
-    //     unique: false,
-    // },
-];
+    };
+}
+
+const FIELDS: [&FieldSpec; 4] = [&fields::NAME, &fields::HOST, &fields::PORT, &fields::STATUS];
 
 pub const WORKER: TableDef = TableDef {
     name: "worker",

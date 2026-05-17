@@ -4,35 +4,41 @@
 
 use infra::{
     record::{AsRecord, DObj, DObjFactory},
-    schema::{DataType, FieldSpec, TableDef, TypeDef},
+    schema::{FieldSpec, TableDef},
     sql::SqlValue,
 };
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 3] = [
-    FieldSpec {
+pub mod fields {
+    use infra::schema::{DataType, FieldSpec, TypeDef};
+
+    pub const REQ_TYPE: FieldSpec = FieldSpec {
         name: "req_type",
         default: None,
         type_def: TypeDef::Data(DataType::String(64)),
         nullable: false,
         unique: true,
-    },
-    FieldSpec {
+    };
+
+    pub const REQ_START: FieldSpec = FieldSpec {
         name: "req_start",
         default: None,
         type_def: TypeDef::Data(DataType::Timestamp),
         nullable: false,
         unique: true,
-    },
-    FieldSpec {
+    };
+
+    pub const REQ_STATUS: FieldSpec = FieldSpec {
         name: "req_status",
         default: None,
         type_def: TypeDef::Data(DataType::String(64)),
         nullable: false,
         unique: true,
-    },
-];
+    };
+}
+
+const FIELDS: [&FieldSpec; 3] = [&fields::REQ_TYPE, &fields::REQ_START, &fields::REQ_STATUS];
 
 pub const REQUEST: TableDef = TableDef {
     name: "request",

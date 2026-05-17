@@ -2,18 +2,19 @@
 // Data Object and related structures
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use std::marker::PhantomData;
+use std::{collections::HashMap, fmt::Debug, marker::PhantomData};
 
 use log::{debug, error};
 
 use mysql::{
     Error, PooledConn, Row,
-    prelude::{FromRow, Queryable},
+    prelude::{FromRow, FromValue, Queryable},
 };
 use serde::Serialize;
 
 use crate::{
-    schema::TableDef,
+    common::CPlaneError,
+    schema::{FieldSpec, TableDef},
     sql::{AsSql, SqlValue},
 };
 
@@ -238,6 +239,43 @@ where
             let obj: T = T::from_row(row);
             return self.from(obj, pkey);
         })
+    }
+
+    pub fn max<V>(
+        &self,
+        conn: &mut PooledConn,
+        max_field: &FieldSpec,
+        group_field: &FieldSpec,
+    ) -> Result<HashMap<u64, V>, CPlaneError>
+    where
+        V: FromValue,
+        V: Debug,
+    {
+        let table = self.table.name;
+        let max_name = max_field.name;
+        let group_name = group_field.name;
+        let query =
+            format!("SELECT MAX({max_name}) m, {group_name} g FROM {table} GROUP BY {group_name}");
+        debug!(target : "max", "QUERY: {query}");
+
+        let mut map: HashMap<u64, V> = HashMap::new();
+
+        conn.query_map(query, |row: Row| {
+            let group = row.get("g").expect("Unable to get {group_name} value");
+            debug!("pkey = {group}");
+            let maxv = row.get("m").expect("Unable to get {max_name} value");
+            debug!("pkey = {maxv:?}");
+
+            match map.insert(group, maxv) {
+                None => {}
+                Some(e) => {
+                    error!("Error inserting {group_name} -> {max_name:?} into hash map: {e:?}");
+                }
+            }
+        })
+        .expect("Error issuing query {query} on {conn:?}");
+
+        Ok(map)
     }
 
     pub fn all(&self, conn: &mut PooledConn) -> Result<Vec<DObj<'a, T>>, Error> {

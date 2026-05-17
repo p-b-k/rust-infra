@@ -4,42 +4,51 @@
 
 use infra::{
     record::{AsRecord, DObj, DObjFactory},
-    schema::{DataType, FieldSpec, TableDef, TypeDef},
+    schema::{FieldSpec, TableDef},
     sql::SqlValue,
 };
 
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 4] = [
-    FieldSpec {
+pub mod fields {
+    use infra::schema::{DataType, FieldSpec, TypeDef};
+
+    pub const LOG_LEVEL: FieldSpec = FieldSpec {
         name: "log_level",
         default: None,
         type_def: TypeDef::Data(DataType::String(32)),
         nullable: false,
         unique: false,
-    },
-    FieldSpec {
+    };
+    pub const FKEY_REQ: FieldSpec = FieldSpec {
         name: "fkey_req",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: true,
         unique: false,
-    },
-    FieldSpec {
+    };
+    pub const FKEY_STEP: FieldSpec = FieldSpec {
         name: "fkey_step",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: true,
         unique: false,
-    },
-    FieldSpec {
+    };
+    pub const MSG: FieldSpec = FieldSpec {
         name: "msg",
         default: None,
         type_def: TypeDef::Data(DataType::String(512)),
         nullable: true,
         unique: false,
-    },
+    };
+}
+
+const FIELDS: [&FieldSpec; 4] = [
+    &fields::LOG_LEVEL,
+    &fields::FKEY_REQ,
+    &fields::FKEY_STEP,
+    &fields::MSG,
 ];
 
 pub const LOG: TableDef = TableDef {

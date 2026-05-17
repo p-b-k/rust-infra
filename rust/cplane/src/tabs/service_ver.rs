@@ -4,7 +4,7 @@
 
 use infra::{
     record::{AsRecord, DObj, DObjFactory},
-    schema::{DataType, FieldSpec, TableDef, TypeDef},
+    schema::{FieldSpec, TableDef},
     sql::SqlValue,
     version::Version,
 };
@@ -12,29 +12,35 @@ use infra::{
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 3] = [
-    FieldSpec {
+pub mod fields {
+    use infra::schema::{DataType, FieldSpec, TypeDef};
+
+    pub const FKEY_SVC: FieldSpec = FieldSpec {
         name: "fkey_svc",
         default: None,
         type_def: TypeDef::Data(DataType::Integer),
         nullable: false,
         unique: false,
-    },
-    FieldSpec {
+    };
+
+    pub const SVC_VER: FieldSpec = FieldSpec {
         name: "svc_ver",
         default: None,
         type_def: TypeDef::Data(DataType::Version),
         nullable: false,
         unique: false,
-    },
-    FieldSpec {
+    };
+
+    pub const SCHEMA_DEF: FieldSpec = FieldSpec {
         name: "schema_def",
         default: None,
         type_def: TypeDef::Data(DataType::Clob),
         nullable: true,
         unique: false,
-    },
-];
+    };
+}
+
+const FIELDS: [&FieldSpec; 3] = [&fields::FKEY_SVC, &fields::SVC_VER, &fields::SCHEMA_DEF];
 
 pub const SERVICE_VERSION: TableDef = TableDef {
     name: "service_ver",

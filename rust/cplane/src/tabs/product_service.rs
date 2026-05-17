@@ -4,28 +4,33 @@
 
 use infra::{
     record::{AsRecord, DObj, DObjFactory},
-    schema::{FieldSpec, TableDef, TypeDef},
+    schema::{FieldSpec, TableDef},
     sql::SqlValue,
 };
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 2] = [
-    FieldSpec {
+pub mod fields {
+    use infra::schema::{FieldSpec, TypeDef};
+
+    pub const FKEY_PROD_VER: FieldSpec = FieldSpec {
         name: "fkey_prod_ver",
         default: None,
         type_def: TypeDef::FKey("product_ver"),
         nullable: false,
         unique: false,
-    },
-    FieldSpec {
+    };
+
+    pub const FKEY_SVC_VER: FieldSpec = FieldSpec {
         name: "fkey_svc_ver",
         default: None,
         type_def: TypeDef::FKey("service_ver"),
         nullable: false,
         unique: false,
-    },
-];
+    };
+}
+
+const FIELDS: [&FieldSpec; 2] = [&fields::FKEY_PROD_VER, &fields::FKEY_SVC_VER];
 
 pub const PRODUCT_SERVICE: TableDef = TableDef {
     name: "product_service",

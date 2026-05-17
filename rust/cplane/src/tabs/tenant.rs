@@ -4,19 +4,25 @@
 
 use infra::{
     record::{AsRecord, DObj, DObjFactory},
-    schema::{FieldSpec, TableDef, TypeDef},
+    schema::{FieldSpec, TableDef},
     sql::SqlValue,
 };
 use mysql::prelude::FromRow;
 use serde::{Deserialize, Serialize};
 
-const FIELDS: [FieldSpec; 1] = [FieldSpec {
-    name: "fkey_cust",
-    default: None,
-    type_def: TypeDef::FKey("customer"),
-    nullable: false,
-    unique: false,
-}];
+pub mod fields {
+    use infra::schema::{FieldSpec, TypeDef};
+
+    pub const FKEY_CUST: FieldSpec = FieldSpec {
+        name: "fkey_cust",
+        default: None,
+        type_def: TypeDef::FKey("customer"),
+        nullable: false,
+        unique: false,
+    };
+}
+
+const FIELDS: [&FieldSpec; 1] = [&fields::FKEY_CUST];
 
 pub const TENANT: TableDef = TableDef {
     name: "tenant",
