@@ -1,3 +1,4 @@
+use log::info;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// A Verision type that can be easily sorted and persisted in a sortable manner
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +95,7 @@ impl FromValue for Version {
     type Intermediate = String;
 
     fn from_value_opt(v: mysql::Value) -> Result<Self, FromValueError> {
+        info!("v = {v:?}");
         match Version::from_string(v.as_sql(true).as_str()) {
             Err(_) => Err(FromValueError(v)),
             Ok(r) => Ok(r),

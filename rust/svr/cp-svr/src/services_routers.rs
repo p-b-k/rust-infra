@@ -58,7 +58,7 @@ async fn get_services_head() -> Json<Box<TableDef>> {
             },
             ColumnDef {
                 column: String::from("version"),
-                class: None,
+                class: Some(String::from("version-field")),
                 text: String::from("Current Version"),
                 width: None,
             },

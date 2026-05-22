@@ -19,14 +19,16 @@ function addColumnToHead (tr, col) {
 function appendDOBodyTd (tr, row, col) {
   console.log('appendDOBodyTd: called on ' + tr + ', ' + col);
   let td = document.createElement('td');
-  let span = document.createElement('span');
-  td.appendChild(span);
+  // let span = document.createElement('span');
+  // td.appendChild(span);
   tr.appendChild(td);
   
   console.log ('value of column ' + col.column + ' is ' + row [col.column]);
   
-  span.innerText = row [col.column];
-  span.classList.add(col.class);
+  // span.innerText = row [col.column];
+  // span.classList.add(col.class);
+  td.innerText = row [col.column];
+  td.classList.add(col.class);
 }
 
 function rePopulateToolbar (toolTable, obj) {

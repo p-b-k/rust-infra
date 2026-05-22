@@ -16,8 +16,12 @@ def "start cp" [
   $env.RUST_LOG = $log
 
   if $env.TERM == xterm-kitty {
-    echo "Run in kitty"
-    kitty --class=cplane_svr -T "Control Plane Server" --detach cp-svr
+    let r = (hyprctl dispatch focuswindow class:cplane_svr)
+    if $r == ok {
+      echo "CPlane Already Started"
+    } else {
+      kitty --class=cplane_svr -T "Control Plane Server" --detach cp-svr
+    }
   } else {
     ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.cp
       -e target/debug/cp-svr
@@ -31,22 +35,34 @@ def "start ui" [
   --log: string = warn
 ] {
   $env.RUST_LOG = $log
-
-  ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.ui
-    -e target/debug/ui-svr
-    -t "UI"
-    --geometry 132x16+0-360
-  )
+  if $env.TERM == xterm-kitty {
+    let r = (hyprctl dispatch focuswindow class:ui_svr) 
+    if $r == ok {
+      echo "UI Already Started"
+    } else {
+      kitty --class=ui_svr -T "Control Plane UI" --detach ui-svr
+    }
+  } else {
+    ( mate-terminal --working-directory $env.PROJ_ROOT --profile $env.profiles.ui
+      -e target/debug/ui-svr
+      -t "UI"
+      --geometry 132x16+0-360
+    )
+  }
 }
 
 def "build cplane" [ ] {
+  cargo build
   cargo test
-  cargo build -r
+  [ infra cplane svr/ui-svr svr/cp-svr ] | each { |p| cargo install --path=$"rust/($p)" } 
+  
+  # cargo test
+  # cargo build -r
 
-  podman build -t rusty-base  -f Dockerfile.base   ..
-  podman build -t db-base     -f Dockerfile.mysql  ..
-  podman build -t cplane-base -f Dockerfile.cplane ..
-  podman build -t ui-base     -f Dockerfile.ui ..
+  # podman build -t rusty-base  -f Dockerfile.base   ..
+  # podman build -t db-base     -f Dockerfile.mysql  ..
+  # podman build -t cplane-base -f Dockerfile.cplane ..
+  # podman build -t ui-base     -f Dockerfile.ui ..
 }
 
 def "list images" [--all] {

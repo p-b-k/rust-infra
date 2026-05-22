@@ -5,6 +5,7 @@
 use std::collections::HashMap;
 
 use infra::common::CPlaneError;
+use infra::version::Version;
 use mysql::PooledConn;
 use serde::{Deserialize, Serialize};
 
@@ -16,11 +17,13 @@ use crate::tabs::service_ver::{
     fields::{FKEY_SVC, SVC_VER},
 };
 
+const NO_VERSION: &str = "\u{26D4}";
+
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ServiceMainRecord {
     pub svc_id: String,
     pub svc_name: String,
-    pub version: Option<String>,
+    pub version: String,
 }
 
 pub fn get_main_services(conn: &mut PooledConn) -> Result<Vec<ServiceMainRecord>, CPlaneError> {
@@ -44,8 +47,11 @@ pub fn get_main_services(conn: &mut PooledConn) -> Result<Vec<ServiceMainRecord>
                     svc_id: svc.obj.svc_id,
                     svc_name: svc.obj.svc_name,
                     version: match vmap.get(&svc.pkey.unwrap()) {
-                        Some(v) => Some(v.clone()),
-                        None => None,
+                        Some(v) => Version::from_string(v)
+                            .expect("Unable to parse version string")
+                            .to_short_string(),
+
+                        None => NO_VERSION.to_string(),
                     },
                 });
             }
