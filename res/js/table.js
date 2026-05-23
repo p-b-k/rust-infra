@@ -97,10 +97,10 @@ function rePopulateColumns (thead, tableId) {
   }
 }
 
-function assignRowAction(tr, action) {
+function assignRowAction(tr, action, pkey) {
   if (action) {
     console.log("Found action " + action);
-    tr.onclick = window[action];
+    tr.onclick = function (e) { window[action] (e, pkey); }
   } else {
     console.log("No action found");
   }
@@ -117,7 +117,7 @@ function rePopulateDOBody (tbody, tableId) {
         bodyData.forEach(function (row) {
           let tr = document.createElement('tr');
           tbody.appendChild(tr);
-          assignRowAction(tr, headData.action);
+          assignRowAction(tr, headData.action, row['pkey']);
           headData.columns.forEach (function (col) {
             appendDOBodyTd (tr, row[1], col);
           });
@@ -147,7 +147,7 @@ function rePopulateROBody (tbody, tableId) {
       if (headData) {
         bodyData.forEach(function (row) {
           let tr = document.createElement('tr');
-          assignRowAction(tr, headData.action);
+          assignRowAction(tr, headData.action, row['pkey']);
           tbody.appendChild(tr);
           headData.columns.forEach (function (col) {
             appendDOBodyTd (tr, row, col);

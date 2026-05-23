@@ -21,6 +21,7 @@ const NO_VERSION: &str = "\u{26D4}";
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct ServiceMainRecord {
+    pub pkey: u64,
     pub svc_id: String,
     pub svc_name: String,
     pub version: String,
@@ -44,6 +45,7 @@ pub fn get_main_services(conn: &mut PooledConn) -> Result<Vec<ServiceMainRecord>
 
             for svc in services {
                 result.push(ServiceMainRecord {
+                    pkey: svc.pkey.unwrap(),
                     svc_id: svc.obj.svc_id,
                     svc_name: svc.obj.svc_name,
                     version: match vmap.get(&svc.pkey.unwrap()) {
