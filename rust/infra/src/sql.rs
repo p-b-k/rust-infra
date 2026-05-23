@@ -2,7 +2,7 @@
 // SQL Data Structures
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use crate::{schema::TableDef, version::Version};
+use crate::{schema::TableDef, svc_schema::SvcSchemaDef, version::Version};
 
 pub trait AsSql {
     fn as_sql(&self) -> String;
@@ -43,6 +43,7 @@ pub enum SqlValue<'a> {
     Boolean(bool),
     Nullable(Option<Box<SqlValue<'a>>>),
     Version(Version),
+    Schema(SvcSchemaDef), // FIXME: Should try and make this a generic serialize/desrialize object
 }
 
 pub fn sql_escape(s: &str) -> String {
@@ -82,6 +83,14 @@ impl<'a> AsSql for SqlValue<'a> {
                 Some(v) => v.as_sql(),
             },
             SqlValue::Version(v) => format!("'{}'", v.to_sort_string()),
+            SqlValue::Schema(s) => format!(
+                "'{}'",
+                sql_escape(
+                    serde_json::to_string(&s)
+                        .expect("Unable to serialize schema")
+                        .as_str()
+                )
+            ),
         }
     }
 }

@@ -51,7 +51,7 @@ pub const SERVICE_VERSION: TableDef = TableDef {
 pub struct ServiceVer {
     pub fkey_svc: u64,
     pub svc_ver: Version,
-    // pub schema_def: Option<String>,
+    pub schema_def: Option<String>,
 }
 
 impl<'a> AsRecord<'a> for ServiceVer {

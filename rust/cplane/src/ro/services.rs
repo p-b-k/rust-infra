@@ -20,14 +20,19 @@ use crate::tabs::service_ver::{
 const NO_VERSION: &str = "\u{26D4}";
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct ServiceMainRecord {
+pub struct ServiceMainRO {
     pub pkey: u64,
     pub svc_id: String,
     pub svc_name: String,
     pub version: String,
 }
 
-pub fn get_main_services(conn: &mut PooledConn) -> Result<Vec<ServiceMainRecord>, CPlaneError> {
+pub struct ServicesVersionsRO {
+    pub fkey_svc: u64,
+    pub svc_ver: Version,
+}
+
+pub fn get_main_services(conn: &mut PooledConn) -> Result<Vec<ServiceMainRO>, CPlaneError> {
     let mut vmap: HashMap<u64, String> = HashMap::new();
 
     match SERVICE_VER_FACTORY.max(conn, &SVC_VER, &FKEY_SVC) {
@@ -41,10 +46,10 @@ pub fn get_main_services(conn: &mut PooledConn) -> Result<Vec<ServiceMainRecord>
 
     match SERVICE_FACTORY.all(conn) {
         Ok(services) => {
-            let mut result: Vec<ServiceMainRecord> = Vec::new();
+            let mut result: Vec<ServiceMainRO> = Vec::new();
 
             for svc in services {
-                result.push(ServiceMainRecord {
+                result.push(ServiceMainRO {
                     pkey: svc.pkey.unwrap(),
                     svc_id: svc.obj.svc_id,
                     svc_name: svc.obj.svc_name,

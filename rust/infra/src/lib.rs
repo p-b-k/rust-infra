@@ -8,4 +8,5 @@ pub mod record;
 pub mod schema;
 pub mod sql;
 pub mod status_router;
+pub mod svc_schema;
 pub mod version;

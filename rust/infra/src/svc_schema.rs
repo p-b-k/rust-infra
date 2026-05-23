@@ -1,0 +1,14 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Defines a services schema
+// TODO: This should be in the cplane crate and a generic object serialization format should be implemented here
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+use serde::{Deserialize, Serialize};
+
+use crate::version::Version;
+
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
+pub struct SvcSchemaDef {
+    pub name: String,
+    pub version: Version,
+}

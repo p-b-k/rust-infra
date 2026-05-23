@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 use axum::{Json, Router, extract::State, routing::get};
-use cplane::ro::services::{ServiceMainRecord, get_main_services};
+use cplane::ro::services::{ServiceMainRO, get_main_services};
 use mysql::PooledConn;
 
 use std::sync::Arc;
@@ -69,7 +69,7 @@ async fn get_services_head() -> Json<Box<TableDef>> {
 
 async fn get_services_body<'a>(
     State(state): State<Arc<AppState>>,
-) -> Json<Option<Vec<ServiceMainRecord>>> {
+) -> Json<Option<Vec<ServiceMainRO>>> {
     let mut pool = state.pool.lock().unwrap();
     let mut_pool = pool.as_mut();
     let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
