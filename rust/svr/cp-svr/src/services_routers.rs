@@ -43,6 +43,7 @@ async fn get_services_head() -> Json<Box<TableDef>> {
         title: String::from("Services"),
         search_url: None,
         refresh_url: Some(String::from("/test/prod/table/refresh")),
+        action: Some("show_service_panel".to_string()),
         columns: Box::new(Vec::from([
             ColumnDef {
                 column: String::from("svc_id"),

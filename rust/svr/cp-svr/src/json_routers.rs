@@ -74,6 +74,7 @@ async fn get_prod_test_head() -> Json<Box<TableDef>> {
         title: String::from("Products"),
         search_url: None,
         refresh_url: Some(String::from("/test/prod/table/refresh")),
+        action: None,
         columns: Box::new(Vec::from([
             ColumnDef {
                 column: String::from("prod_id"),
@@ -118,6 +119,7 @@ async fn get_svc_test_head() -> Json<Box<TableDef>> {
         title: String::from("Services"),
         search_url: Some(String::from("/test/svc/table/search")),
         refresh_url: None,
+        action: None,
         columns: Box::new(Vec::from([
             ColumnDef {
                 column: String::from("svc_id"),

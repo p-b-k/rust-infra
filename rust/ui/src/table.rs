@@ -2,6 +2,7 @@
 // Table Component
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+use log::warn;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize)]
@@ -18,6 +19,7 @@ pub struct TableDef {
     pub search_url: Option<String>,
     pub refresh_url: Option<String>,
     pub columns: Box<Vec<ColumnDef>>,
+    pub action: Option<String>,
 }
 
 impl TableDef {
@@ -27,6 +29,7 @@ impl TableDef {
             search_url: None,
             refresh_url: None,
             columns: Box::new(Vec::from([])),
+            action: None,
         }
     }
 
@@ -42,6 +45,18 @@ impl TableDef {
 
     pub fn add_column(&mut self, cdef: ColumnDef) -> &TableDef {
         self.columns.push(cdef);
+        self
+    }
+
+    pub fn set_action(&mut self, action: String) -> &TableDef {
+        match &self.action {
+            Some(old) => {
+                warn!("Setting previously set value from {} to {action}", old)
+            }
+            _ => {}
+        }
+        self.action = Some(action);
+
         self
     }
 }

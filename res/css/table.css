@@ -68,3 +68,17 @@
   /* background              : #FFE3D8; */
   font-size               : small;
 }
+
+TBODY.table-data TR TD {
+  padding-top             : 2px;
+  padding-bottom          : 2px;
+}
+  
+TBODY.table-data TR:hover TD {
+  padding-top             : 0px;
+  padding-bottom          : 0px;
+  background              : var(--table-hover-bg);
+  color                   : var(--table-hover-fg);
+  border-top              : 2px solid var(--table-hover-fg);
+  border-bottom           : 2px solid var(--table-hover-fg);
+}

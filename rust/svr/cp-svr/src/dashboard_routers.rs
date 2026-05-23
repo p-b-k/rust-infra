@@ -36,6 +36,7 @@ async fn get_request_head(State(state): State<Arc<AppState>>) -> Json<Box<TableD
         title: String::from("Request Monitor"),
         search_url: None,
         refresh_url: Some(format!("/{json_root}/test/prod/table/refresh")),
+        action: None,
         columns: Box::new(Vec::from([
             ColumnDef {
                 column: String::from("req_type"),

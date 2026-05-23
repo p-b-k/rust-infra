@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function addColumnToHead (tr, col) {
-  console.log('addColumnToHead: called on ' + tr + ', ' + col);
+  // console.log('addColumnToHead: called on ' + tr + ', ' + col);
   let td = document.createElement('th');
   if (col.width) {
     td.style = "width: " + col.width + "px;";
@@ -17,13 +17,13 @@ function addColumnToHead (tr, col) {
 }
 
 function appendDOBodyTd (tr, row, col) {
-  console.log('appendDOBodyTd: called on ' + tr + ', ' + col);
+  // console.log('appendDOBodyTd: called on ' + tr + ', ' + col);
   let td = document.createElement('td');
   // let span = document.createElement('span');
   // td.appendChild(span);
   tr.appendChild(td);
   
-  console.log ('value of column ' + col.column + ' is ' + row [col.column]);
+  // console.log ('value of column ' + col.column + ' is ' + row [col.column]);
   
   // span.innerText = row [col.column];
   // span.classList.add(col.class);
@@ -88,12 +88,21 @@ function rePopulateColumns (thead, tableId) {
 
   let headData = data[tableId].head;
   if (headData) {
-    console.log('headData = ' + headData + ', headData.columns = ' + headData.columns);
+    // console.log('headData = ' + headData + ', headData.columns = ' + headData.columns);
     let tr = document.createElement('tr');
     thead.appendChild(tr);
     headData.columns.forEach(function (col) { addColumnToHead (tr, col); });
   } else {
     console.log('rePopulateColumns: No column data found');
+  }
+}
+
+function assignRowAction(tr, action) {
+  if (action) {
+    console.log("Found action " + action);
+    tr.onclick = window[action];
+  } else {
+    console.log("No action found");
   }
 }
 
@@ -108,6 +117,7 @@ function rePopulateDOBody (tbody, tableId) {
         bodyData.forEach(function (row) {
           let tr = document.createElement('tr');
           tbody.appendChild(tr);
+          assignRowAction(tr, headData.action);
           headData.columns.forEach (function (col) {
             appendDOBodyTd (tr, row[1], col);
           });
@@ -137,23 +147,24 @@ function rePopulateROBody (tbody, tableId) {
       if (headData) {
         bodyData.forEach(function (row) {
           let tr = document.createElement('tr');
+          assignRowAction(tr, headData.action);
           tbody.appendChild(tr);
           headData.columns.forEach (function (col) {
             appendDOBodyTd (tr, row, col);
           });
         });
       } else {
-        console.log('rePopulateDOBody: No table column data found for table body');
+        console.log('rePopulateROBody: No table column data found for table body');
       }
     } else {
-      console.log('rePopulateDOBody: No table body data found');
+      console.log('rePopulateROBody: No table body data found');
       let noDataDiv = document.createElement('div');
       noDataDiv.innerText = 'No records found';
       tbody.appendChild(noDataDiv);
     }
     
   } else {
-    console.log('rePopulateDOBody: tbody not found for ' + tableId);
+    console.log('rePopulateROBody: tbody not found for ' + tableId);
   }
 }
 
@@ -167,7 +178,7 @@ function populateROTable (tableId, headUrl, bodyUrl) {
   
 function populateTable (tableId, headUrl, bodyUrl, bodyDataCallback) {
   // Find the root element ...
-  console.log('tableId = ' + tableId);
+  // console.log('tableId = ' + tableId);
   let root = document.getElementById(tableId);
   root.classList = [ 'table-control' ];
 
