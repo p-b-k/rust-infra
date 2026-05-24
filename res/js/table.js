@@ -99,7 +99,7 @@ function rePopulateColumns (thead, tableId) {
 
 function assignRowAction(tr, action, pkey) {
   if (action) {
-    console.log("Found action " + action);
+    console.log("Found action " + action + " (window[action] = " + window[action] + ")");
     tr.onclick = function (e) { window[action] (e, pkey); }
   } else {
     console.log("No action found");

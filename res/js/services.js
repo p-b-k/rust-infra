@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function show_service_panel(elem, key) {
-  console.log("show_service_pane(" + elem + ', ' + key + ")");
+  console.log("show_service_panel(" + elem + ', ' + key + ")");
   let panel = document.getElementById("service-panel");
   if (panel.style.visibility == 'hidden') {
     panel.style.visibility = 'visible';
