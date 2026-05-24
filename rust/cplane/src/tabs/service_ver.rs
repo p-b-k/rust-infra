@@ -31,16 +31,24 @@ pub mod fields {
         unique: false,
     };
 
-    pub const SCHEMA_DEF: FieldSpec = FieldSpec {
-        name: "schema_def",
+    // pub const SCHEMA_DEF: FieldSpec = FieldSpec {
+    //     name: "schema_def",
+    //     default: None,
+    //     type_def: TypeDef::Data(DataType::Clob),
+    //     nullable: true,
+    //     unique: false,
+    // };
+
+    pub const FKEY_SDEF: FieldSpec = FieldSpec {
+        name: "fkey_sdef",
         default: None,
-        type_def: TypeDef::Data(DataType::Clob),
+        type_def: TypeDef::Data(DataType::Integer),
         nullable: true,
         unique: false,
     };
 }
 
-const FIELDS: [&FieldSpec; 3] = [&fields::FKEY_SVC, &fields::SVC_VER, &fields::SCHEMA_DEF];
+const FIELDS: [&FieldSpec; 3] = [&fields::FKEY_SVC, &fields::SVC_VER, &fields::FKEY_SDEF];
 
 pub const SERVICE_VERSION: TableDef = TableDef {
     name: "service_ver",
@@ -51,14 +59,19 @@ pub const SERVICE_VERSION: TableDef = TableDef {
 pub struct ServiceVer {
     pub fkey_svc: u64,
     pub svc_ver: Version,
-    pub schema_def: Option<String>,
+    pub fkey_sdef: Option<u64>,
 }
 
 impl<'a> AsRecord<'a> for ServiceVer {
     fn pairs(&self) -> Vec<(&str, SqlValue<'a>)> {
+        let fkey_sdef = match self.fkey_sdef {
+            Some(i) => SqlValue::Nullable(Some(Box::new(SqlValue::Id(i)))),
+            None => SqlValue::Nullable(None),
+        };
         Vec::from([
             ("fkey_svc", SqlValue::Id(self.fkey_svc)),
             ("svc_ver", SqlValue::Version(self.svc_ver.clone())),
+            ("fkey_sdef", fkey_sdef),
         ])
     }
 }

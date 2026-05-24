@@ -100,42 +100,42 @@ pub fn load_sample_data(conn: &mut PooledConn) {
     let mut sv_auth_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_auth.pkey.unwrap(),
         svc_ver: Version::from_string("0.1").unwrap(),
-        schema_def: None,
+        fkey_sdef: None,
     });
     sv_auth_0_1.sync(conn);
 
     let mut sv_auth_0_1_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_auth.pkey.unwrap(),
         svc_ver: Version::from_string("0.1.1").unwrap(),
-        schema_def: None,
+        fkey_sdef: None,
     });
     sv_auth_0_1_1.sync(conn);
 
     let mut sv_auth_0_1_2 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_auth.pkey.unwrap(),
         svc_ver: Version::from_string("0.1.2").unwrap(),
-        schema_def: None,
+        fkey_sdef: None,
     });
     sv_auth_0_1_2.sync(conn);
 
     let mut sv_auth_1_0 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_auth.pkey.unwrap(),
         svc_ver: Version::from_string("1.0").unwrap(),
-        schema_def: None,
+        fkey_sdef: None,
     });
     sv_auth_1_0.sync(conn);
 
     let mut sv_aionbl_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_aionbl.pkey.unwrap(),
         svc_ver: Version::from_string("0.1").unwrap(),
-        schema_def: None,
+        fkey_sdef: None,
     });
     sv_aionbl_0_1.sync(conn);
 
     let mut sv_aionui_0_1 = SERVICE_VER_FACTORY.new(ServiceVer {
         fkey_svc: s_aionui.pkey.unwrap(),
         svc_ver: Version::from_string("0.1").unwrap(),
-        schema_def: None,
+        fkey_sdef: None,
     });
     sv_aionui_0_1.sync(conn);
 

@@ -5,6 +5,8 @@ pub mod product_service;
 pub mod product_tenant;
 pub mod product_ver;
 pub mod request;
+pub mod schema;
+pub mod schema_def;
 pub mod service;
 pub mod service_ver;
 pub mod task;
