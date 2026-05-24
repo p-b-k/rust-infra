@@ -221,15 +221,18 @@ mod tests {
 }
 
 pub mod select {
+    use std::marker::PhantomData;
+
     use super::*;
     use crate::schema::TableDef;
 
-    pub struct SqlSelect<'a> {
+    pub struct SqlSelect<'a, T> {
+        pub phantom: PhantomData<T>,
         pub tref: TableRef<'a>,
         pub fields: Option<Vec<SqlValue<'a>>>,
     }
 
-    impl<'a> AsSql for SqlSelect<'a> {
+    impl<'a, T> AsSql for SqlSelect<'a, T> {
         fn as_sql(&self) -> String {
             let table_id_spec = match &self.tref.id {
                 None => {
@@ -263,11 +266,16 @@ pub mod select {
 
     #[cfg(test)]
     mod test {
+        use mysql::prelude::FromRow;
+
         use crate::schema::FieldSpec;
 
         use super::*;
 
         const FIELDS: [&FieldSpec; 0] = [];
+
+        #[derive(FromRow)]
+        struct TestData1 {}
 
         #[test]
         fn test_select() {
@@ -276,7 +284,8 @@ pub mod select {
                 fields: &FIELDS,
             };
 
-            let sel1 = SqlSelect {
+            let sel1: SqlSelect<TestData1> = SqlSelect {
+                phantom: PhantomData {},
                 tref: TableRef {
                     table: &tdef,
                     id: None,
@@ -290,7 +299,8 @@ pub mod select {
                 id: Some(String::from("t1")),
             };
 
-            let sel2 = SqlSelect {
+            let sel2: SqlSelect<TestData1> = SqlSelect {
+                phantom: PhantomData {},
                 fields: Some(Vec::from([
                     SqlValue::Field(FieldId {
                         table: tref.clone(),

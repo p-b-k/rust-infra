@@ -4,7 +4,7 @@ use log::info;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 use serde::{Deserialize, Serialize};
 
-use mysql::{FromValueError, prelude::FromValue};
+use mysql::{FromValueError, Value, prelude::FromValue};
 
 use std::str::FromStr;
 
@@ -94,11 +94,15 @@ impl From<String> for Version {
 impl FromValue for Version {
     type Intermediate = String;
 
-    fn from_value_opt(v: mysql::Value) -> Result<Self, FromValueError> {
+    fn from_value_opt(v: Value) -> Result<Self, FromValueError> {
         info!("v = {v:?}");
-        match Version::from_string(v.as_sql(true).as_str()) {
-            Err(_) => Err(FromValueError(v)),
-            Ok(r) => Ok(r),
+        match v {
+            Value::Bytes(b) => {
+                info!("s = {b:?}");
+                let s: String = String::from_utf8(b).expect("Unable to parse version string");
+                Ok(Version::from_string(s.as_str()).expect("Unable to parse version"))
+            }
+            _ => Err(FromValueError(v)),
         }
     }
 }

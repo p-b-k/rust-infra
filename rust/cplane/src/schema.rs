@@ -13,6 +13,8 @@ use crate::tabs::product_service::PRODUCT_SERVICE;
 use crate::tabs::product_tenant::PRODUCT_TENANT;
 use crate::tabs::product_ver::PRODUCT_VERSION;
 use crate::tabs::request::REQUEST;
+use crate::tabs::schema::SCHEMA;
+use crate::tabs::schema_def::SCHEMA_DEF;
 use crate::tabs::service::SERVICE;
 use crate::tabs::service_ver::SERVICE_VERSION;
 use crate::tabs::task::TASK;
@@ -68,6 +70,8 @@ pub fn build_schema_def() -> SchemaDef {
             (String::from("tenant"), &TENANT),
             (String::from("product_tenant"), &PRODUCT_TENANT),
             (String::from("worker"), &WORKER),
+            (String::from("schema"), &SCHEMA),
+            (String::from("schema_def"), &SCHEMA_DEF),
         ])),
     }
 }

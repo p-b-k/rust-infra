@@ -6,8 +6,12 @@
 // 3. Update/Create service handlers
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use axum::{Json, Router, extract::State, routing::get};
-use cplane::ro::services::{ServiceMainRO, get_main_services};
+use axum::{
+    Json, Router,
+    extract::{Path, State},
+    routing::get,
+};
+use cplane::ro::services::{ServiceDetailRO, ServiceMainRO, get_main_services, get_service_detail};
 use mysql::PooledConn;
 
 use std::sync::Arc;
@@ -31,8 +35,16 @@ pub fn services_router(app: Arc<AppState>) -> Router<()> {
                 get(get_services_body),
             )
             .route(
-                format!("/{json_root}/test/page/services/service-table/refresh").as_str(),
+                format!("/{json_root}/page/services/service-table/refresh").as_str(),
                 get(get_services_body),
+            )
+            .route(
+                format!(
+                    "/{json_root}/page/services/service-panel/service/{}",
+                    "{pkey}"
+                )
+                .as_str(),
+                get(get_service),
             )
             .with_state(app)
     }
@@ -76,6 +88,25 @@ async fn get_services_body<'a>(
 
     let return_value = match get_main_services(&mut conn) {
         Ok(services) => Some(services),
+        Err(e) => {
+            error!("Error getting services: {}", e.to_string());
+            None
+        }
+    };
+
+    Json(return_value)
+}
+
+async fn get_service<'a>(
+    State(state): State<Arc<AppState>>,
+    Path(pkey): Path<u64>,
+) -> Json<Option<ServiceDetailRO>> {
+    let mut pool = state.pool.lock().expect("Unable to lock connection pool");
+    let mut_pool = pool.as_mut();
+    let mut conn: PooledConn = mut_pool.unwrap().get_conn().unwrap();
+
+    let return_value = match get_service_detail(&mut conn, pkey) {
+        Ok(s) => s,
         Err(e) => {
             error!("Error getting services: {}", e.to_string());
             None

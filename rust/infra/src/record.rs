@@ -15,7 +15,7 @@ use serde::Serialize;
 use crate::{
     common::CPlaneError,
     schema::{FieldSpec, TableDef},
-    sql::{AsSql, SqlValue},
+    sql::{AsSql, SqlValue, TableRef, select::SqlSelect},
 };
 
 pub trait AsRecord<'a> {
@@ -302,6 +302,62 @@ where
                 println!("An error occured: {}", e.to_string());
                 Some(format!("An error occured: {}", e.to_string()))
             }
+        }
+    }
+
+    pub fn select(&self) -> SqlSelect<'a, T> {
+        SqlSelect {
+            phantom: PhantomData {},
+            tref: TableRef {
+                table: self.table,
+                id: Some("this".to_string()),
+            },
+            fields: None,
+        }
+    }
+
+    pub fn query_obj<R>(
+        &mut self,
+        conn: &mut PooledConn,
+        sel: &SqlSelect<R>,
+    ) -> Result<Option<R>, CPlaneError>
+    where
+        R: FromRow,
+        R: Clone,
+    {
+        let query = sel.as_sql();
+        debug!(target : "query_list", "QUERY: {query}");
+
+        match conn.query_map(query, |row: Row| {
+            return R::from_row(row);
+        }) {
+            Ok(v) => match v.len() {
+                0 => Ok(None),
+                1 => Ok(Some(v[0].clone())),
+                _ => {
+                    CPlaneError::new(format!("Expected single result, found {}", v.len()).as_str())
+                }
+            },
+            Err(v) => CPlaneError::new(v.to_string().as_str()),
+        }
+    }
+
+    pub fn query_list<R>(
+        &mut self,
+        conn: &mut PooledConn,
+        sel: &SqlSelect<R>,
+    ) -> Result<Vec<R>, CPlaneError>
+    where
+        R: FromRow,
+    {
+        let query = sel.as_sql();
+        debug!(target : "query_list", "QUERY: {query}");
+
+        match conn.query_map(query, |row: Row| {
+            return R::from_row(row);
+        }) {
+            Ok(v) => Ok(v),
+            Err(v) => CPlaneError::new(v.to_string().as_str()),
         }
     }
 }
