@@ -1,4 +1,3 @@
-use log::info;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// A Verision type that can be easily sorted and persisted in a sortable manner
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,10 +94,8 @@ impl FromValue for Version {
     type Intermediate = String;
 
     fn from_value_opt(v: Value) -> Result<Self, FromValueError> {
-        info!("v = {v:?}");
         match v {
             Value::Bytes(b) => {
-                info!("s = {b:?}");
                 let s: String = String::from_utf8(b).expect("Unable to parse version string");
                 Ok(Version::from_string(s.as_str()).expect("Unable to parse version"))
             }
