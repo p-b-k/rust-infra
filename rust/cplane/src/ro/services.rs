@@ -88,18 +88,23 @@ pub fn get_service_detail(
     let max_ver = vmap.get(&pkey);
 
     match SERVICE_FACTORY.fetch(conn, pkey) {
-        Ok(s) => Ok(Some(ServiceDetailRO {
-            pkey,
-            svc_id: s.obj.svc_id,
-            svc_name: s.obj.svc_name,
-            version: match max_ver {
+        Ok(s) => {
+            let version = match max_ver {
                 Some(v) => {
                     let ver = Version::from_string(v).expect("Unable to parse version string");
                     ver.to_short_string()
                 }
                 None => NO_VERSION.to_string(),
-            },
-        })),
+            };
+
+            Ok(Some(ServiceDetailRO {
+                pkey,
+                svc_id: s.obj.svc_id,
+                svc_name: s.obj.svc_name,
+                version,
+            }))
+        }
+
         Err(e) => CPlaneError::new(e.to_string().as_str()),
     }
 }
