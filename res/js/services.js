@@ -3,20 +3,24 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var sp_data = {};
+let current_key = false;
 
 function showServicePanel(elem, key) {
   console.log("showServicePanel(" + elem + ', ' + key + ")");
-  let current_key = data[]
+  console.log("old key = " + current_key + ", new key = " + key + ", same? " + ((current_key == key)?'Yes':'No'));
   let panel = document.getElementById("service-panel");
   if (panel.style.visibility == 'hidden') {
     panel.style.visibility = 'visible';
-    // populateServicePanel (key);
+    populateServicePanel (key);
+    current_key = key;
   } else if (panel.style.visibility == 'visible') {
-    // if (current_key == key) {
+    if (current_key == key) {
       panel.style.visibility = 'hidden';
-    // } else {
-    //   populateServicePanel (key);
-    // }
+      current_key = false;
+    } else {
+      current_key = key;
+      populateServicePanel (key);
+    }
   } else {
     console.log('panel.style.visibility = ' + panel.style.visibility);
   }
@@ -36,8 +40,8 @@ function populateServicePanel (key) {
 
 function  rePopulateervicePanelData (obj) {
   let spId = document.getElementById('service-panel-id');
-  let spName = document.getElementById('service-panel-id');
-  let spVersion = document.getElementById('service-panel-id');
+  let spName = document.getElementById('service-panel-name');
+  let spVersion = document.getElementById('service-panel-version');
 
   spId.innerText = obj.svc_id;
   spName.innerText = obj.svc_name;
