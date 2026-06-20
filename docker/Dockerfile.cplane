@@ -1,6 +1,0 @@
-FROM rusty-base
-
-ADD docker/start.cp /start
-RUN chmod +x /start
-
-CMD /start

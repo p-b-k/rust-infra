@@ -1,7 +1,0 @@
-name = "Databases"
-title = "Database Managment"
-desc = "Place for managing database"
-icon = "db.svg"
-help = "/static/html/help/db.html"
-css  = []
-js   = []

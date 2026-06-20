@@ -1,7 +1,0 @@
-name = "Servers"
-title = "Server Management"
-desc = "Control service instances"
-icon = "server.svg"
-help = "/static/html/help/dash.html"
-css  = ["/static/css/table.css"]
-js   = ["/static/js/table.js"]
