@@ -5,9 +5,10 @@
 use std::{collections::HashMap, marker::PhantomData};
 
 use http::Response;
-use infra::error::ErrorResponse;
 use log::{error, info, warn};
 use mime::Mime;
+
+use crate::error::ErrorResponse;
 
 pub trait CacheState {
     fn needs_sync(&self) -> bool;

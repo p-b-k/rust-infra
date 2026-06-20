@@ -10,7 +10,7 @@ use std::{
 
 use mime::Mime;
 
-use crate::rescache::{CacheLogic, CacheState, ResCache};
+use crate::cache::rescache::{CacheLogic, CacheState, ResCache};
 
 #[derive(Debug)]
 pub struct StaticFileData {
