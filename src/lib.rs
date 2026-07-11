@@ -5,6 +5,7 @@
 pub mod cache;
 pub mod common;
 pub mod error;
+pub mod print_schema;
 pub mod record;
 pub mod schema;
 pub mod sql;

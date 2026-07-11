@@ -188,3 +188,7 @@ impl SchemaDef {
         }
     }
 }
+
+pub trait SchemaDefFactory {
+    fn build_schema_def(&self) -> SchemaDef;
+}
