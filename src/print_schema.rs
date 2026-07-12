@@ -114,8 +114,6 @@ fn write_tail(fmt: &TableFormat) {
 }
 
 pub fn write_schema_def<T: SchemaDefFactory>(fact: &T) {
-    env_logger::init();
-
     let schema_def = fact.build_schema_def();
     let cfg = create_config(&schema_def);
 

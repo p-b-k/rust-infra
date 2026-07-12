@@ -174,7 +174,7 @@ pub struct DBUser {
     pub grants: Box<Vec<GrantInfo>>,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct SchemaDef {
     pub tables: Box<HashMap<String, &'static TableDef>>,
     pub users: Box<HashMap<String, DBUser>>,
