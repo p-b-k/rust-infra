@@ -16,6 +16,14 @@ pub trait SampleDataLoader {
     fn load_sample_data(&self, conn: &mut PooledConn) -> Option<String>;
 }
 
+pub struct EmptySampleDataLoader {}
+
+impl SampleDataLoader for EmptySampleDataLoader {
+    fn load_sample_data(&self, _conn: &mut PooledConn) -> Option<String> {
+        None
+    }
+}
+
 #[derive(Copy, Clone, Debug)]
 pub enum Op {
     Create(bool, bool, bool),
