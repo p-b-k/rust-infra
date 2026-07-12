@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct DbConfig {
+pub struct DBConfig {
     pub name: String,
     pub user: String,
     pub pass: String,
@@ -11,7 +11,7 @@ pub struct DbConfig {
     pub port: u32,
 }
 
-impl DbConfig {
+impl DBConfig {
     pub fn to_url(&self) -> String {
         let name = &self.name;
         let user = &self.user;

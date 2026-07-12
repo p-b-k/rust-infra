@@ -4,6 +4,8 @@
 
 pub mod cache;
 pub mod common;
+pub mod dbconn;
+pub mod dbmgr;
 pub mod error;
 pub mod print_schema;
 pub mod record;
