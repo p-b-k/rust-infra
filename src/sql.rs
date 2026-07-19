@@ -2,7 +2,7 @@
 // SQL Data Structures
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-use crate::{schema::TableDef, svc_schema::SchemaDef, version::Version};
+use crate::{schema::TableDef, svc_schema::SchemaDef, timedata::Time, version::Version};
 
 pub trait AsSql {
     fn as_sql(&self) -> String;
@@ -39,6 +39,8 @@ pub enum SqlValue<'a> {
     Id(u64),
     ShortU(u32),
     String(String),
+    Time(Time),
+    WeekDay(String),
     // Timestamp(Time)
     Boolean(bool),
     Nullable(Option<Box<SqlValue<'a>>>),
@@ -71,6 +73,8 @@ impl<'a> AsSql for SqlValue<'a> {
             SqlValue::Int(i) => format!("{i}"),
             SqlValue::Id(i) => format!("{i}"),
             SqlValue::ShortU(i) => format!("{i}"),
+            SqlValue::Time(t) => format!("{}", t.to_string()),
+            SqlValue::WeekDay(d) => format!("{}", d.to_string()),
             SqlValue::Boolean(b) => {
                 if *b {
                     String::from("'Y'")

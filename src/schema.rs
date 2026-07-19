@@ -12,6 +12,9 @@ pub enum DataType {
     Boolean,
     String(u32),
     Integer,
+    Date,
+    Time,
+    Timespan,
     Timestamp,
     Clob,
     Blob,
@@ -41,6 +44,9 @@ impl TypeDef {
                 DataType::Boolean => out.push_str("VARCHAR(1)"),
                 DataType::String(size) => out.push_str(format!("VARCHAR({size})").as_str()),
                 DataType::Integer => out.push_str("INTEGER"),
+                DataType::Date => out.push_str("VARCHAR(8)"), // YYYYMMDD
+                DataType::Time => out.push_str("INTEGER"),    // Seconds since midnight
+                DataType::Timespan => out.push_str("INTEGER"), // Number of minutes
                 DataType::Timestamp => out.push_str("DATE"),
                 DataType::Clob => out.push_str("LONGTEXT"), // Using MySQL Syntax for now, TODO add RDBMS layer
                 DataType::Blob => out.push_str("BLOB"),
@@ -59,7 +65,10 @@ impl Display for TypeDef {
                 DataType::Boolean => write!(f, "bool"),
                 DataType::String(size) => write!(f, "string({size})"),
                 DataType::Integer => write!(f, "integer"),
-                DataType::Timestamp => write!(f, "date"),
+                DataType::Date => write!(f, "date"),
+                DataType::Time => write!(f, "time"),
+                DataType::Timespan => write!(f, "timespan"),
+                DataType::Timestamp => write!(f, "timestamp"),
                 DataType::Clob => write!(f, "clob"),
                 DataType::Blob => write!(f, "blob"),
                 DataType::Version => write!(f, "version"),
@@ -79,7 +88,17 @@ pub struct FieldSpec {
 
 impl Display for FieldSpec {
     fn fmt(&self, f: &mut Formatter) -> Result<(), std::fmt::Error> {
-        write!(f, "{} : {}", self.name, self.type_def)
+        let unique = match self.unique {
+            true => char::from_u32(0x2219).unwrap(),
+            false => ' ',
+        };
+
+        let nullable = match self.nullable {
+            true => '?',
+            false => '!',
+        };
+
+        write!(f, "{nullable} {unique} {} : {}", self.name, self.type_def)
     }
 }
 

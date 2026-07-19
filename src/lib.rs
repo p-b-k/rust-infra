@@ -13,4 +13,5 @@ pub mod schema;
 pub mod sql;
 pub mod status_router;
 pub mod svc_schema;
+pub mod timedata;
 pub mod version;
